@@ -4,7 +4,7 @@
 		"annotations": [],
 		"type": "HttpServer",
 		"typeProperties": {
-			"url": "https://pxweb.nhwstat.org:443/Prod/sq/",
+			"url": "https://pxweb.nhwstat.org:443/Prod/sq",
 			"enableServerCertificateValidation": true,
 			"authenticationType": "Anonymous"
 		},
