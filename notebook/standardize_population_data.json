@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "6f28d29a-97a1-4c41-b097-d22cf362001e"
+				"spark.autotune.trackingId": "9a4b1e65-af38-4699-855d-5b2df557797a"
 			}
 		},
 		"metadata": {
@@ -50,26 +50,37 @@
 		"cells": [
 			{
 				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"outputs_hidden": true
+					}
+				},
 				"source": [
 					"import pandas as pd\n",
 					"\n",
-					"# Load from parquet\n",
 					"df_raw = spark.read.parquet(\n",
 					"    \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/staging/population.parquet/\"\n",
 					")\n",
 					"\n",
-					"# Convert to pandas if you want to transform in memory\n",
 					"df = df_raw.toPandas()\n",
 					"\n",
-					"# Keep only the relevant columns\n",
 					"df_long = df[['TIME_PERIOD', 'REF_AREA', 'SEX', 'POPULATION']]\n",
 					"\n",
-					"# Sort to make it clean (optional)\n",
 					"df_long = df_long.sort_values(by=['TIME_PERIOD', 'REF_AREA', 'SEX']).reset_index(drop=True)\n",
-					"\n",
-					"df_long.head(70)"
+					""
 				],
-				"execution_count": 9
+				"execution_count": 10
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"spark_df = spark.createDataFrame(df_long)\n",
+					"\n",
+					"output_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/population.parquet\"\n",
+					"\n",
+					"spark_df.write.mode(\"overwrite\").parquet(output_path)"
+				],
+				"execution_count": 11
 			}
 		]
 	}
