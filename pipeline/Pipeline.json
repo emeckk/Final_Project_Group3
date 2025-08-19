@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Notebook1",
+				"name": "Fetch Population Data",
 				"type": "SynapseNotebook",
 				"state": "Inactive",
 				"onInactiveMarkAs": "Succeeded",
@@ -17,7 +17,13 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"snapshot": true,
+
+					"notebook": {
+						"referenceName": "population_data",
+						"type": "NotebookReference"
+					},
+
+          "snapshot": true,
 					"conf": {
 						"spark.dynamicAllocation.enabled": null,
 						"spark.dynamicAllocation.minExecutors": null,
