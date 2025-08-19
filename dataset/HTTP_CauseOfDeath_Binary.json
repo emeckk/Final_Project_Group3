@@ -10,7 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "HttpServerLocation",
-				"relativeUrl": "/43f45219-97b7-4e58-ae7c-1d1a1e924c25"
+				"relativeUrl": "43f45219-97b7-4e58-ae7c-1d1a1e924c25"
 			}
 		}
 	}
