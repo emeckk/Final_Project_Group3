@@ -5,6 +5,8 @@
 			{
 				"name": "Notebook1",
 				"type": "SynapseNotebook",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -15,11 +17,19 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"snapshot": true
+					"snapshot": true,
+					"conf": {
+						"spark.dynamicAllocation.enabled": null,
+						"spark.dynamicAllocation.minExecutors": null,
+						"spark.dynamicAllocation.maxExecutors": null
+					},
+					"numExecutors": null
 				}
 			},
 			{
-				"name": "Copy Cause of Death Data",
+
+				"name": "Copy data1",
+
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -31,8 +41,41 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
+
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "HttpReadSettings",
+							"requestMethod": "GET"
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"sink": {
+						"type": "JsonSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "JsonWriteSettings"
+						}
+					},
 					"enableStaging": false
-				}
+				},
+				"inputs": [
+					{
+						"referenceName": "HTTP_WHO_JSON",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ADLS_WHO_JSON",
+						"type": "DatasetReference"
+					}
+				]
+
 			}
 		],
 		"annotations": []
