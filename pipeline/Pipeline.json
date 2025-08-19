@@ -17,13 +17,11 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-
 					"notebook": {
 						"referenceName": "population_data",
 						"type": "NotebookReference"
 					},
-
-          "snapshot": true,
+					"snapshot": true,
 					"conf": {
 						"spark.dynamicAllocation.enabled": null,
 						"spark.dynamicAllocation.minExecutors": null,
@@ -68,7 +66,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "HTTP_WHO_JSON",
+						"referenceName": "HTTP_ghoapi_JSON",
 						"type": "DatasetReference"
 					}
 				],
@@ -78,37 +76,6 @@
 						"type": "DatasetReference"
 					}
 				]
-			},
-			{
-				"name": "flattenJSON",
-				"type": "ExecuteDataFlow",
-				"dependsOn": [
-					{
-						"activity": "copyDiabetesPrevalence",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"dataflow": {
-						"referenceName": "FlattenJSON",
-						"type": "DataFlowReference"
-					},
-					"compute": {
-						"coreCount": 8,
-						"computeType": "General"
-					},
-					"traceLevel": "Fine"
-				}
 			}
 		],
 		"annotations": []
