@@ -27,7 +27,7 @@
 				}
 			},
 			{
-				"name": "Copy data1",
+				"name": "copyDiabetesPrevalence",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -74,11 +74,11 @@
 				]
 			},
 			{
-				"name": "Data flow1",
+				"name": "flattenJSON",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [
 					{
-						"activity": "Copy data1",
+						"activity": "copyDiabetesPrevalence",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -94,7 +94,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "Dataflow1",
+						"referenceName": "FlattenJSON",
 						"type": "DataFlowReference"
 					},
 					"compute": {

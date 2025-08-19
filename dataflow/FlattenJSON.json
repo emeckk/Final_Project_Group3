@@ -1,5 +1,5 @@
 {
-	"name": "Dataflow1",
+	"name": "FlattenJSON",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -9,16 +9,40 @@
 						"referenceName": "ADLS_WHO_JSON",
 						"type": "DatasetReference"
 					},
-					"name": "source1"
+					"name": "diabetesPrevalence"
 				}
 			],
 			"sinks": [],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "flattenValues"
+				},
+				{
+					"name": "select1"
+				}
+			],
 			"scriptLines": [
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          {@odata.context} as string,",
+				"          value as (Comments as string, DataSourceDim as string, DataSourceDimType as string, Date as string, Dim1 as string, Dim1Type as string, Dim2 as string, Dim2Type as string, Dim3 as string, Dim3Type as string, High as double, Id as integer, IndicatorCode as string, Low as double, NumericValue as double, ParentLocation as string, ParentLocationCode as string, SpatialDim as string, SpatialDimType as string, TimeDim as short, TimeDimType as string, TimeDimensionBegin as string, TimeDimensionEnd as string, TimeDimensionValue as short, Value as string)[]",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
-				"     documentForm: 'documentPerLine') ~> source1"
+				"     documentForm: 'arrayOfDocuments') ~> diabetesPrevalence",
+				"diabetesPrevalence foldDown(unroll(value, value),",
+				"     mapColumn(",
+				"          {@odata.context},",
+				"          value",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> flattenValues",
+				"flattenValues select(mapColumn(",
+				"          {@odata.context},",
+				"          value",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1"
 			]
 		}
 	}

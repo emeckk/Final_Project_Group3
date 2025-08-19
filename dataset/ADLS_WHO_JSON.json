@@ -10,7 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"folderPath": "testing",
+				"folderPath": "staging",
 				"container": "group3fpfilesystem"
 			}
 		},
