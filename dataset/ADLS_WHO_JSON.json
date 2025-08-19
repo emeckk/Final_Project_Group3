@@ -1,0 +1,18 @@
+{
+	"name": "ADLS_WHO_JSON",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "group3finalprojectworkspace-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileSystem": "staging"
+			}
+		},
+		"schema": {}
+	}
+}
