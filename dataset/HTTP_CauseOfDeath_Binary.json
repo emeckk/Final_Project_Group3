@@ -1,0 +1,17 @@
+{
+	"name": "HTTP_CauseOfDeath_Binary",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "HTTP_PxWeb",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": "/f05cec77-391e-4780-ac7b-41fb2f269581"
+			}
+		}
+	}
+}
