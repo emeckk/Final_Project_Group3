@@ -27,9 +27,7 @@
 				}
 			},
 			{
-
 				"name": "Copy data1",
-
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -41,7 +39,6 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-
 					"source": {
 						"type": "JsonSource",
 						"storeSettings": {
@@ -55,7 +52,7 @@
 					"sink": {
 						"type": "JsonSink",
 						"storeSettings": {
-							"type": "AzureBlobFSWriteSettings"
+							"type": "AzureBlobStorageWriteSettings"
 						},
 						"formatSettings": {
 							"type": "JsonWriteSettings"
@@ -75,7 +72,37 @@
 						"type": "DatasetReference"
 					}
 				]
-
+			},
+			{
+				"name": "Data flow1",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "Copy data1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "Dataflow1",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
 			}
 		],
 		"annotations": []

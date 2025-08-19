@@ -2,14 +2,16 @@
 	"name": "ADLS_WHO_JSON",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "group3finalprojectworkspace-WorkspaceDefaultStorage",
+			"referenceName": "group3fpadls",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
 		"type": "Json",
 		"typeProperties": {
 			"location": {
-				"type": "AzureBlobFSLocation"
+				"type": "AzureBlobStorageLocation",
+				"folderPath": "testing",
+				"container": "group3fpfilesystem"
 			}
 		},
 		"schema": {}
