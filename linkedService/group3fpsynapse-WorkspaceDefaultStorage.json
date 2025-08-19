@@ -1,9 +1,9 @@
 {
-	"name": "group3finalprojectworkspace-WorkspaceDefaultStorage",
+	"name": "group3fpsynapse-WorkspaceDefaultStorage",
 	"type": "Microsoft.Synapse/workspaces/linkedservices",
 	"properties": {
 		"typeProperties": {
-			"url": "https://group3finalprojectadls.dfs.core.windows.net"
+			"url": "https://group3fpadls.dfs.core.windows.net"
 		},
 		"type": "AzureBlobFS",
 		"connectVia": {
