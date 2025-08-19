@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "44aa85a2-55da-44d3-864d-186bf62b171e"
+				"spark.autotune.trackingId": "6d2523c9-0ff0-4059-bcc4-0301922e0a76"
 			}
 		},
 		"metadata": {
@@ -56,40 +56,9 @@
 					}
 				},
 				"source": [
-					"import requests\n",
-					"import pandas as pd\n",
-					"\n",
-					"url = \"https://sdmx.oecd.org/public/rest/data/OECD.ELS.SAE,DSD_POPULATION@DF_POP_HIST,/NOR+SWE+DNK.POP.PS._T+M+F._T.?startPeriod=2006&endPeriod=2020&dimensionAtObservation=AllDimensions\"\n",
-					"\n",
-					"# Call API\n",
-					"response = requests.get(url)\n",
-					"data = response.json()"
+					""
 				],
-				"execution_count": 5
-			},
-			{
-				"cell_type": "code",
-				"source": [
-					"# Navigate to series/observations\n",
-					"series = data['data']['dataSets'][0]['series']\n",
-					"\n",
-					"# Flatten the data into a dataframe\n",
-					"records = []\n",
-					"for key, series_data in series.items():\n",
-					"    obs = series_data['observations']\n",
-					"    for time_idx, values in obs.items():\n",
-					"        records.append({\n",
-					"            \"series_key\": key,\n",
-					"            \"time\": data['data']['structure']['dimensions']['observation'][0]['values'][int(time_idx)]['id'],\n",
-					"            \"value\": values[0]\n",
-					"        })\n",
-					"\n",
-					"df = pd.DataFrame(records)\n",
-					"\n",
-					"# Show\n",
-					"df.head()"
-				],
-				"execution_count": null
+				"execution_count": 9
 			}
 		]
 	}
