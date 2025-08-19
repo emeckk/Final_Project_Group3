@@ -1,0 +1,21 @@
+{
+	"name": "ADLS_CauseOfDeath_Parquet",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "group3fpadls",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "cause_of_death.parquet",
+				"folderPath": "staging",
+				"container": "group3fpfilesystem"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}
