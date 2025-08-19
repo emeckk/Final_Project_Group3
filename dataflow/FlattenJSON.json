@@ -12,13 +12,14 @@
 					"name": "diabetesPrevalence"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"name": "sinkFlattenedData"
+				}
+			],
 			"transformations": [
 				{
 					"name": "flattenValues"
-				},
-				{
-					"name": "select1"
 				}
 			],
 			"scriptLines": [
@@ -37,12 +38,10 @@
 				"     ),",
 				"     skipDuplicateMapInputs: false,",
 				"     skipDuplicateMapOutputs: false) ~> flattenValues",
-				"flattenValues select(mapColumn(",
-				"          {@odata.context},",
-				"          value",
-				"     ),",
+				"flattenValues sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1"
+				"     skipDuplicateMapOutputs: true) ~> sinkFlattenedData"
 			]
 		}
 	}
