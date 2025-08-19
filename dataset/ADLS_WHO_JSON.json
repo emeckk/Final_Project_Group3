@@ -1,0 +1,13 @@
+{
+	"name": "ADLS_WHO_JSON",
+	"properties": {
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation"
+			}
+		},
+		"schema": {}
+	}
+}

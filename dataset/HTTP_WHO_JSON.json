@@ -1,0 +1,18 @@
+{
+	"name": "HTTP_WHO_JSON",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "WHO_API",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": "/NCD_DIABETES_PREVALENCE_AGESTD?$filter=SpatialDim%20eq%20%27SWE%27%20or%20SpatialDim%20eq%20%27DNK%27%20or%20SpatialDim%20eq%20%27NOR%27"
+			}
+		},
+		"schema": {}
+	}
+}
