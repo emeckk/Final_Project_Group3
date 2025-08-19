@@ -1,0 +1,117 @@
+{
+	"name": "population_data",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "group3fpspark",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 1,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "true",
+				"spark.dynamicAllocation.minExecutors": "1",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "4789db3a-750b-41d9-b459-24792a4cb287"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/23b183d5-a30f-46b8-b418-ad060fb67787/resourceGroups/group3fp/providers/Microsoft.Synapse/workspaces/group3fpsynapse/bigDataPools/group3fpspark",
+				"name": "group3fpspark",
+				"type": "Spark",
+				"endpoint": "https://group3fpsynapse.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/group3fpspark",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "3.4",
+				"nodeCount": 10,
+				"cores": 4,
+				"memory": 28,
+				"automaticScaleJobs": true
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"outputs_hidden": true
+					},
+					"microsoft": {
+						"language": "python"
+					}
+				},
+				"source": [
+					"%%pyspark\n",
+					"import pandas as pd\n",
+					"import xml.etree.ElementTree as ET\n",
+					"import urllib.request\n",
+					"\n",
+					"# The API endpoint\n",
+					"url = (\"https://sdmx.oecd.org/public/rest/data/\"\n",
+					"       \"OECD.ELS.SAE,DSD_POPULATION@DF_POP_HIST,\"\n",
+					"       \"/NOR+SWE+DNK.POP.PS._T+M+F._T.?\"\n",
+					"       \"startPeriod=2006&endPeriod=2020\")\n",
+					"\n",
+					"# Add headers to avoid 403\n",
+					"req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})\n",
+					"xml_data = urllib.request.urlopen(req).read()\n",
+					"\n",
+					"# Parse XML\n",
+					"root = ET.fromstring(xml_data)\n",
+					"\n",
+					"# Namespaces in the XML\n",
+					"ns = {\n",
+					"    \"generic\": \"http://www.sdmx.org/resources/sdmxml/schemas/v2_1/data/generic\",\n",
+					"}\n",
+					"\n",
+					"rows = []\n",
+					"for series in root.findall(\".//generic:Series\", ns):\n",
+					"    # Extract series keys (country, sex, etc.)\n",
+					"    series_key = {v.attrib[\"id\"]: v.attrib[\"value\"]\n",
+					"                  for v in series.findall(\"generic:SeriesKey/generic:Value\", ns)}\n",
+					"    \n",
+					"    # Extract observations\n",
+					"    for obs in series.findall(\"generic:Obs\", ns):\n",
+					"        year = obs.find(\"generic:ObsDimension\", ns).attrib[\"value\"]\n",
+					"        value = obs.find(\"generic:ObsValue\", ns).attrib[\"value\"]\n",
+					"        \n",
+					"        row = series_key.copy()\n",
+					"        row[\"TIME_PERIOD\"] = year\n",
+					"        row[\"POPULATION\"] = int(value)\n",
+					"        rows.append(row)\n",
+					"\n",
+					"# Build DataFrame\n",
+					"df_pandas = pd.DataFrame(rows)\n",
+					"\n",
+					"# Convert to Spark DataFrame\n",
+					"spark_df = spark.createDataFrame(df_pandas)\n",
+					"\n",
+					"output_path = \"abfss://<container>@<storage-account>.dfs.core.windows.net/oecd/population.parquet\"\n",
+					"\n",
+					"# Write DataFrame to ADLS in Parquet format (overwrite if exists)\n",
+					"spark_df.write.mode(\"overwrite\").parquet(output_path)\n",
+					""
+				],
+				"execution_count": 15
+			}
+		]
+	}
+}

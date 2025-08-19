@@ -4,7 +4,7 @@
 		"annotations": [],
 		"type": "HttpServer",
 		"typeProperties": {
-			"url": "https://ghoapi.azureedge.net/api",
+			"url": "https://ghoapi.azureedge.net/api/",
 			"enableServerCertificateValidation": true,
 			"authenticationType": "Anonymous"
 		},

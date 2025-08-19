@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Notebook1",
+				"name": "Fetch Population Data",
 				"type": "SynapseNotebook",
 				"state": "Inactive",
 				"onInactiveMarkAs": "Succeeded",
@@ -17,7 +17,13 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"snapshot": true,
+
+					"notebook": {
+						"referenceName": "population_data",
+						"type": "NotebookReference"
+					},
+
+          "snapshot": true,
 					"conf": {
 						"spark.dynamicAllocation.enabled": null,
 						"spark.dynamicAllocation.minExecutors": null,
@@ -27,7 +33,7 @@
 				}
 			},
 			{
-				"name": "Copy data1",
+				"name": "copyDiabetesPrevalence",
 				"type": "Copy",
 				"state": "Inactive",
 				"onInactiveMarkAs": "Succeeded",
@@ -54,7 +60,7 @@
 					"sink": {
 						"type": "JsonSink",
 						"storeSettings": {
-							"type": "AzureBlobFSWriteSettings"
+							"type": "AzureBlobStorageWriteSettings"
 						},
 						"formatSettings": {
 							"type": "JsonWriteSettings"
@@ -76,9 +82,11 @@
 				]
 			},
 			{
+
 				"name": "Copy Cause of Death Data",
 				"type": "Copy",
 				"dependsOn": [],
+
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -88,6 +96,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
+
 					"source": {
 						"type": "BinarySource",
 						"storeSettings": {
@@ -118,6 +127,7 @@
 						"type": "DatasetReference"
 					}
 				]
+
 			}
 		],
 		"annotations": []
