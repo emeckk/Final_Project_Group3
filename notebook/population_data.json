@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "4789db3a-750b-41d9-b459-24792a4cb287"
+				"spark.autotune.trackingId": "f66ca59a-dbd8-4aa2-b9a8-5ea8b08c3335"
 			}
 		},
 		"metadata": {
@@ -104,13 +104,13 @@
 					"# Convert to Spark DataFrame\n",
 					"spark_df = spark.createDataFrame(df_pandas)\n",
 					"\n",
-					"output_path = \"abfss://<container>@<storage-account>.dfs.core.windows.net/oecd/population.parquet\"\n",
+					"output_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/staging/population.parquet\"\n",
 					"\n",
 					"# Write DataFrame to ADLS in Parquet format (overwrite if exists)\n",
 					"spark_df.write.mode(\"overwrite\").parquet(output_path)\n",
 					""
 				],
-				"execution_count": 15
+				"execution_count": 16
 			}
 		]
 	}
