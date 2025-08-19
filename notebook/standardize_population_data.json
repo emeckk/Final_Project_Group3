@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "e8e53d4b-cc35-47c4-9168-56b8473cea41"
+				"spark.autotune.trackingId": "6f28d29a-97a1-4c41-b097-d22cf362001e"
 			}
 		},
 		"metadata": {
@@ -67,9 +67,9 @@
 					"# Sort to make it clean (optional)\n",
 					"df_long = df_long.sort_values(by=['TIME_PERIOD', 'REF_AREA', 'SEX']).reset_index(drop=True)\n",
 					"\n",
-					"df_long.head(20)"
+					"df_long.head(70)"
 				],
-				"execution_count": 8
+				"execution_count": 9
 			}
 		]
 	}
