@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "9a4b1e65-af38-4699-855d-5b2df557797a"
+				"spark.autotune.trackingId": "5047680d-bb50-497f-8025-d88146b8eae8"
 			}
 		},
 		"metadata": {
@@ -52,7 +52,7 @@
 				"cell_type": "code",
 				"metadata": {
 					"jupyter": {
-						"outputs_hidden": true
+						"outputs_hidden": false
 					}
 				},
 				"source": [
@@ -67,9 +67,9 @@
 					"df_long = df[['TIME_PERIOD', 'REF_AREA', 'SEX', 'POPULATION']]\n",
 					"\n",
 					"df_long = df_long.sort_values(by=['TIME_PERIOD', 'REF_AREA', 'SEX']).reset_index(drop=True)\n",
-					""
+					"df_long.head(30)"
 				],
-				"execution_count": 10
+				"execution_count": 12
 			},
 			{
 				"cell_type": "code",
