@@ -35,6 +35,8 @@
 			{
 				"name": "copyDiabetesPrevalence",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -80,16 +82,11 @@
 				]
 			},
 			{
-				"name": "flattenJSON",
-				"type": "ExecuteDataFlow",
-				"dependsOn": [
-					{
-						"activity": "copyDiabetesPrevalence",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+
+				"name": "Copy Cause of Death Data",
+				"type": "Copy",
+				"dependsOn": [],
+
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -99,16 +96,38 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"dataflow": {
-						"referenceName": "FlattenJSON",
-						"type": "DataFlowReference"
+
+					"source": {
+						"type": "BinarySource",
+						"storeSettings": {
+							"type": "HttpReadSettings",
+							"requestMethod": "GET"
+						},
+						"formatSettings": {
+							"type": "BinaryReadSettings"
+						}
 					},
-					"compute": {
-						"coreCount": 8,
-						"computeType": "General"
+					"sink": {
+						"type": "BinarySink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						}
 					},
-					"traceLevel": "Fine"
-				}
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "HTTP_CauseOfDeath_Binary",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ADLS_CauseOfDeath_Binary",
+						"type": "DatasetReference"
+					}
+				]
+
 			}
 		],
 		"annotations": []

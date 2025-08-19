@@ -1,0 +1,19 @@
+{
+	"name": "ADLS_CauseOfDeath_Binary",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "group3fpadls",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "cause_of_death.csv",
+				"folderPath": "staging",
+				"container": "group3fpfilesystem"
+			}
+		}
+	}
+}
