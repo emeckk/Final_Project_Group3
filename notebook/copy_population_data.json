@@ -1,5 +1,5 @@
 {
-	"name": "population_data",
+	"name": "copy_population_data",
 	"properties": {
 		"nbformat": 4,
 		"nbformat_minor": 2,
@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "f66ca59a-dbd8-4aa2-b9a8-5ea8b08c3335"
+				"spark.autotune.trackingId": "6aee8d02-1a73-4774-8587-1bb57d1a72dc"
 			}
 		},
 		"metadata": {
