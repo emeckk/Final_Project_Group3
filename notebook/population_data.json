@@ -3,17 +3,21 @@
 	"properties": {
 		"nbformat": 4,
 		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "group3fpspark",
+			"type": "BigDataPoolReference"
+		},
 		"sessionProperties": {
 			"driverMemory": "28g",
 			"driverCores": 4,
 			"executorMemory": "28g",
 			"executorCores": 4,
-			"numExecutors": 2,
+			"numExecutors": 1,
 			"conf": {
-				"spark.dynamicAllocation.enabled": "false",
-				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.enabled": "true",
+				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "a5dd21ee-e8cf-4df1-a910-fcc596ddb914"
+				"spark.autotune.trackingId": "44aa85a2-55da-44d3-864d-186bf62b171e"
 			}
 		},
 		"metadata": {
@@ -21,18 +25,69 @@
 			"enableDebugMode": false,
 			"kernelspec": {
 				"name": "synapse_pyspark",
-				"display_name": "python"
+				"display_name": "Synapse PySpark"
 			},
 			"language_info": {
 				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/23b183d5-a30f-46b8-b418-ad060fb67787/resourceGroups/group3fp/providers/Microsoft.Synapse/workspaces/group3fpsynapse/bigDataPools/group3fpspark",
+				"name": "group3fpspark",
+				"type": "Spark",
+				"endpoint": "https://group3fpsynapse.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/group3fpspark",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "3.4",
+				"nodeCount": 10,
+				"cores": 4,
+				"memory": 28,
+				"automaticScaleJobs": true
 			},
 			"sessionKeepAliveTimeout": 30
 		},
 		"cells": [
 			{
 				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"outputs_hidden": false
+					}
+				},
 				"source": [
-					""
+					"import requests\n",
+					"import pandas as pd\n",
+					"\n",
+					"url = \"https://sdmx.oecd.org/public/rest/data/OECD.ELS.SAE,DSD_POPULATION@DF_POP_HIST,/NOR+SWE+DNK.POP.PS._T+M+F._T.?startPeriod=2006&endPeriod=2020&dimensionAtObservation=AllDimensions\"\n",
+					"\n",
+					"# Call API\n",
+					"response = requests.get(url)\n",
+					"data = response.json()"
+				],
+				"execution_count": 5
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"# Navigate to series/observations\n",
+					"series = data['data']['dataSets'][0]['series']\n",
+					"\n",
+					"# Flatten the data into a dataframe\n",
+					"records = []\n",
+					"for key, series_data in series.items():\n",
+					"    obs = series_data['observations']\n",
+					"    for time_idx, values in obs.items():\n",
+					"        records.append({\n",
+					"            \"series_key\": key,\n",
+					"            \"time\": data['data']['structure']['dimensions']['observation'][0]['values'][int(time_idx)]['id'],\n",
+					"            \"value\": values[0]\n",
+					"        })\n",
+					"\n",
+					"df = pd.DataFrame(records)\n",
+					"\n",
+					"# Show\n",
+					"df.head()"
 				],
 				"execution_count": null
 			}
