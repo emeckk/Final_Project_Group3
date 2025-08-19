@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "6ba31734-4151-40a4-af5a-3450472e2317"
+				"spark.autotune.trackingId": "e8e53d4b-cc35-47c4-9168-56b8473cea41"
 			}
 		},
 		"metadata": {
@@ -51,28 +51,25 @@
 			{
 				"cell_type": "code",
 				"source": [
-					"df = df[['REF_AREA', 'SEX', 'TIME_PERIOD', 'POPULATION']]\n",
+					"import pandas as pd\n",
 					"\n",
-					"# Pivot table\n",
-					"df_pivot = df.pivot_table(\n",
-					"    index='TIME_PERIOD',\n",
-					"    columns=['REF_AREA', 'SEX'],\n",
-					"    values='POPULATION'\n",
+					"# Load from parquet\n",
+					"df_raw = spark.read.parquet(\n",
+					"    \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/staging/population.parquet/\"\n",
 					")\n",
 					"\n",
-					"# Flatten MultiIndex columns into something like sweden_total, norway_male, etc.\n",
-					"sex_map = {'_T': 'total', 'M': 'male', 'F': 'female'}\n",
-					"df_pivot.columns = [\n",
-					"    f\"{country.lower()}_{sex_map.get(sex, sex.lower())}\"\n",
-					"    for country, sex in df_pivot.columns\n",
-					"]\n",
+					"# Convert to pandas if you want to transform in memory\n",
+					"df = df_raw.toPandas()\n",
 					"\n",
-					"# Reset index so TIME_PERIOD is a column again\n",
-					"df_pivot = df_pivot.reset_index()\n",
+					"# Keep only the relevant columns\n",
+					"df_long = df[['TIME_PERIOD', 'REF_AREA', 'SEX', 'POPULATION']]\n",
 					"\n",
-					"df_pivot.head(40)"
+					"# Sort to make it clean (optional)\n",
+					"df_long = df_long.sort_values(by=['TIME_PERIOD', 'REF_AREA', 'SEX']).reset_index(drop=True)\n",
+					"\n",
+					"df_long.head(20)"
 				],
-				"execution_count": 7
+				"execution_count": 8
 			}
 		]
 	}
