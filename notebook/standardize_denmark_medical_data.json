@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "027fad62-2f40-4c48-aa48-6961e0f39314"
+				"spark.autotune.trackingId": "3c02ccec-628a-4a28-a633-2f54c44fd815"
 			}
 		},
 		"metadata": {
@@ -51,7 +51,15 @@
 			{
 				"cell_type": "code",
 				"source": [
-					""
+					"import pandas as pd\n",
+					"\n",
+					"#read the parquet file from our staging folder\n",
+					"df_raw = spark.read.parquet(\n",
+					"    \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/staging/denmark_medical.parquet/\"\n",
+					")\n",
+					"\n",
+					"#convert to a pandas df\n",
+					"df = df_raw.toPandas()"
 				],
 				"execution_count": null
 			}
