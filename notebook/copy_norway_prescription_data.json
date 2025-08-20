@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "c1a84745-f3a1-4bd8-b3fc-c35e311a402c"
+				"spark.autotune.trackingId": "12cc3a03-b9bd-47b9-89ba-5da4e9af68b8"
 			}
 		},
 		"metadata": {
@@ -64,27 +64,58 @@
 			{
 				"cell_type": "code",
 				"source": [
-					"!pip install selenium webdriver-manager\n",
+					"import requests\n",
+					"from bs4 import BeautifulSoup\n",
 					"\n",
-					"!apt-get update\n",
-					"!apt-get install -y chromium-browser chromium-chromedriver\n",
+					"# --- Step 1: Start session ---\n",
+					"session = requests.Session()\n",
+					"url = \"https://www.norpd.no/Prevalens.aspx\"\n",
 					"\n",
-					"from selenium import webdriver\n",
-					"from selenium.webdriver.chrome.service import Service\n",
-					"from selenium.webdriver.chrome.options import Options\n",
-					"from webdriver_manager.chrome import ChromeDriverManager\n",
-					"import time\n",
+					"headers = {\n",
+					"    \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0 Safari/537.36\",\n",
+					"}\n",
 					"\n",
-					"chrome_options = Options()\n",
-					"chrome_options.add_argument(\"--headless=new\")\n",
-					"chrome_options.add_argument(\"--no-sandbox\")\n",
-					"chrome_options.add_argument(\"--disable-dev-shm-usage\")\n",
-					"chrome_options.add_argument(\"--disable-gpu\")\n",
-					"chrome_options.add_argument(\"--window-size=1920,1080\")\n",
+					"# --- Step 2: GET page ---\n",
+					"resp = session.get(url, headers=headers)\n",
+					"resp.raise_for_status()\n",
+					"soup = BeautifulSoup(resp.text, \"html.parser\")\n",
 					"\n",
-					"driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)"
+					"# --- Step 3: Extract hidden fields ---\n",
+					"viewstate = soup.find(id=\"__VIEWSTATE\")[\"value\"]\n",
+					"viewstategenerator = soup.find(id=\"__VIEWSTATEGENERATOR\")[\"value\"]\n",
+					"eventvalidation_tag = soup.find(id=\"__EVENTVALIDATION\")\n",
+					"eventvalidation = eventvalidation_tag[\"value\"] if eventvalidation_tag else None\n",
+					"\n",
+					"# --- Step 4: Build payload (request CSV) ---\n",
+					"payload = {\n",
+					"    \"__VIEWSTATE\": viewstate,\n",
+					"    \"__VIEWSTATEGENERATOR\": viewstategenerator,\n",
+					"    \"ctl00$pageContent$commonQueryPageControls$ddlRapportFormat\": \"Csv\",  # <- CSV format\n",
+					"    \"ctl00$pageContent$commonQueryPageControls$btnHentRapport\": \"Get report\",\n",
+					"}\n",
+					"if eventvalidation:\n",
+					"    payload[\"__EVENTVALIDATION\"] = eventvalidation\n",
+					"\n",
+					"# --- Step 5: POST to download CSV ---\n",
+					"post_resp = session.post(url, data=payload, headers=headers)\n",
+					"post_resp.raise_for_status()\n",
+					"\n",
+					"csv_file = \"abfss://container@storageaccount.dfs.core.windows.net/norpd_report.csv\"\n",
+					"\n",
+					"with open(\"/tmp/norpd_report.csv\", \"rb\") as f:\n",
+					"    dbutils.fs.cp(\"file:/tmp/norpd_report.csv\", csv_file)\n",
+					"\n",
+					"print(\"CSV downloaded:\", csv_file)\n",
+					""
 				],
-				"execution_count": 2
+				"execution_count": 5
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					""
+				],
+				"execution_count": null
 			}
 		]
 	}
