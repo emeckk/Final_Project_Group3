@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "812091a8-5736-4e47-8df3-72891cde252b"
+				"spark.autotune.trackingId": "5982ed3a-b619-44cd-8135-43a85bc6d1ed"
 			}
 		},
 		"metadata": {
@@ -64,6 +64,7 @@
 					"import xml.etree.ElementTree as ET\n",
 					"import urllib.request\n",
 					"\n",
+					"#Get the filtered url, which is filtered by starting date and end date and also Norway,Sweden and Denmark\n",
 					"url = (\"https://sdmx.oecd.org/public/rest/data/\"\n",
 					"       \"OECD.ELS.SAE,DSD_POPULATION@DF_POP_HIST,\"\n",
 					"       \"/NOR+SWE+DNK.POP.PS._T+M+F._T.?\"\n",
@@ -72,12 +73,14 @@
 					"req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})\n",
 					"xml_data = urllib.request.urlopen(req).read()\n",
 					"\n",
+					"#Handle the xml data contained in the url\n",
 					"root = ET.fromstring(xml_data)\n",
 					"\n",
 					"ns = {\n",
 					"    \"generic\": \"http://www.sdmx.org/resources/sdmxml/schemas/v2_1/data/generic\",\n",
 					"}\n",
 					"\n",
+					"#Convert this into a table\n",
 					"rows = []\n",
 					"for series in root.findall(\".//generic:Series\", ns):\n",
 					"    series_key = {v.attrib[\"id\"]: v.attrib[\"value\"]\n",
@@ -91,9 +94,10 @@
 					"        row[\"TIME_PERIOD\"] = year\n",
 					"        row[\"POPULATION\"] = int(value)\n",
 					"        rows.append(row)\n",
-					"\n",
+					"#Convert the rows into a pandas dataframe\n",
 					"df_pandas = pd.DataFrame(rows)\n",
 					"\n",
+					"#convert into a spark df and then store it in our staging folder in parquet format\n",
 					"spark_df = spark.createDataFrame(df_pandas)\n",
 					"\n",
 					"output_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/staging/population.parquet\"\n",
