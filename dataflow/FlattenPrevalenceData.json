@@ -15,7 +15,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "ADLS_STDDiabetesPrevalence_Parquet",
+						"referenceName": "ADLS_STDDiabetesPrevalence_JSON",
 						"type": "DatasetReference"
 					},
 					"name": "SinkToStandardized"
@@ -24,9 +24,6 @@
 			"transformations": [
 				{
 					"name": "FlattenJSON"
-				},
-				{
-					"name": "SortByCountryAndYear"
 				},
 				{
 					"name": "SelectValues"
@@ -38,7 +35,7 @@
 			"scriptLines": [
 				"source(output(",
 				"          {@odata.context} as string,",
-				"          value as (Comments as string, DataSourceDim as string, DataSourceDimType as string, Date as string, Dim1 as string, Dim1Type as string, Dim2 as string, Dim2Type as string, Dim3 as string, Dim3Type as string, High as double, Id as integer, IndicatorCode as string, Low as double, NumericValue as double, ParentLocation as string, ParentLocationCode as string, SpatialDim as string, SpatialDimType as string, TimeDim as short, TimeDimType as string, TimeDimensionBegin as string, TimeDimensionEnd as string, TimeDimensionValue as short, Value as string)[]",
+				"          value as (Id as integer, IndicatorCode as string, SpatialDimType as string, SpatialDim as string, TimeDimType as string, ParentLocationCode as string, ParentLocation as string, Dim1Type as string, Dim1 as string, TimeDim as integer, Dim2Type as string, Dim2 as string, Dim3Type as string, Dim3 as string, DataSourceDimType as string, DataSourceDim as string, Value as string, NumericValue as double, Low as double, High as double, Comments as string, Date as string, TimeDimensionValue as string, TimeDimensionBegin as string, TimeDimensionEnd as string)[]",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
@@ -51,8 +48,6 @@
 				"     ),",
 				"     skipDuplicateMapInputs: false,",
 				"     skipDuplicateMapOutputs: false) ~> FlattenJSON",
-				"SelectValues sort(asc(CountryCode, true),",
-				"     desc(Year, true)) ~> SortByCountryAndYear",
 				"FilterScandinavia select(mapColumn(",
 				"          Gender = value.Dim1,",
 				"          CountryCode = value.SpatialDim,",
@@ -66,11 +61,12 @@
 				"     skipDuplicateMapOutputs: true) ~> SelectValues",
 				"FlattenJSON filter(value.SpatialDim == 'NOR' || value.SpatialDim == 'SWE' ||",
 				"value.SpatialDim == 'DNK') ~> FilterScandinavia",
-				"SortByCountryAndYear sink(allowSchemaDrift: true,",
+				"SelectValues sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     format: 'parquet',",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> SinkToStandardized"
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 1,",
+				"     format: 'parquet') ~> SinkToStandardized"
 			]
 		}
 	}

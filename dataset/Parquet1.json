@@ -1,5 +1,5 @@
 {
-	"name": "ADLS_STDDiabetesPrevalence_Parquet",
+	"name": "Parquet1",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "group3fpadls",
@@ -14,7 +14,7 @@
 				"folderPath": "standardized",
 				"container": "group3fpfilesystem"
 			},
-			"compressionCodec": "gzip"
+			"compressionCodec": "snappy"
 		},
 		"schema": []
 	}
