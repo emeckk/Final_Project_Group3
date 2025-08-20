@@ -1,0 +1,91 @@
+{
+	"name": "copy_norway_prescription_data",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "group3fpspark",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 1,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "true",
+				"spark.dynamicAllocation.minExecutors": "1",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "c1a84745-f3a1-4bd8-b3fc-c35e311a402c"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/23b183d5-a30f-46b8-b418-ad060fb67787/resourceGroups/group3fp/providers/Microsoft.Synapse/workspaces/group3fpsynapse/bigDataPools/group3fpspark",
+				"name": "group3fpspark",
+				"type": "Spark",
+				"endpoint": "https://group3fpsynapse.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/group3fpspark",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "3.4",
+				"nodeCount": 10,
+				"cores": 4,
+				"memory": 28,
+				"automaticScaleJobs": true
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					""
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"!pip install selenium webdriver-manager\n",
+					"\n",
+					"!apt-get update\n",
+					"!apt-get install -y chromium-browser chromium-chromedriver\n",
+					"\n",
+					"from selenium import webdriver\n",
+					"from selenium.webdriver.chrome.service import Service\n",
+					"from selenium.webdriver.chrome.options import Options\n",
+					"from webdriver_manager.chrome import ChromeDriverManager\n",
+					"import time\n",
+					"\n",
+					"chrome_options = Options()\n",
+					"chrome_options.add_argument(\"--headless=new\")\n",
+					"chrome_options.add_argument(\"--no-sandbox\")\n",
+					"chrome_options.add_argument(\"--disable-dev-shm-usage\")\n",
+					"chrome_options.add_argument(\"--disable-gpu\")\n",
+					"chrome_options.add_argument(\"--window-size=1920,1080\")\n",
+					"\n",
+					"driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)"
+				],
+				"execution_count": 2
+			}
+		]
+	}
+}
