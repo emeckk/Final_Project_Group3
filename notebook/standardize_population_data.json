@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "5047680d-bb50-497f-8025-d88146b8eae8"
+				"spark.autotune.trackingId": "c798d291-3ef0-47f4-bfd7-710750664fba"
 			}
 		},
 		"metadata": {
@@ -58,22 +58,25 @@
 				"source": [
 					"import pandas as pd\n",
 					"\n",
+					"#read the parquet file from our staging folder\n",
 					"df_raw = spark.read.parquet(\n",
 					"    \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/staging/population.parquet/\"\n",
 					")\n",
 					"\n",
+					"#convert to a pandas df\n",
 					"df = df_raw.toPandas()\n",
-					"\n",
+					"#Create columns for the df\n",
 					"df_long = df[['TIME_PERIOD', 'REF_AREA', 'SEX', 'POPULATION']]\n",
-					"\n",
+					"#sort based on time period,country and gender\n",
 					"df_long = df_long.sort_values(by=['TIME_PERIOD', 'REF_AREA', 'SEX']).reset_index(drop=True)\n",
-					"df_long.head(30)"
+					"#df_long.head(30)"
 				],
 				"execution_count": 12
 			},
 			{
 				"cell_type": "code",
 				"source": [
+					"#convert into spark df and store in our standardized folder\n",
 					"spark_df = spark.createDataFrame(df_long)\n",
 					"\n",
 					"output_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/population.parquet\"\n",
