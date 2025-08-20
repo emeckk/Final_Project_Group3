@@ -1,0 +1,108 @@
+{
+	"name": "HTTP_DiabetesPrevalence_JSON",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "WHO GhoApi",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": "NCD_DIABETES_PREVALENCE_AGESTD"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"@odata.context": {
+					"type": "string"
+				},
+				"value": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"Id": {
+								"type": "integer"
+							},
+							"IndicatorCode": {
+								"type": "string"
+							},
+							"SpatialDimType": {
+								"type": "string"
+							},
+							"SpatialDim": {
+								"type": "string"
+							},
+							"TimeDimType": {
+								"type": "string"
+							},
+							"ParentLocationCode": {
+								"type": "string"
+							},
+							"ParentLocation": {
+								"type": "string"
+							},
+							"Dim1Type": {
+								"type": "string"
+							},
+							"Dim1": {
+								"type": "string"
+							},
+							"TimeDim": {
+								"type": "integer"
+							},
+							"Dim2Type": {
+								"type": "string"
+							},
+							"Dim2": {
+								"type": "string"
+							},
+							"Dim3Type": {
+								"type": "null"
+							},
+							"Dim3": {
+								"type": "null"
+							},
+							"DataSourceDimType": {
+								"type": "null"
+							},
+							"DataSourceDim": {
+								"type": "null"
+							},
+							"Value": {
+								"type": "string"
+							},
+							"NumericValue": {
+								"type": "number"
+							},
+							"Low": {
+								"type": "number"
+							},
+							"High": {
+								"type": "number"
+							},
+							"Comments": {
+								"type": "null"
+							},
+							"Date": {
+								"type": "string"
+							},
+							"TimeDimensionValue": {
+								"type": "string"
+							},
+							"TimeDimensionBegin": {
+								"type": "string"
+							},
+							"TimeDimensionEnd": {
+								"type": "string"
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

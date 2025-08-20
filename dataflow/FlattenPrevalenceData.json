@@ -1,0 +1,77 @@
+{
+	"name": "FlattenPrevalenceData",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ADLS_DiabetesPrevalence_JSON",
+						"type": "DatasetReference"
+					},
+					"name": "DiabetesPrevalence"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ADLS_STDDiabetesPrevalence_Parquet",
+						"type": "DatasetReference"
+					},
+					"name": "SinkToStandardized"
+				}
+			],
+			"transformations": [
+				{
+					"name": "FlattenJSON"
+				},
+				{
+					"name": "SortByCountryAndYear"
+				},
+				{
+					"name": "SelectValues"
+				},
+				{
+					"name": "FilterScandinavia"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          {@odata.context} as string,",
+				"          value as (Comments as string, DataSourceDim as string, DataSourceDimType as string, Date as string, Dim1 as string, Dim1Type as string, Dim2 as string, Dim2Type as string, Dim3 as string, Dim3Type as string, High as double, Id as integer, IndicatorCode as string, Low as double, NumericValue as double, ParentLocation as string, ParentLocationCode as string, SpatialDim as string, SpatialDimType as string, TimeDim as short, TimeDimType as string, TimeDimensionBegin as string, TimeDimensionEnd as string, TimeDimensionValue as short, Value as string)[]",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'singleDocument') ~> DiabetesPrevalence",
+				"DiabetesPrevalence foldDown(unroll(value),",
+				"     mapColumn(",
+				"          {@odata.context},",
+				"          value",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> FlattenJSON",
+				"SelectValues sort(asc(CountryCode, true),",
+				"     desc(Year, true)) ~> SortByCountryAndYear",
+				"FilterScandinavia select(mapColumn(",
+				"          Gender = value.Dim1,",
+				"          CountryCode = value.SpatialDim,",
+				"          Year = value.TimeDim,",
+				"          AgeGroup = value.Dim2,",
+				"          {Prevalence%} = value.NumericValue,",
+				"          LowerConfidence = value.Low,",
+				"          UpperConfidence = value.High",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectValues",
+				"FlattenJSON filter(value.SpatialDim == 'NOR' || value.SpatialDim == 'SWE' ||",
+				"value.SpatialDim == 'DNK') ~> FilterScandinavia",
+				"SortByCountryAndYear sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SinkToStandardized"
+			]
+		}
+	}
+}

@@ -1,5 +1,5 @@
 {
-	"name": "WHO_API",
+	"name": "WHO GhoApi",
 	"properties": {
 		"annotations": [],
 		"type": "HttpServer",

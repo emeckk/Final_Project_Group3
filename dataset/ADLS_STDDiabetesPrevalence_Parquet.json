@@ -1,19 +1,21 @@
 {
-	"name": "ADLS_WHO_JSON",
+	"name": "ADLS_STDDiabetesPrevalence_Parquet",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "group3fpadls",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
-		"type": "Json",
+		"type": "Parquet",
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"folderPath": "staging",
+				"fileName": "diabetes_prevalence.parquet",
+				"folderPath": "standardized",
 				"container": "group3fpfilesystem"
-			}
+			},
+			"compressionCodec": "none"
 		},
-		"schema": {}
+		"schema": []
 	}
 }
