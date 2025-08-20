@@ -15,7 +15,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "Parquet1",
+						"referenceName": "ADLS_STDDiabetesPrevalence_JSON",
 						"type": "DatasetReference"
 					},
 					"name": "SinkToStandardized"
@@ -63,10 +63,10 @@
 				"value.SpatialDim == 'DNK') ~> FilterScandinavia",
 				"SelectValues sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     format: 'parquet',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     saveOrder: 1) ~> SinkToStandardized"
+				"     saveOrder: 1,",
+				"     format: 'parquet') ~> SinkToStandardized"
 			]
 		}
 	}
