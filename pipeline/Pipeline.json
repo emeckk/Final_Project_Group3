@@ -63,19 +63,7 @@
 						}
 					},
 					"enableStaging": false
-				},
-				"inputs": [
-					{
-						"referenceName": "HTTP_ghoapi_JSON",
-						"type": "DatasetReference"
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "ADLS_WHO_JSON_TEST",
-						"type": "DatasetReference"
-					}
-				]
+				}
 			}
 		],
 		"annotations": []
