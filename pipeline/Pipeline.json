@@ -17,13 +17,11 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-
 					"notebook": {
 						"referenceName": "population_data",
 						"type": "NotebookReference"
 					},
-
-          "snapshot": true,
+					"snapshot": true,
 					"conf": {
 						"spark.dynamicAllocation.enabled": null,
 						"spark.dynamicAllocation.minExecutors": null,
@@ -34,6 +32,78 @@
 			},
 			{
 				"name": "copyDiabetesPrevalence",
+				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "HttpReadSettings",
+							"requestMethod": "GET"
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"sink": {
+						"type": "JsonSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "JsonWriteSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"outputs": [
+					{
+						"referenceName": "ADLS_WHO_JSON",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "flattenJSON",
+				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [
+					{
+						"activity": "copyDiabetesPrevalence",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "CopyLekmedelSv",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -68,23 +138,23 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "HTTP_WHO_JSON",
+						"referenceName": "ls_http_lakemedel_api",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "ADLS_WHO_JSON",
+						"referenceName": "SvLekmedelJson",
 						"type": "DatasetReference"
 					}
 				]
 			},
 			{
-				"name": "flattenJSON",
+				"name": "flattenSvlekmedelJson",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [
 					{
-						"activity": "copyDiabetesPrevalence",
+						"activity": "CopyLekmedelSv",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -100,7 +170,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "FlattenJSON",
+						"referenceName": "Dataflow1",
 						"type": "DataFlowReference"
 					},
 					"compute": {

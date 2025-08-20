@@ -1,0 +1,20 @@
+{
+	"name": "SvLekmedelJson",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "group3fpadls",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "sweden_medical.parquet",
+				"folderPath": "staging",
+				"container": "group3fpfilesystem"
+			}
+		},
+		"schema": {}
+	}
+}
