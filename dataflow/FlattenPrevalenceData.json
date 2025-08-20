@@ -15,7 +15,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "ADLS_STDDiabetesPrevalence_Parquet",
+						"referenceName": "Parquet1",
 						"type": "DatasetReference"
 					},
 					"name": "SinkToStandardized"
@@ -33,7 +33,11 @@
 				}
 			],
 			"scriptLines": [
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          {@odata.context} as string,",
+				"          value as (Id as integer, IndicatorCode as string, SpatialDimType as string, SpatialDim as string, TimeDimType as string, ParentLocationCode as string, ParentLocation as string, Dim1Type as string, Dim1 as string, TimeDim as integer, Dim2Type as string, Dim2 as string, Dim3Type as string, Dim3 as string, DataSourceDimType as string, DataSourceDim as string, Value as string, NumericValue as double, Low as double, High as double, Comments as string, Date as string, TimeDimensionValue as string, TimeDimensionBegin as string, TimeDimensionEnd as string)[]",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
 				"     documentForm: 'singleDocument') ~> DiabetesPrevalence",
