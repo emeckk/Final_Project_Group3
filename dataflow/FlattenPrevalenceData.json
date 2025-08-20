@@ -1,5 +1,5 @@
 {
-	"name": "Dataflow1",
+	"name": "FlattenPrevalenceData",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -9,11 +9,32 @@
 						"referenceName": "ADLS_DiabetesPrevalence_JSON",
 						"type": "DatasetReference"
 					},
-					"name": "source1"
+					"name": "DiabetesPrevalence"
 				}
 			],
-			"sinks": [],
-			"transformations": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ADLS_STDDiabetesPrevalence_Parquet",
+						"type": "DatasetReference"
+					},
+					"name": "SinkToStandardized"
+				}
+			],
+			"transformations": [
+				{
+					"name": "FlattenJSON"
+				},
+				{
+					"name": "SortByCountryAndYear"
+				},
+				{
+					"name": "SelectValues"
+				},
+				{
+					"name": "FilterScandinavia"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
 				"          {@odata.context} as string,",
@@ -22,7 +43,34 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
-				"     documentForm: 'documentPerLine') ~> source1"
+				"     documentForm: 'singleDocument') ~> DiabetesPrevalence",
+				"DiabetesPrevalence foldDown(unroll(value),",
+				"     mapColumn(",
+				"          {@odata.context},",
+				"          value",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> FlattenJSON",
+				"SelectValues sort(asc(CountryCode, true),",
+				"     desc(Year, true)) ~> SortByCountryAndYear",
+				"FilterScandinavia select(mapColumn(",
+				"          Gender = value.Dim1,",
+				"          CountryCode = value.SpatialDim,",
+				"          Year = value.TimeDim,",
+				"          AgeGroup = value.Dim2,",
+				"          {Prevalence%} = value.NumericValue,",
+				"          LowerConfidence = value.Low,",
+				"          UpperConfidence = value.High",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectValues",
+				"FlattenJSON filter(value.SpatialDim == 'NOR' || value.SpatialDim == 'SWE' ||",
+				"value.SpatialDim == 'DNK') ~> FilterScandinavia",
+				"SortByCountryAndYear sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SinkToStandardized"
 			]
 		}
 	}

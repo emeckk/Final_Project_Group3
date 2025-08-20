@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "copyDiabetesPrevalence",
+				"name": "Copy Diabetes Prevalence",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -50,11 +50,11 @@
 				]
 			},
 			{
-				"name": "Data flow1",
+				"name": "Flatten JSON Structure",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [
 					{
-						"activity": "copyDiabetesPrevalence",
+						"activity": "Copy Diabetes Prevalence",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -70,7 +70,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "Dataflow1",
+						"referenceName": "FlattenPrevalenceData",
 						"type": "DataFlowReference"
 					},
 					"compute": {
