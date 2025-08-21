@@ -32,10 +32,10 @@
 					"name": "FilterScandinavia"
 				},
 				{
-					"name": "derivedColumn1"
+					"name": "RemapGenderAndAge"
 				},
 				{
-					"name": "sort1"
+					"name": "SortValues"
 				}
 			],
 			"scriptLines": [
@@ -72,13 +72,14 @@
 				"SelectRelevantColumns derive(Gender = iif(Gender == 'SEX_MLE', 'M',\r",
 				"  iif(Gender == 'SEX_FMLE', 'F', Gender)),",
 				"          Age = iif(Age == 'AGEGROUP_YEARS18-PLUS', '18Above', \r",
-				"    iif(Age == 'AGEGROUP_YEARS30-PLUS', '30Above', Age))) ~> derivedColumn1",
-				"derivedColumn1 sort(asc(Year, true),",
+				"    iif(Age == 'AGEGROUP_YEARS30-PLUS', '30Above', Age))) ~> RemapGenderAndAge",
+				"RemapGenderAndAge sort(asc(Year, true),",
 				"     asc(Country, true),",
-				"     asc(Gender, true)) ~> sort1",
-				"sort1 sink(allowSchemaDrift: true,",
+				"     asc(Gender, true)) ~> SortValues",
+				"SortValues sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
+				"     truncate: true,",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> SinkToStandardized"
 			]
