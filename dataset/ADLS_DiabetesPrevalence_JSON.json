@@ -10,7 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "diabetes_prevalence",
+				"fileName": "diabetes_prevalence.json",
 				"folderPath": "staging",
 				"container": "group3fpfilesystem"
 			}
