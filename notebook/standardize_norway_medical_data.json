@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "f5ab574d-a062-4521-a315-f01a82ed8d53"
+				"spark.autotune.trackingId": "7d39b002-3255-43cc-afc8-4441608b35cf"
 			}
 		},
 		"metadata": {
@@ -71,7 +71,7 @@
 					"df_long = df_long.rename(columns={\n",
 					"    'Valuetime': 'year', \n",
 					"'Valuegender': 'sex', \n",
-					"'Valuedrug':'atc', \n",
+					"'Valuedrug':'atc_level_5', \n",
 					"'SumSum_DDD': 'expedited_units', \n",
 					"'SumAntall_unike_pasienter': 'users'\n",
 					"})\n",
@@ -84,17 +84,17 @@
 					"\n",
 					"df_long.head(30)"
 				],
-				"execution_count": 9
+				"execution_count": 10
 			},
 			{
 				"cell_type": "code",
 				"source": [
 					"#convert into spark df and store in our standardized folder\n",
 					"spark_df = spark.createDataFrame(df_long)\n",
-					"output_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/norway_medical.parquet\"\n",
+					"output_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/norway_medicine.parquet\"\n",
 					"spark_df.write.mode(\"overwrite\").parquet(output_path)"
 				],
-				"execution_count": null
+				"execution_count": 12
 			}
 		]
 	}
