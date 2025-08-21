@@ -33,6 +33,9 @@
 				},
 				{
 					"name": "derivedColumn1"
+				},
+				{
+					"name": "sort1"
 				}
 			],
 			"scriptLines": [
@@ -61,14 +64,19 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> SelectRelevantColumns",
-				"FlattenValue filter(",
-				"value.SpatialDim == 'DNK' ||",
-				"value.SpatialDim == 'SWE' ||",
-				"value.SpatialDim == 'NOR'",
+				"FlattenValue filter((value.SpatialDim == 'DNK' && value.Dim1 != 'SEX_BTSX') ||",
+				"(value.SpatialDim == 'SWE' && value.Dim1 != 'SEX_BTSX') ||",
+				"(value.SpatialDim == 'NOR' && value.Dim1 != 'SEX_BTSX')",
+				"",
 				") ~> FilterScandinavia",
 				"SelectRelevantColumns derive(Gender = iif(Gender == 'SEX_MLE', 'M',\r",
-				"  iif(Gender == 'SEX_FMLE', 'F', Gender))) ~> derivedColumn1",
-				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"  iif(Gender == 'SEX_FMLE', 'F', Gender)),",
+				"          Age = iif(Age == 'AGEGROUP_YEARS18-PLUS', '18Above', \r",
+				"    iif(Age == 'AGEGROUP_YEARS30-PLUS', '30Above', Age))) ~> derivedColumn1",
+				"derivedColumn1 sort(asc(Year, true),",
+				"     asc(Country, true),",
+				"     asc(Gender, true)) ~> sort1",
+				"sort1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
 				"     skipDuplicateMapInputs: true,",
