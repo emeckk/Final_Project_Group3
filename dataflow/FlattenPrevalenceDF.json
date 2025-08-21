@@ -1,0 +1,52 @@
+{
+	"name": "FlattenPrevalenceDF",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ADLS_DiabetesPrevalence_JSON",
+						"type": "DatasetReference"
+					},
+					"name": "STGDiabetesPrevalence"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ADLS_STDDiabetesPrevalence_Parquet",
+						"type": "DatasetReference"
+					},
+					"name": "SinkToStandardized"
+				}
+			],
+			"transformations": [
+				{
+					"name": "FlattenValue"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          {@odata.context} as string,",
+				"          value as (Comments as string, DataSourceDim as string, DataSourceDimType as string, Date as string, Dim1 as string, Dim1Type as string, Dim2 as string, Dim2Type as string, Dim3 as string, Dim3Type as string, High as double, Id as integer, IndicatorCode as string, Low as double, NumericValue as double, ParentLocation as string, ParentLocationCode as string, SpatialDim as string, SpatialDimType as string, TimeDim as short, TimeDimType as string, TimeDimensionBegin as string, TimeDimensionEnd as string, TimeDimensionValue as short, Value as string)[]",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'documentPerLine') ~> STGDiabetesPrevalence",
+				"STGDiabetesPrevalence foldDown(unroll(value, value),",
+				"     mapColumn(",
+				"          value",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> FlattenValue",
+				"FlattenValue sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SinkToStandardized"
+			]
+		}
+	}
+}

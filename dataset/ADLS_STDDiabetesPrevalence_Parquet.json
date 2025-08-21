@@ -1,0 +1,20 @@
+{
+	"name": "ADLS_STDDiabetesPrevalence_Parquet",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "group3fpadls",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"folderPath": "standardized/diabetes_prevalence.parquet",
+				"container": "group3fpfilesystem"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}

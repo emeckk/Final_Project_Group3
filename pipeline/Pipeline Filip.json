@@ -38,7 +38,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "HTTP_STGDiabetesPrevalence_JSON",
+						"referenceName": "HTTP_DiabetesPrevalence_JSON",
 						"type": "DatasetReference"
 					}
 				],
@@ -50,10 +50,8 @@
 				]
 			},
 			{
-				"name": "Flatten JSON Structure",
+				"name": "Flatten Prevalence Data",
 				"type": "ExecuteDataFlow",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "Copy Diabetes Prevalence",
@@ -72,7 +70,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "FlattenPrevalenceData",
+						"referenceName": "FlattenPrevalenceDF",
 						"type": "DataFlowReference"
 					},
 					"compute": {

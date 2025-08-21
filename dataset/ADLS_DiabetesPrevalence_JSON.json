@@ -1,0 +1,20 @@
+{
+	"name": "ADLS_DiabetesPrevalence_JSON",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "group3fpadls",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "diabetes_prevalence",
+				"folderPath": "staging",
+				"container": "group3fpfilesystem"
+			}
+		},
+		"schema": {}
+	}
+}
