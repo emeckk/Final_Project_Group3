@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "01410f2b-1d6d-4f3c-91e4-684851659ddb"
+				"spark.autotune.trackingId": "d60882c7-9979-4427-a3b1-e42472262e3d"
 			}
 		},
 		"metadata": {
@@ -246,6 +246,42 @@
 					""
 				],
 				"execution_count": 8
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"\n",
+					"import os\n",
+					"\n",
+					"OUT_DIR   = \"out_diabetes_a10_clean\"  \n",
+					"local_csv  = f\"{OUT_DIR}/diabetes_A10_M_K_ALLA_regioner_ALLA_ar.csv\"\n",
+					"local_parq = f\"{OUT_DIR}/diabetes_A10_M_K_ALLA_regioner_ALLA_ar.parquet\"\n",
+					"\n",
+					"account   = \"group3fpadls\"\n",
+					"container = \"group3fpfilesystem\"      \n",
+					"folder    = \"staging\"                  \n",
+					"\n",
+					"target_base = f\"abfss://{container}@{account}.dfs.core.windows.net/{folder}\"\n",
+					"mssparkutils.fs.mkdirs(target_base)\n",
+					"\n",
+					"# CSV -> staging/sweden_medical.csv\n",
+					"mssparkutils.fs.cp(f\"file:{os.path.abspath(local_csv)}\",\n",
+					"                   f\"{target_base}/sweden_medical.csv\",\n",
+					"                   recurse=False)\n",
+					"\n",
+					"# Parquet -> staging/sweden_medical.parquet (om den finns)\n",
+					"if os.path.exists(local_parq):\n",
+					"    mssparkutils.fs.cp(f\"file:{os.path.abspath(local_parq)}\",\n",
+					"                       f\"{target_base}/sweden_medical.parquet\",\n",
+					"                       recurse=False)\n",
+					"\n",
+					"print(\"Uppladdat till:\")\n",
+					"print(f\"{target_base}/sweden_medical.csv\")\n",
+					"if os.path.exists(local_parq):\n",
+					"    print(f\"{target_base}/sweden_medical.parquet\")\n",
+					""
+				],
+				"execution_count": 11
 			}
 		]
 	}
