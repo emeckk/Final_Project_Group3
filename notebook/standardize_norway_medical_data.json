@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "9e105ba8-7b24-47f3-a919-e79a0b49f35c"
+				"spark.autotune.trackingId": "4259a7f6-feca-4107-8469-4e2388c8f65f"
 			}
 		},
 		"metadata": {
@@ -25,7 +25,7 @@
 			"enableDebugMode": false,
 			"kernelspec": {
 				"name": "synapse_pyspark",
-				"display_name": "python"
+				"display_name": "Synapse PySpark"
 			},
 			"language_info": {
 				"name": "python"
@@ -53,23 +53,24 @@
 				"source": [
 					"import pandas as pd\n",
 					"\n",
-					"#read the parquet file from our staging folder\n",
-					"df_raw = spark.read.parquet(\n",
-					"    \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/staging/population.parquet/\"\n",
+					"#read the csv file from our staging folder\n",
+					"df_raw = spark.read.csv(\n",
+					"    \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/staging/norway_medical.csv\"\n",
 					")\n",
-					"\n",
+					"#VALUEDRUG VALUETIME VALUEGENDER\n",
+					"#VALUEGEOGRAPHY SUMANTALL_UNIKE_PASIENTER SUMSUM_AUP SUMSUM_DDD\n",
 					"#convert to a pandas df\n",
 					"df = df_raw.toPandas()\n",
 					"#Create columns for the df\n",
-					"df_long = df[['TIME_PERIOD', 'REF_AREA', 'SEX', 'POPULATION']]\n",
+					"df_long = df[['VALUETIME', 'VALUEGENDER', 'VALUEDRUG']]\n",
 					"#sort based on time period,country and gender\n",
-					"df_long = df_long.sort_values(by=['TIME_PERIOD', 'REF_AREA', 'SEX']).reset_index(drop=True)\n",
+					"df_long = df_long.sort_values(by=['VALUETIME', 'VALUEGENDER', 'VALUEDRUG']).reset_index(drop=True)\n",
 					"#remove rows where Sex is total, only keep male and female\n",
-					"df_long = df_long[df_long[\"SEX\"] != \"_T\"]\n",
+					"\n",
 					"df_long = df_long.reset_index(drop=True)\n",
 					"df_long.head(30)"
 				],
-				"execution_count": null
+				"execution_count": 1
 			},
 			{
 				"cell_type": "code",
