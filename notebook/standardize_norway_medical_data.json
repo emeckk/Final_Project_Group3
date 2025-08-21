@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "1a90aa74-4463-4746-aef4-3810c200f638"
+				"spark.autotune.trackingId": "3d8e8bcd-92e0-4425-978e-f5d49299deed"
 			}
 		},
 		"metadata": {
@@ -67,6 +67,7 @@
 					"\n",
 					"# sort based on time, gender, drug\n",
 					"df_long = df_long.sort_values(by=['Valuetime', 'Valuedrug']).reset_index(drop=True)\n",
+					"\n",
 					"#Change column names to our standardized names\n",
 					"df_long = df_long.rename(columns={\n",
 					"    'Valuetime': 'year', \n",
