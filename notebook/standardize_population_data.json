@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "3f174be5-5f9b-4eef-a92c-d54a8907a0fa"
+				"spark.autotune.trackingId": "c010abcb-0d7a-4eea-a1bc-fe677ce17ba6"
 			}
 		},
 		"metadata": {
@@ -69,6 +69,8 @@
 					"df_long = df[['TIME_PERIOD', 'REF_AREA', 'SEX', 'POPULATION']]\n",
 					"#sort based on time period,country and gender\n",
 					"df_long = df_long.sort_values(by=['TIME_PERIOD', 'REF_AREA', 'SEX']).reset_index(drop=True)\n",
+					"df_long = df_long[df_long[\"SEX\"] != \"_T\"]\n",
+					"df_long = df_long.reset_index(drop=True)\n",
 					"df_long.head(30)"
 				],
 				"execution_count": 1
@@ -77,13 +79,11 @@
 				"cell_type": "code",
 				"source": [
 					"#convert into spark df and store in our standardized folder\n",
-					"#spark_df = spark.createDataFrame(df_long)\n",
-					"\n",
-					"#output_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/population.parquet\"\n",
-					"\n",
-					"#spark_df.write.mode(\"overwrite\").parquet(output_path)"
+					"spark_df = spark.createDataFrame(df_long)\n",
+					"output_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/population.parquet\"\n",
+					"spark_df.write.mode(\"overwrite\").parquet(output_path)"
 				],
-				"execution_count": 11
+				"execution_count": 2
 			}
 		]
 	}
