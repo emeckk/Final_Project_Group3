@@ -64,8 +64,10 @@
 				}
 			},
 			{
-				"name": "Copy Denmark Medical Data",
+				"name": "Copy Denmark Medical Data Backup",
 				"type": "SynapseNotebook",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -123,7 +125,7 @@
 				}
 			},
 			{
-				"name": "Copy Denmark Med Data",
+				"name": "Copy Denmark Medical Data",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
