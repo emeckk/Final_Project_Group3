@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "336c474e-30d6-4d30-aad1-bccc2277146c"
+				"spark.autotune.trackingId": "7f306b3c-c557-424c-88a6-88781320ddfd"
 			}
 		},
 		"metadata": {
@@ -63,7 +63,7 @@
 					"df = df_raw.toPandas()\n",
 					"\n",
 					"# keep only the columns we care about\n",
-					"df_long = df[['Valuetime', 'Valuegender', 'Valuedrug', 'SumAntall_unike_pasienter']]\n",
+					"df_long = df[['Valuetime', 'Valuegender', 'Valuedrug','', 'SumAntall_unike_pasienter']]\n",
 					"\n",
 					"# sort based on time, gender, drug\n",
 					"df_long = df_long.sort_values(by=['Valuetime', 'Valuedrug']).reset_index(drop=True)\n",
