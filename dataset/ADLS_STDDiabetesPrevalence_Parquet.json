@@ -10,11 +10,10 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "diabetes_prevalence.parquet",
-				"folderPath": "standardized",
+				"folderPath": "standardized/diabetes_prevalence.parquet",
 				"container": "group3fpfilesystem"
 			},
-			"compressionCodec": "gzip"
+			"compressionCodec": "snappy"
 		},
 		"schema": []
 	}

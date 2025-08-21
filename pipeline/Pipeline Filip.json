@@ -50,7 +50,7 @@
 				]
 			},
 			{
-				"name": "Flatten JSON Structure",
+				"name": "Flatten Prevalence Data",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [
 					{
@@ -70,7 +70,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "FlattenPrevalenceData",
+						"referenceName": "FlattenPrevalenceDF",
 						"type": "DataFlowReference"
 					},
 					"compute": {

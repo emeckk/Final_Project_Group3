@@ -1,0 +1,88 @@
+{
+	"name": "FlattenPrevalenceDF",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ADLS_DiabetesPrevalence_JSON",
+						"type": "DatasetReference"
+					},
+					"name": "STGDiabetesPrevalence"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ADLS_STDDiabetesPrevalence_Parquet",
+						"type": "DatasetReference"
+					},
+					"name": "SinkToStandardized"
+				}
+			],
+			"transformations": [
+				{
+					"name": "FlattenValue"
+				},
+				{
+					"name": "SelectRelevantColumns"
+				},
+				{
+					"name": "FilterScandinavia"
+				},
+				{
+					"name": "RemapGenderAndAge"
+				},
+				{
+					"name": "SortValues"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          {@odata.context} as string,",
+				"          value as (Comments as string, DataSourceDim as string, DataSourceDimType as string, Date as string, Dim1 as string, Dim1Type as string, Dim2 as string, Dim2Type as string, Dim3 as string, Dim3Type as string, High as double, Id as integer, IndicatorCode as string, Low as double, NumericValue as double, ParentLocation as string, ParentLocationCode as string, SpatialDim as string, SpatialDimType as string, TimeDim as short, TimeDimType as string, TimeDimensionBegin as string, TimeDimensionEnd as string, TimeDimensionValue as short, Value as string)[]",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'documentPerLine') ~> STGDiabetesPrevalence",
+				"STGDiabetesPrevalence foldDown(unroll(value, value),",
+				"     mapColumn(",
+				"          value",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> FlattenValue",
+				"FilterScandinavia select(mapColumn(",
+				"          Year = value.TimeDim,",
+				"          Country = value.SpatialDim,",
+				"          Gender = value.Dim1,",
+				"          Age = value.Dim2,",
+				"          {Diabetes%} = value.NumericValue,",
+				"          LowerConfidence = value.Low,",
+				"          UpperConfidence = value.High",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectRelevantColumns",
+				"FlattenValue filter((value.SpatialDim == 'DNK' && value.Dim1 != 'SEX_BTSX') ||",
+				"(value.SpatialDim == 'SWE' && value.Dim1 != 'SEX_BTSX') ||",
+				"(value.SpatialDim == 'NOR' && value.Dim1 != 'SEX_BTSX')",
+				"",
+				") ~> FilterScandinavia",
+				"SelectRelevantColumns derive(Gender = iif(Gender == 'SEX_MLE', 'M',\r",
+				"  iif(Gender == 'SEX_FMLE', 'F', Gender)),",
+				"          Age = iif(Age == 'AGEGROUP_YEARS18-PLUS', '18Above', \r",
+				"    iif(Age == 'AGEGROUP_YEARS30-PLUS', '30Above', Age))) ~> RemapGenderAndAge",
+				"RemapGenderAndAge sort(asc(Year, true),",
+				"     asc(Country, true),",
+				"     asc(Gender, true)) ~> SortValues",
+				"SortValues sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     truncate: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SinkToStandardized"
+			]
+		}
+	}
+}
