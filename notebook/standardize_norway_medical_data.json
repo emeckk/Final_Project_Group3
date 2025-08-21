@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "4259a7f6-feca-4107-8469-4e2388c8f65f"
+				"spark.autotune.trackingId": "2280a2dc-ccb4-4335-a552-13be51fa0aeb"
 			}
 		},
 		"metadata": {
@@ -53,24 +53,29 @@
 				"source": [
 					"import pandas as pd\n",
 					"\n",
-					"#read the csv file from our staging folder\n",
+					"# Read CSV with headers\n",
 					"df_raw = spark.read.csv(\n",
-					"    \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/staging/norway_medical.csv\"\n",
+					"    \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/staging/norway_medical.csv\",\n",
+					"    header=True,\n",
+					"    inferSchema=True\n",
 					")\n",
-					"#VALUEDRUG VALUETIME VALUEGENDER\n",
-					"#VALUEGEOGRAPHY SUMANTALL_UNIKE_PASIENTER SUMSUM_AUP SUMSUM_DDD\n",
-					"#convert to a pandas df\n",
-					"df = df_raw.toPandas()\n",
-					"#Create columns for the df\n",
-					"df_long = df[['VALUETIME', 'VALUEGENDER', 'VALUEDRUG']]\n",
-					"#sort based on time period,country and gender\n",
-					"df_long = df_long.sort_values(by=['VALUETIME', 'VALUEGENDER', 'VALUEDRUG']).reset_index(drop=True)\n",
-					"#remove rows where Sex is total, only keep male and female\n",
 					"\n",
-					"df_long = df_long.reset_index(drop=True)\n",
+					"# Convert to pandas\n",
+					"df = df_raw.toPandas()\n",
+					"\n",
+					"# Select only the relevant columns\n",
+					"df_long = df[['Valuetime', 'Valuegender', 'Valuedrug']]\n",
+					"\n",
+					"# Sort\n",
+					"df_long = df_long.sort_values(by=['Valuetime', 'Valuegender', 'Valuedrug']).reset_index(drop=True)\n",
+					"\n",
+					"# Remove rows where gender = Total\n",
+					"df_long = df_long[df_long['Valuegender'] != 'Total'].reset_index(drop=True)\n",
+					"\n",
+					"# Preview\n",
 					"df_long.head(30)"
 				],
-				"execution_count": 1
+				"execution_count": 6
 			},
 			{
 				"cell_type": "code",
