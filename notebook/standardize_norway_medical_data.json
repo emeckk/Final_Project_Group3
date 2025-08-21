@@ -1,5 +1,5 @@
 {
-	"name": "standardize_population_data",
+	"name": "standardize_norway_medical_data",
 	"properties": {
 		"nbformat": 4,
 		"nbformat_minor": 2,
@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "846fb9e9-68a3-4327-80f8-b189f25574e7"
+				"spark.autotune.trackingId": "9e105ba8-7b24-47f3-a919-e79a0b49f35c"
 			}
 		},
 		"metadata": {
@@ -25,7 +25,7 @@
 			"enableDebugMode": false,
 			"kernelspec": {
 				"name": "synapse_pyspark",
-				"display_name": "Synapse PySpark"
+				"display_name": "python"
 			},
 			"language_info": {
 				"name": "python"
@@ -50,11 +50,6 @@
 		"cells": [
 			{
 				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"outputs_hidden": false
-					}
-				},
 				"source": [
 					"import pandas as pd\n",
 					"\n",
@@ -74,7 +69,7 @@
 					"df_long = df_long.reset_index(drop=True)\n",
 					"df_long.head(30)"
 				],
-				"execution_count": 1
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -84,7 +79,7 @@
 					"output_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/population.parquet\"\n",
 					"spark_df.write.mode(\"overwrite\").parquet(output_path)"
 				],
-				"execution_count": 2
+				"execution_count": null
 			}
 		]
 	}

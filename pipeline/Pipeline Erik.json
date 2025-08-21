@@ -139,6 +139,26 @@
 				"typeProperties": {
 					"enableStaging": false
 				}
+			},
+			{
+				"name": "Standardize Norway Medical Data",
+				"type": "SynapseNotebook",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebook": {
+						"referenceName": "standardize_norway_medical_data",
+						"type": "NotebookReference"
+					},
+					"snapshot": true
+				}
 			}
 		],
 		"annotations": []
