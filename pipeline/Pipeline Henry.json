@@ -47,7 +47,7 @@
 				]
 			},
 			{
-				"name": "Copy Norway Prescription Data",
+				"name": "Copy Denmark Medicine Data",
 				"type": "SynapseNotebook",
 				"dependsOn": [],
 				"policy": {
@@ -60,7 +60,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"notebook": {
-						"referenceName": "copy_norway_prescription_data",
+						"referenceName": "copy_denmark_medicine",
 						"type": "NotebookReference"
 					},
 					"snapshot": true
