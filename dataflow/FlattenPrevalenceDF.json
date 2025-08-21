@@ -24,6 +24,15 @@
 			"transformations": [
 				{
 					"name": "FlattenValue"
+				},
+				{
+					"name": "SelectRelevantColumns"
+				},
+				{
+					"name": "FilterScandinavia"
+				},
+				{
+					"name": "derivedColumn1"
 				}
 			],
 			"scriptLines": [
@@ -41,7 +50,25 @@
 				"     ),",
 				"     skipDuplicateMapInputs: false,",
 				"     skipDuplicateMapOutputs: false) ~> FlattenValue",
-				"FlattenValue sink(allowSchemaDrift: true,",
+				"FilterScandinavia select(mapColumn(",
+				"          Year = value.TimeDim,",
+				"          Country = value.SpatialDim,",
+				"          Gender = value.Dim1,",
+				"          Age = value.Dim2,",
+				"          {Diabetes%} = value.NumericValue,",
+				"          LowerConfidence = value.Low,",
+				"          UpperConfidence = value.High",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectRelevantColumns",
+				"FlattenValue filter(",
+				"value.SpatialDim == 'DNK' ||",
+				"value.SpatialDim == 'SWE' ||",
+				"value.SpatialDim == 'NOR'",
+				") ~> FilterScandinavia",
+				"SelectRelevantColumns derive(Gender = iif(Gender == 'SEX_MLE', 'M',\r",
+				"  iif(Gender == 'SEX_FMLE', 'F', Gender))) ~> derivedColumn1",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
 				"     skipDuplicateMapInputs: true,",
