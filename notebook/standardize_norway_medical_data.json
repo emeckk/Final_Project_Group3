@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "7d39b002-3255-43cc-afc8-4441608b35cf"
+				"spark.autotune.trackingId": "1a90aa74-4463-4746-aef4-3810c200f638"
 			}
 		},
 		"metadata": {
@@ -55,7 +55,7 @@
 					"\n",
 					"# read the csv file from staging\n",
 					"df_raw = spark.read.csv(\n",
-					"    \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/staging/norway_medical.csv\",\n",
+					"    \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/staging/norway_medicine.csv\",\n",
 					"    header=True, inferSchema=True\n",
 					")\n",
 					"\n",
