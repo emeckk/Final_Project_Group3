@@ -1,0 +1,49 @@
+{
+	"name": "ADLS_CauseOfDeath_CSV",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "group3fpadls",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "cause_of_death.csv",
+				"folderPath": "staging",
+				"container": "group3fpfilesystem"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "Age group",
+				"type": "String"
+			},
+			{
+				"name": "Diagnosis group",
+				"type": "String"
+			},
+			{
+				"name": "Country",
+				"type": "String"
+			},
+			{
+				"name": "Sex",
+				"type": "String"
+			},
+			{
+				"name": "Year",
+				"type": "String"
+			},
+			{
+				"name": "[DEATH01] Causes of death (full list)",
+				"type": "String"
+			}
+		]
+	}
+}

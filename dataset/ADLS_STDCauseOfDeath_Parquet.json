@@ -1,20 +1,20 @@
 {
-	"name": "ADLS_DiabetesPrevalence_JSON",
+	"name": "ADLS_STDCauseOfDeath_Parquet",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "group3fpadls",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
-		"type": "Json",
+		"type": "Parquet",
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "diabetes_prevalence.json",
-				"folderPath": "staging",
+				"folderPath": "standardized/cause_of_death.parquet/",
 				"container": "group3fpfilesystem"
-			}
+			},
+			"compressionCodec": "snappy"
 		},
-		"schema": {}
+		"schema": []
 	}
 }
