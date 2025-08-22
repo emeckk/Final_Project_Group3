@@ -12,10 +12,14 @@
 					"name": "CauseOfDeath"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"name": "sink1"
+				}
+			],
 			"transformations": [
 				{
-					"name": "derivedColumn1"
+					"name": "StandardizeValues"
 				},
 				{
 					"name": "FilterDiabetesRelated"
@@ -36,19 +40,26 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> CauseOfDeath",
-				"FilterDiabetesRelated derive({Diagnosis group} = ERROR_FUNCTION('')) ~> derivedColumn1",
-				"RenameColumns filter(DiagnosisGroup == 'Subgroup:_Diabetes_mellitus_(E10-E14)'",
-				") ~> FilterDiabetesRelated",
+				"FilterDiabetesRelated derive(country = iif(country == 'Denmark', 'DNK', iif(country == 'Norway', 'NOR', iif(country == 'Sweden', 'SWE','NA'))),",
+				"          sex = iif(sex == 'Men', 'M', iif(sex == 'Women', 'F', sex))) ~> StandardizeValues",
+				"RenameColumns filter(like(diagnosis_group, '%cardiovascular%') ||",
+				"like(diagnosis_group, '%Diabetes%') ||",
+				"like(diagnosis_group, '%kidney and ureter%') ||",
+				"like(diagnosis_group, '%myocardial%')) ~> FilterDiabetesRelated",
 				"CauseOfDeath select(mapColumn(",
-				"          AgeGroup = {Age group},",
-				"          DiagnosisGroup = {Diagnosis group},",
-				"          Country,",
-				"          Sex,",
-				"          Year,",
-				"          CauseOfDeath = {[DEATH01] Causes of death (full list)}",
+				"          age_group = {Age group},",
+				"          diagnosis_group = {Diagnosis group},",
+				"          country = Country,",
+				"          sex = Sex,",
+				"          year = Year,",
+				"          recorded_deaths = {[DEATH01] Causes of death (full list)}",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> RenameColumns"
+				"     skipDuplicateMapOutputs: true) ~> RenameColumns",
+				"StandardizeValues sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
 			]
 		}
 	}
