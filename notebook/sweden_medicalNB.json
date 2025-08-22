@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "8bd184f5-0c40-4823-add4-c14e29832d0d"
+				"spark.autotune.trackingId": "198e1b48-59ad-4e52-8430-0407511d62b7"
 			}
 		},
 		"metadata": {
@@ -60,7 +60,13 @@
 					"BASE = \"https://sdb.socialstyrelsen.se/api/v1/sv/lakemedel\"\n",
 					"HEADERS = {\"User-Agent\":\"synapse-a10/1.0\",\"Accept\":\"application/json\"}\n",
 					"MATT_PAT, MATT_EXP = 1, 3               # 1=Antal patienter, 3=Antal expedieringar\n",
-					"KON = {\"M\":1, \"K\":2}                    # Läkemedel: 1=Män, 2=Kvinnor\n",
+					"KON = {\n",
+					"    \"Män\": 1,\n",
+					"    \"Kvinnor\": 2,\n",
+					"    \"Båda könen\": 3\n",
+					"}\n",
+					"\n",
+					"\n",
 					"ATC_CHUNK, PER_PAGE = 20, 5000\n",
 					"RETRY, BACKOFF, TIMEOUT, SLEEP = 4, 1.5, 60, 0.1\n",
 					"\n",
@@ -231,7 +237,7 @@
 					"print(\"Klart.\")\n",
 					""
 				],
-				"execution_count": 20
+				"execution_count": 107
 			},
 			{
 				"cell_type": "code",
@@ -285,21 +291,23 @@
 			},
 			{
 				"cell_type": "code",
-				"metadata": {
-					"collapsed": false
-				},
 				"source": [
-					"# Läs Parquet från ADLS Gen2\n",
-					"parq_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/staging/sweden_medical.parquet\"\n",
+					"# Läs staging-data (Bronze)\n",
+					"staging_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/staging/sweden_medical.parquet\"\n",
+					"df_staging = spark.read.parquet(staging_path)\n",
 					"\n",
-					"df = spark.read.parquet(parq_path)\n",
+					"# Kolla schema\n",
+					"df_staging.printSchema()\n",
 					"\n",
-					"df.printSchema()           # schema\n",
-					"print(\"Rows:\", df.count()) # antal rader\n",
-					"display(df.limit(50))      # förhandsvisa 50 rader i UI:t\n",
+					"# Unika könsvärden (numeriska ID:n)\n",
+					"df_staging.select(\"kon\").distinct().show()\n",
+					"\n",
+					"# Unika könsvärden med text-label (om finns i staging)\n",
+					"if \"kon_label\" in df_staging.columns:\n",
+					"    df_staging.select(\"kon\", \"kon_label\").distinct().show()\n",
 					""
 				],
-				"execution_count": 23
+				"execution_count": 106
 			}
 		]
 	}

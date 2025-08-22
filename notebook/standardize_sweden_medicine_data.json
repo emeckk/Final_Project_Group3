@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "28ac4987-5b11-477f-93ca-381da64aa55b"
+				"spark.autotune.trackingId": "cc37beb2-52df-45c3-888e-7473de1e1773"
 			}
 		},
 		"metadata": {
@@ -240,6 +240,68 @@
 					""
 				],
 				"execution_count": 102
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"import pandas as pd\n",
+					"\n",
+					"# Läs standardized parquet (från staging eller befintlig standardize)\n",
+					"df_std = spark.read.parquet(\n",
+					"    \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/sweden_medicine.parquet\"\n",
+					").toPandas()\n",
+					"\n",
+					"# Summera över båda könen\n",
+					"df_both = (\n",
+					"    df_std\n",
+					"    .groupby([\"year\", \"atc_level_5\"], as_index=False)\n",
+					"    [[\"antal_expedieringar\", \"users\"]]\n",
+					"    .sum()\n",
+					")\n",
+					"\n",
+					"# Lägg till kolumn sex = \"Båda könen\"\n",
+					"df_both[\"sex\"] = \"Båda könen\"\n",
+					"\n",
+					"# Anpassa kolumnordningen\n",
+					"df_both = df_both[[\"year\", \"sex\", \"atc_level_5\", \"antal_expedieringar\", \"users\"]]\n",
+					"\n",
+					"# Kontroll\n",
+					"print(\"Antal rader efter summering:\", len(df_both))\n",
+					"print(\"Könskategorier:\", df_both[\"sex\"].unique())\n",
+					"\n",
+					"# Förhandsvisa\n",
+					"df_both.head(20)\n",
+					""
+				],
+				"execution_count": 110
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"import pandas as pd\n",
+					"\n",
+					"# Läs standardized parquet\n",
+					"df_std = spark.read.parquet(\n",
+					"    \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/sweden_medicine.parquet\"\n",
+					").toPandas()\n",
+					"\n",
+					"# Summera över båda könen (slå ihop M + F)\n",
+					"df_no_sex = (\n",
+					"    df_std\n",
+					"    .groupby([\"year\", \"atc_level_5\"], as_index=False)\n",
+					"    [[\"antal_expedieringar\", \"users\"]]\n",
+					"    .sum()\n",
+					")\n",
+					"\n",
+					"# Kontroll\n",
+					"print(\"Antal rader efter summering:\", len(df_no_sex))\n",
+					"print(\"Kolumner:\", df_no_sex.columns.tolist())\n",
+					"print(df_no_sex.count())\n",
+					"# Förhandsvisa\n",
+					"df_no_sex.head(670)\n",
+					""
+				],
+				"execution_count": 113
 			}
 		]
 	}
