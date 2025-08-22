@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "83820b46-89b6-4b1f-8b76-8279d6aca84a"
+				"spark.autotune.trackingId": "fc08815f-c22e-4009-899a-c730261cce86"
 			}
 		},
 		"metadata": {
@@ -102,7 +102,7 @@
 					"    \"thousand_units_sold\", \n",
 					"    \"units_sold_per_thousand_inhabitants_per_day\", \n",
 					"    \"share_of_sales_linked_to_person\"\n",
-					"    ]\n",
+					"]\n",
 					"\n",
 					"new_cols_product = [\n",
 					"    \"atc\",\n",
@@ -128,7 +128,7 @@
 					"df_atc_renamed.createOrReplaceTempView(\"raw_data_atc\")\n",
 					"df_product_renamed.createOrReplaceTempView(\"raw_data_product\")"
 				],
-				"execution_count": 26
+				"execution_count": 40
 			},
 			{
 				"cell_type": "markdown",
@@ -161,7 +161,7 @@
 					"SELECT \n",
 					"    atc,\n",
 					"    year,\n",
-					"    sum(a3_units_sold_thousand) as a3_units_sold_thousand\n",
+					"    sum(a3_units_sold_thousand) as thousand_units_sold\n",
 					"FROM raw_data_product \n",
 					"WHERE sector = 300\n",
 					"  AND atc IN (\n",
@@ -177,9 +177,11 @@
 					"    'A10BJ01','A10BJ02','A10BJ03','A10BJ05','A10BJ06',\n",
 					"    'A10BK01','A10BK02','A10BK03','A10BK04','A10BX02','A10BX03'\n",
 					"  )\n",
-					"GROUP BY atc, year;"
+					"GROUP BY atc, year;\n",
+					"\n",
+					"SELECT * FROM product_minimal;"
 				],
-				"execution_count": 27
+				"execution_count": 45
 			},
 			{
 				"cell_type": "markdown",
@@ -210,7 +212,7 @@
 					"    atc,\n",
 					"    year,\n",
 					"    sum(users) as users,\n",
-					"    sum(thousand_units_sold) as thousand_units_sold\n",
+					"    sum(thousand_units_sold) as thousand_ddd_sold\n",
 					"FROM raw_data_atc \n",
 					"WHERE sector = 0\n",
 					"  AND region = 0\n",
@@ -233,7 +235,47 @@
 					"\n",
 					"SELECT * FROM atc_minimal;"
 				],
-				"execution_count": 37
+				"execution_count": 46
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"##### Join product and atc data"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"\n",
+					"CREATE OR REPLACE TEMP VIEW atc_product_full AS\n",
+					"SELECT \n",
+					"    a.atc as atc_level_5,\n",
+					"    a.year,\n",
+					"    a.users,\n",
+					"    a.thousand_ddd_sold,\n",
+					"    p.thousand_units_sold\n",
+					"FROM atc_minimal a\n",
+					"LEFT JOIN product_minimal p\n",
+					"    ON a.atc = p.atc\n",
+					"   AND a.year = p.year;\n",
+					"\n",
+					"SELECT * FROM atc_product_full;"
+				],
+				"execution_count": 48
 			},
 			{
 				"cell_type": "markdown",
@@ -290,31 +332,6 @@
 					"ORDER BY r.year, r.atc4;"
 				],
 				"execution_count": 24
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"microsoft": {
-						"language": "sparksql"
-					},
-					"collapsed": false
-				},
-				"source": [
-					"%%sql\n",
-					"\n",
-					"SELECT * FROM raw_data_product WHERE atc LIKE \"A10%\";"
-				],
-				"execution_count": 22
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"collapsed": false
-				},
-				"source": [
-					""
-				],
-				"execution_count": 16
 			}
 		]
 	}
