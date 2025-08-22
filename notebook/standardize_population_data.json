@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "518601de-8a0b-4e00-8b5e-f5775d82f319"
+				"spark.autotune.trackingId": "cb323bcb-94ac-49c6-82d1-0bb42c27b8e4"
 			}
 		},
 		"metadata": {
@@ -76,13 +76,13 @@
 					"'POPULATION': 'population'\n",
 					"})\n",
 					"\n",
-					"# Define custom order for 'sex' so M comes before F\n",
+					"# Define custom order for 'sex' so M comes before F, and only keep M and F not _T(total)\n",
 					"df_long['sex'] = pd.Categorical(df_long['sex'], categories=['M', 'F'], ordered=True)\n",
 					"\n",
 					"#sort based on time period,country and gender\n",
 					"df_long = df_long.sort_values(by=['year', 'country', 'sex']).reset_index(drop=True)\n",
 					"\n",
-					"#remove rows where Sex is total, only keep male and female\n",
+					"\n",
 					"# Remove rows where sex is NaN, which was originally _T, but i didnt put it in categories so its now NaN\n",
 					"df_long = df_long.dropna(subset=['sex']).reset_index(drop=True)\n",
 					"df_long = df_long.reset_index(drop=True)\n",
