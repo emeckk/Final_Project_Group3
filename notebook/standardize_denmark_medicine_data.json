@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "488d78cc-633f-4cea-8144-cfe79f63226e"
+				"spark.autotune.trackingId": "f659939f-4461-4557-b1b9-264aeb5a65ab"
 			}
 		},
 		"metadata": {
@@ -49,23 +49,59 @@
 		},
 		"cells": [
 			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"##### Load CSV files into temporary views"
+				]
+			},
+			{
 				"cell_type": "code",
 				"source": [
 					"# Path to your ADLS folder\n",
-					"path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/staging/denmark_medicine/\"\n",
+					"atc_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/staging/denmark_medicine_atc/\"\n",
+					"product_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/staging/denmark_medicine_product/\"\n",
 					"\n",
-					"# Read all CSVs recursively with ; as delimiter\n",
-					"df = (\n",
+					"# Read all CSVs from both datasets recursively into separate dataframes\n",
+					"df_atc = (\n",
 					"    spark.read\n",
 					"    .option(\"header\", \"true\")\n",
 					"    .option(\"delimiter\", \";\")\n",
-					"    .csv(path, recursiveFileLookup=True)\n",
+					"    .csv(atc_path, recursiveFileLookup=True)\n",
 					")\n",
 					"\n",
-					"# Create temp view\n",
-					"df.createOrReplaceTempView(\"raw_data\")"
+					"df_product = (\n",
+					"    spark.read\n",
+					"    .option(\"header\", \"true\")\n",
+					"    .option(\"delimiter\", \";\")\n",
+					"    .csv(product_path, recursiveFileLookup=True)\n",
+					")\n",
+					"\n",
+					"\n",
+					"# Create temp views\n",
+					"df_atc.createOrReplaceTempView(\"raw_data_atc\")\n",
+					"df_product.createOrReplaceTempView(\"raw_data_product\")"
 				],
-				"execution_count": null
+				"execution_count": 12
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"##### Add headers"
+				]
 			},
 			{
 				"cell_type": "code",
@@ -77,7 +113,7 @@
 				"source": [
 					"%%sql\n",
 					"\n",
-					"SELECT * FROM raw_data;"
+					"SELECT * FROM raw_data_atc;"
 				],
 				"execution_count": null
 			}
