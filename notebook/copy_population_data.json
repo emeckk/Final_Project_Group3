@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "daef69f2-d5b6-4cd9-8eb3-c362ece2dd9b"
+				"spark.autotune.trackingId": "44f9ab26-b363-4b73-af10-f1518765ba80"
 			}
 		},
 		"metadata": {
@@ -100,7 +100,7 @@
 					"\n",
 					""
 				],
-				"execution_count": 17
+				"execution_count": 18
 			},
 			{
 				"cell_type": "code",
@@ -111,7 +111,7 @@
 					"output_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/staging/population.parquet\"\n",
 					"spark_df.write.mode(\"overwrite\").parquet(output_path)"
 				],
-				"execution_count": null
+				"execution_count": 19
 			}
 		]
 	}

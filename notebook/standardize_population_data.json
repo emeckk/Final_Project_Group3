@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "846fb9e9-68a3-4327-80f8-b189f25574e7"
+				"spark.autotune.trackingId": "518601de-8a0b-4e00-8b5e-f5775d82f319"
 			}
 		},
 		"metadata": {
@@ -67,14 +67,28 @@
 					"df = df_raw.toPandas()\n",
 					"#Create columns for the df\n",
 					"df_long = df[['TIME_PERIOD', 'REF_AREA', 'SEX', 'POPULATION']]\n",
+					"\n",
+					"#Change column names to our standardized names\n",
+					"df_long = df_long.rename(columns={\n",
+					"    'TIME_PERIOD': 'year', \n",
+					"'REF_AREA': 'country', \n",
+					"'SEX':'sex', \n",
+					"'POPULATION': 'population'\n",
+					"})\n",
+					"\n",
+					"# Define custom order for 'sex' so M comes before F\n",
+					"df_long['sex'] = pd.Categorical(df_long['sex'], categories=['M', 'F'], ordered=True)\n",
+					"\n",
 					"#sort based on time period,country and gender\n",
-					"df_long = df_long.sort_values(by=['TIME_PERIOD', 'REF_AREA', 'SEX']).reset_index(drop=True)\n",
+					"df_long = df_long.sort_values(by=['year', 'country', 'sex']).reset_index(drop=True)\n",
+					"\n",
 					"#remove rows where Sex is total, only keep male and female\n",
-					"df_long = df_long[df_long[\"SEX\"] != \"_T\"]\n",
+					"# Remove rows where sex is NaN, which was originally _T, but i didnt put it in categories so its now NaN\n",
+					"df_long = df_long.dropna(subset=['sex']).reset_index(drop=True)\n",
 					"df_long = df_long.reset_index(drop=True)\n",
-					"df_long.head(30)"
+					"df_long.head(100)"
 				],
-				"execution_count": 1
+				"execution_count": 13
 			},
 			{
 				"cell_type": "code",
@@ -84,7 +98,7 @@
 					"output_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/population.parquet\"\n",
 					"spark_df.write.mode(\"overwrite\").parquet(output_path)"
 				],
-				"execution_count": 2
+				"execution_count": 14
 			}
 		]
 	}
