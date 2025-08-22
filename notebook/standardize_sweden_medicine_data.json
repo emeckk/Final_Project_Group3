@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "d9cefe95-e648-4004-b809-8837a8d60576"
+				"spark.autotune.trackingId": "ef0e7d52-6dc4-477b-86cc-20994ea65255"
 			}
 		},
 		"metadata": {
@@ -80,7 +80,7 @@
 					"})\n",
 					"df_long.head(30)"
 				],
-				"execution_count": 30
+				"execution_count": 86
 			},
 			{
 				"cell_type": "code",
@@ -99,7 +99,7 @@
 					"df_grouped.head(30)\n",
 					""
 				],
-				"execution_count": 32
+				"execution_count": 87
 			},
 			{
 				"cell_type": "code",
@@ -120,7 +120,7 @@
 					"df_grouped.head(30)\n",
 					""
 				],
-				"execution_count": 33
+				"execution_count": 88
 			},
 			{
 				"cell_type": "code",
@@ -128,106 +128,101 @@
 					"df_long.query(\"atc_level_5 == 'A10AB03'\").head(20)\n",
 					""
 				],
-				"execution_count": 34
+				"execution_count": 89
 			},
 			{
 				"cell_type": "code",
 				"source": [
-					"#convert into spark df and store in our standardized folder\n",
-					"spark_df = spark.createDataFrame(df_long)\n",
-					"output_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/sweden_medicine.parquet\"\n",
-					"spark_df.write.mode(\"overwrite\").parquet(output_path)"
+					"print(\"Kolumner i df_long:\", df_long.columns.tolist())\n",
+					""
 				],
-				"execution_count": 35
+				"execution_count": 90
 			},
 			{
 				"cell_type": "code",
 				"source": [
-					"import pandas as pd\n",
-					"\n",
-					"# Läs standardized parquet som Pandas DF\n",
-					"df_std = pd.read_parquet(\n",
-					"    \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/sweden_medicine.parquet\",\n",
-					"    engine=\"pyarrow\"\n",
+					"print(\"Antal rader i df_long:\", len(df_long))\n",
+					"print(\"Kolumner:\", df_long.columns.tolist())\n",
+					"df_long.head(10)   # visar de 10 första raderna\n",
+					""
+				],
+				"execution_count": 91
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"# Aggregera till en rad per (year, sex, atc_level_5)\n",
+					"df_agg = (\n",
+					"    df_long\n",
+					"      .groupby([\"year\",\"sex\",\"atc_level_5\"], as_index=False)[[\"antal_expedieringar\",\"users\"]]\n",
+					"      .sum()\n",
+					"      .assign(sex_order=lambda d: d[\"sex\"].map({\"M\":0,\"F\":1}))\n",
+					"      .sort_values([\"year\",\"atc_level_5\",\"sex_order\"])\n",
+					"      .drop(columns=\"sex_order\")\n",
+					"      .reset_index(drop=True)\n",
 					")\n",
 					"\n",
-					"#  Antal nulls per kolumn\n",
-					"print(\"Nulls per kolumn:\")\n",
-					"print(df_std.isnull().sum(), \"\\n\")\n",
+					"print(\"Rader före (df_long):\", len(df_long))\n",
+					"print(\"Rader efter agg (df_agg):\", len(df_agg))\n",
+					"print(\"Unika år:\", df_agg[\"year\"].nunique(),\n",
+					"      \"| Unika ATC:\", df_agg[\"atc_level_5\"].nunique(),\n",
+					"      \"| Kön:\", df_agg[\"sex\"].nunique())\n",
 					"\n",
-					"# Distinkta värden i viktiga kolumner\n",
-					"print(\"Unika värden i sex:\", df_std[\"sex\"].unique(), \"\\n\")\n",
-					"print(\"Unika år (sorterade):\", sorted(df_std[\"year\"].unique())[:20], \"...\\n\")\n",
-					"print(\"Unika ATC-koder:\", df_std[\"atc_level_5\"].unique(), \"\\n\")\n",
+					"# Säkerställ att inga logiska dubletter finns kvar\n",
+					"print(\"Logiska dubletter kvar:\", df_agg.duplicated(subset=[\"year\",\"sex\",\"atc_level_5\"]).sum())\n",
 					"\n",
-					"\n",
-					"# Min / Max på numeriska kolumner\n",
-					"print(\"Min/Max antal_expedieringar:\", df_std[\"antal_expedieringar\"].min(), \"/\", df_std[\"antal_expedieringar\"].max())\n",
-					"print(\"Min/Max users:\", df_std[\"users\"].min(), \"/\", df_std[\"users\"].max())\n",
+					"# Titta snabbt\n",
+					"df_agg.head(1300)\n",
 					""
 				],
-				"execution_count": 42
+				"execution_count": 93
 			},
 			{
 				"cell_type": "code",
 				"source": [
-					"# Kolla dubletter i hela datasetet\n",
-					"dupes = df_std[df_std.duplicated(keep=False)]\n",
-					"\n",
-					"print(\"Antal exakta dubletter:\", len(dupes))\n",
-					"\n",
-					"# Visa några exempel\n",
-					"dupes.sort_values([\"year\",\"sex\",\"atc_level_5\"]).head(20)\n",
+					"dups = df_agg.duplicated(subset=[\"year\", \"sex\", \"atc_level_5\"]).sum()\n",
+					"print(\"Antal dubletter (ska vara 0):\", dups)\n",
 					""
 				],
-				"execution_count": 43
+				"execution_count": 95
 			},
 			{
 				"cell_type": "code",
 				"source": [
-					"import pandas as pd\n",
-					"\n",
-					"#  Läs standardized-data till Pandas\n",
-					"df_std = pd.read_parquet(\n",
-					"    \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/sweden_medicine.parquet\",\n",
-					"    engine=\"pyarrow\"\n",
-					")\n",
-					"\n",
-					"print(\"Antal rader före dublettrensning:\", len(df_std))\n",
-					"\n",
-					"#  Ta bort exakta dubletter\n",
-					"df_nodup = df_std.drop_duplicates()\n",
-					"\n",
-					"print(\"Antal rader efter dublettrensning:\", len(df_nodup))\n",
-					"\n",
-					"#  Konvertera tillbaka till Spark DataFrame\n",
-					"spark_df = spark.createDataFrame(df_nodup)\n",
-					"\n",
-					"#  Spara \n",
-					"output_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/sweden_medicine.parquet\"\n",
-					"spark_df.write.mode(\"overwrite\").parquet(output_path)\n",
-					"\n",
-					"print(f\" Rensad data utan dubletter sparad till {output_path}\")\n",
+					"import numpy as np\n",
+					"expected_years = set(np.arange(2006, 2025))\n",
+					"missing_years = expected_years - set(df_agg[\"year\"])\n",
+					"print(\"Saknade år:\", missing_years if missing_years else \"Inga\")\n",
 					""
 				],
-				"execution_count": 44
+				"execution_count": 96
 			},
 			{
 				"cell_type": "code",
 				"source": [
-					"\n",
-					"df_check = spark.read.parquet(\"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/sweden_medicine.parquet\")\n",
-					"\n",
-					"# Kolla om några dubletter finns kvar\n",
-					"total_rows = df_check.count()\n",
-					"unique_rows = df_check.dropDuplicates().count()\n",
-					"\n",
-					"print(\"Totala rader:\", total_rows)\n",
-					"print(\"Unika rader:\", unique_rows)\n",
-					"print(\"Dubletter kvar:\", total_rows - unique_rows)\n",
+					"sex_per_year = df_agg.groupby(\"year\")[\"sex\"].unique()\n",
+					"print(sex_per_year)\n",
 					""
 				],
-				"execution_count": 45
+				"execution_count": 97
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"atc_sex = df_agg.groupby(\"atc_level_5\")[\"sex\"].nunique()\n",
+					"print(\"ATC-koder som bara har ett kön:\", atc_sex[atc_sex == 1].index.tolist())\n",
+					""
+				],
+				"execution_count": 98
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"df_check_atc = df_agg[df_agg[\"atc_level_5\"].isin([\"A10BB03\",\"A10BD16\"])]\n",
+					"print(df_check_atc.sort_values([\"atc_level_5\",\"year\",\"sex\"]))\n",
+					""
+				],
+				"execution_count": 99
 			}
 		]
 	}
