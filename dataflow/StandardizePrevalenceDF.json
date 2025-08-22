@@ -36,6 +36,9 @@
 				},
 				{
 					"name": "SortValues"
+				},
+				{
+					"name": "DropSexColumnTemp"
 				}
 			],
 			"scriptLines": [
@@ -74,7 +77,17 @@
 				"RemapGenderAndAge sort(asc(year, true),",
 				"     asc(country, true),",
 				"     asc(sex, true)) ~> SortValues",
-				"SortValues sink(allowSchemaDrift: true,",
+				"SortValues select(mapColumn(",
+				"          year,",
+				"          country,",
+				"          age,",
+				"          {diabetes%},",
+				"          lower_confidence,",
+				"          upper_confidence",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> DropSexColumnTemp",
+				"DropSexColumnTemp sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
 				"     truncate: true,",
