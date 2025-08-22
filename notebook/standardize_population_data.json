@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "77722470-22b6-42e1-afb6-369bc12c7c6c"
+				"spark.autotune.trackingId": "fbb2a87d-e375-418d-a0f4-30d12164875a"
 			}
 		},
 		"metadata": {
@@ -71,9 +71,9 @@
 					"#Change column names to our standardized names\n",
 					"df_long = df_long.rename(columns={\n",
 					"    'TIME_PERIOD': 'year', \n",
-					"'REF_AREA': 'country', \n",
-					"'SEX':'sex', \n",
-					"'POPULATION': 'population'\n",
+					"    'REF_AREA': 'country', \n",
+					"    'SEX':'sex', \n",
+					"    'POPULATION': 'population'\n",
 					"})\n",
 					"\n",
 					"# Define custom order for 'sex' so M comes before F, and only keep M and F not _T(total)\n",
@@ -88,7 +88,7 @@
 					"df_long = df_long.reset_index(drop=True)\n",
 					"df_long.head(100)"
 				],
-				"execution_count": 13
+				"execution_count": 15
 			},
 			{
 				"cell_type": "code",
