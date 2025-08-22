@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "f659939f-4461-4557-b1b9-264aeb5a65ab"
+				"spark.autotune.trackingId": "03da5421-701e-4f44-aa85-d83a8d7857d1"
 			}
 		},
 		"metadata": {
@@ -71,24 +71,64 @@
 					"# Read all CSVs from both datasets recursively into separate dataframes\n",
 					"df_atc = (\n",
 					"    spark.read\n",
-					"    .option(\"header\", \"true\")\n",
+					"    .option(\"header\", \"false\")\n",
 					"    .option(\"delimiter\", \";\")\n",
 					"    .csv(atc_path, recursiveFileLookup=True)\n",
 					")\n",
 					"\n",
 					"df_product = (\n",
 					"    spark.read\n",
-					"    .option(\"header\", \"true\")\n",
+					"    .option(\"header\", \"false\")\n",
 					"    .option(\"delimiter\", \";\")\n",
 					"    .csv(product_path, recursiveFileLookup=True)\n",
 					")\n",
 					"\n",
+					"# Drop empty columns\n",
+					"df_atc = df_atc.drop(\"_c13\")\n",
+					"df_product = df_product.drop(\"_c14\")\n",
+					"\n",
+					"# Add headers\n",
+					"new_cols_atc = [\n",
+					"    \"atc\", \n",
+					"    \"year\", \n",
+					"    \"sector\", \n",
+					"    \"region\", \n",
+					"    \"sex\", \n",
+					"    \"age_group\", \n",
+					"    \"users\", \n",
+					"    \"users_per_thousand_inhabitants\", \n",
+					"    \"turnover_thousand_dkk\", \n",
+					"    \"regional_subsidy_thousand_dkk\", \n",
+					"    \"thousand_units_sold\", \n",
+					"    \"units_sold_per_thousand_inhabitants_per_day\", \n",
+					"    \"share_of_sales_linked_to_person\"\n",
+					"    ]\n",
+					"\n",
+					"new_cols_product = [\n",
+					"    \"atc\",\n",
+					"    \"year\",\n",
+					"    \"sector\",\n",
+					"    \"item_number\",\n",
+					"    \"a1_units_sold_thousand\",\n",
+					"    \"a1_quantity_thousand\",\n",
+					"    \"a1_turnover_thousand_dkk\",\n",
+					"    \"a2_units_sold_thousand\",\n",
+					"    \"a2_units_sold_subsidy_thousand\",\n",
+					"    \"a2_quantity_thousand\",\n",
+					"    \"a2_turnover_thousand_dkk\",\n",
+					"    \"a2_regional_subsidy_thousand_dkk\",\n",
+					"    \"a3_units_sold_thousand\",\n",
+					"    \"a3_quantity_thousand\"\n",
+					"]\n",
+					"\n",
+					"df_atc_renamed = df_atc.toDF(*new_cols_atc)\n",
+					"df_product_renamed = df_product.toDF(*new_cols_product)\n",
 					"\n",
 					"# Create temp views\n",
-					"df_atc.createOrReplaceTempView(\"raw_data_atc\")\n",
-					"df_product.createOrReplaceTempView(\"raw_data_product\")"
+					"df_atc_renamed.createOrReplaceTempView(\"raw_data_atc\")\n",
+					"df_product_renamed.createOrReplaceTempView(\"raw_data_product\")"
 				],
-				"execution_count": 12
+				"execution_count": 28
 			},
 			{
 				"cell_type": "markdown",
@@ -100,7 +140,7 @@
 					}
 				},
 				"source": [
-					"##### Add headers"
+					"##### Join datasets"
 				]
 			},
 			{
@@ -108,14 +148,15 @@
 				"metadata": {
 					"microsoft": {
 						"language": "sparksql"
-					}
+					},
+					"collapsed": false
 				},
 				"source": [
 					"%%sql\n",
 					"\n",
-					"SELECT * FROM raw_data_atc;"
+					"SELECT * FROM raw_data_product;"
 				],
-				"execution_count": null
+				"execution_count": 29
 			}
 		]
 	}
