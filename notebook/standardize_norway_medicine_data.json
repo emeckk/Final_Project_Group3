@@ -1,5 +1,5 @@
 {
-	"name": "standardize_norway_medical_data",
+	"name": "standardize_norway_medicine_data",
 	"properties": {
 		"nbformat": 4,
 		"nbformat_minor": 2,
@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "230f6a50-903e-4f32-a4b4-f3ded75aeb85"
+				"spark.autotune.trackingId": "a787f8f5-8501-4b9a-a406-23854ed61038"
 			}
 		},
 		"metadata": {
