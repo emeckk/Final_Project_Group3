@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "024bf1d5-6a33-48cb-9726-f20eaebedd11"
+				"spark.autotune.trackingId": "e729d055-dee9-4d0c-a22d-afe075d1dbf4"
 			}
 		},
 		"metadata": {
@@ -63,29 +63,22 @@
 					"df = df_raw.toPandas()\n",
 					"\n",
 					"# keep only the columns we care about\n",
-					"df_long = df[['Valuetime', 'Valuegender', 'Valuedrug','SumSum_DDD', 'SumAntall_unike_pasienter']]\n",
 					"\n",
+					"df_long = df[df['Valuegender'] == 'Both sexes'][['Valuetime','Valuedrug','SumSum_DDD', 'SumAntall_unike_pasienter']]\n",
 					"# sort based on time, gender, atc-code\n",
 					"df_long = df_long.sort_values(by=['Valuetime', 'Valuedrug']).reset_index(drop=True)\n",
 					"\n",
 					"#Change column names to our standardized names\n",
 					"df_long = df_long.rename(columns={\n",
-					"    'Valuetime': 'year', \n",
-					"    'Valuegender': 'sex', \n",
+					"    'Valuetime': 'year',  \n",
 					"    'Valuedrug':'atc_level_5', \n",
 					"    'SumSum_DDD': 'expedited_ddd', \n",
 					"    'SumAntall_unike_pasienter': 'users'\n",
 					"})\n",
-					"\n",
-					"#Change Male and Female to M and F\n",
-					"df_long['sex'] = df_long['sex'].replace({\n",
-					"    'Men': 'M',\n",
-					"    'Women': 'F'\n",
-					"})\n",
-					"\n",
-					"df_long.head(1797)"
+					"#print(df_long.count())\n",
+					"#df_long.head(900)"
 				],
-				"execution_count": 16
+				"execution_count": 22
 			},
 			{
 				"cell_type": "code",

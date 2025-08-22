@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "1611e371-8e94-49ac-9863-fe5ca476caf4"
+				"spark.autotune.trackingId": "55e46bfe-4898-4401-a5c4-d7309c742e2e"
 			}
 		},
 		"metadata": {
@@ -66,36 +66,24 @@
 					"# convert to a pandas df\n",
 					"df = df_raw.toPandas()\n",
 					"\n",
-					"\n",
-					"# Only keep rows where population is already total (e.g., SEX == 'T' for total)\n",
+					"# Only keep rows with the total population\n",
 					"df_total = df[df['SEX'] == '_T'][['TIME_PERIOD', 'REF_AREA', 'POPULATION']]\n",
 					"\n",
-					"# Rename columns\n",
+					"# rename columns to our standardized names\n",
 					"df_total = df_total.rename(columns={\n",
 					"    'TIME_PERIOD': 'year', \n",
 					"    'REF_AREA': 'country',  \n",
 					"    'POPULATION': 'population'\n",
 					"})\n",
 					"\n",
-					"# Sort\n",
+					"\n",
+					"#sort on year and country\n",
 					"df_total = df_total.sort_values(by=['year', 'country']).reset_index(drop=True)\n",
 					"\n",
-					"df_total.head(100)\n",
-					"\n",
-					"# rename columns\n",
-					"df_long = df_long.rename(columns={\n",
-					"    'TIME_PERIOD': 'year', \n",
-					"    'REF_AREA': 'country',  \n",
-					"    'POPULATION': 'population'\n",
-					"})\n",
-					"\n",
-					"# sort if needed\n",
-					"df_total = df_total.sort_values(by=['year', 'country']).reset_index(drop=True)\n",
-					"\n",
-					"# now display the total population dataframe\n",
-					"df_total.head(100)"
+					"# testing purposes\n",
+					"#df_total.head(100)"
 				],
-				"execution_count": 6
+				"execution_count": 14
 			},
 			{
 				"cell_type": "code",
@@ -105,7 +93,7 @@
 					"output_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/population.parquet\"\n",
 					"spark_df.write.mode(\"overwrite\").parquet(output_path)"
 				],
-				"execution_count": 14
+				"execution_count": 15
 			}
 		]
 	}
