@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "e729d055-dee9-4d0c-a22d-afe075d1dbf4"
+				"spark.autotune.trackingId": "b539f597-df2a-40ae-ab68-00fb9dcc7d92"
 			}
 		},
 		"metadata": {
@@ -88,7 +88,7 @@
 					"output_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/norway_medicine.parquet\"\n",
 					"spark_df.write.mode(\"overwrite\").parquet(output_path)"
 				],
-				"execution_count": 16
+				"execution_count": 23
 			}
 		]
 	}
