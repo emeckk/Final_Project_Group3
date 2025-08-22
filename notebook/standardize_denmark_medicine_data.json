@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "f61b2041-10b8-4d6e-83d0-10fd13315966"
+				"spark.autotune.trackingId": "c4cfbe2f-cf90-4e77-b643-ba87e0c315ac"
 			}
 		},
 		"metadata": {
@@ -128,7 +128,7 @@
 					"df_atc_renamed.createOrReplaceTempView(\"raw_data_atc\")\n",
 					"df_product_renamed.createOrReplaceTempView(\"raw_data_product\")"
 				],
-				"execution_count": 1
+				"execution_count": 26
 			},
 			{
 				"cell_type": "markdown",
@@ -140,7 +140,7 @@
 					}
 				},
 				"source": [
-					"##### Clean product and atc dataset"
+					"##### Clean product dataset"
 				]
 			},
 			{
@@ -174,7 +174,32 @@
 					"    'A10BJ01','A10BJ02','A10BJ03','A10BJ05','A10BJ06',\n",
 					"    'A10BK01','A10BK02','A10BK03','A10BK04','A10BX02','A10BX03'\n",
 					"  )\n",
-					"GROUP BY atc, year;\n",
+					"GROUP BY atc, year;"
+				],
+				"execution_count": 27
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"##### Clean atc dataset"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "sparksql"
+					}
+				},
+				"source": [
+					"%%sql\n",
 					"\n",
 					"CREATE OR REPLACE TEMP VIEW atc_minimal AS\n",
 					"SELECT \n",
@@ -187,24 +212,11 @@
 					"  AND region = 0\n",
 					"  AND sex = 0\n",
 					"  AND age_group = \"T\"\n",
-					"  AND atc IN (\n",
-					"    'A10AB01','A10AB03','A10AB04','A10AB05','A10AB06',\n",
-					"    'A10AC01','A10AC03','A10AC30','A10AD01','A10AD03',\n",
-					"    'A10AD04','A10AD05','A10AE01','A10AE02','A10AE04',\n",
-					"    'A10AE05','A10AE06','A10AE54','A10AE56','A10BA02',\n",
-					"    'A10BB01','A10BB02','A10BB07','A10BB12','A10BD03',\n",
-					"    'A10BD04','A10BD05','A10BD07','A10BD08','A10BD10',\n",
-					"    'A10BD11','A10BD15','A10BD19','A10BD20','A10BD21',\n",
-					"    'A10BD23','A10BD24','A10BF01','A10BG01','A10BG02',\n",
-					"    'A10BG03','A10BH01','A10BH02','A10BH03','A10BH05',\n",
-					"    'A10BJ01','A10BJ02','A10BJ03','A10BJ05','A10BJ06',\n",
-					"    'A10BK01','A10BK02','A10BK03','A10BK04','A10BX02','A10BX03'\n",
-					"  )\n",
 					"GROUP BY atc, year;\n",
 					"\n",
 					"SELECT * FROM atc_minimal;"
 				],
-				"execution_count": 25
+				"execution_count": 28
 			},
 			{
 				"cell_type": "markdown",
