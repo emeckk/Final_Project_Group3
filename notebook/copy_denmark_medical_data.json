@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "e4325a4d-3608-4f5b-b161-067d3270334a"
+				"spark.autotune.trackingId": "ce9f1136-9958-45e8-9696-a4b80b71df54"
 			}
 		},
 		"metadata": {
@@ -84,13 +84,13 @@
 					"\n",
 					"# Combine all the tables into one dataframe\n",
 					"df_final = pd.concat(cleaned_tables, ignore_index=True)\n",
-					"df_final.head()\n",
+					"#df_final.head()\n",
 					"#turn it into a spark df and then store it in our staging folder in parquet format\n",
-					"#spark_df = spark.createDataFrame(df_final)\n",
+					"spark_df = spark.createDataFrame(df_final)\n",
 					"\n",
-					"#output_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/staging/denmark_medical.parquet\"\n",
+					"output_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/staging/denmark_medical.parquet\"\n",
 					"\n",
-					"#spark_df.write.mode(\"overwrite\").parquet(output_path)"
+					"spark_df.write.mode(\"overwrite\").parquet(output_path)"
 				],
 				"execution_count": 1
 			}
