@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "d60882c7-9979-4427-a3b1-e42472262e3d"
+				"spark.autotune.trackingId": "8bd184f5-0c40-4823-add4-c14e29832d0d"
 			}
 		},
 		"metadata": {
@@ -231,7 +231,7 @@
 					"print(\"Klart.\")\n",
 					""
 				],
-				"execution_count": 6
+				"execution_count": 20
 			},
 			{
 				"cell_type": "code",
@@ -245,7 +245,7 @@
 					"df.head(20)                # första 20 raderna\n",
 					""
 				],
-				"execution_count": 8
+				"execution_count": 21
 			},
 			{
 				"cell_type": "code",
@@ -281,7 +281,25 @@
 					"    print(f\"{target_base}/sweden_medical.parquet\")\n",
 					""
 				],
-				"execution_count": 11
+				"execution_count": 22
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"# Läs Parquet från ADLS Gen2\n",
+					"parq_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/staging/sweden_medical.parquet\"\n",
+					"\n",
+					"df = spark.read.parquet(parq_path)\n",
+					"\n",
+					"df.printSchema()           # schema\n",
+					"print(\"Rows:\", df.count()) # antal rader\n",
+					"display(df.limit(50))      # förhandsvisa 50 rader i UI:t\n",
+					""
+				],
+				"execution_count": 23
 			}
 		]
 	}

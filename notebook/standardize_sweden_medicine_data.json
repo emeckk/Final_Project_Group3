@@ -1,0 +1,145 @@
+{
+	"name": "standardize_sweden_medicine_data",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "group3fpspark",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 1,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "true",
+				"spark.dynamicAllocation.minExecutors": "1",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "f55d4ed6-f1ce-4505-8578-52de1fe99cef"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/23b183d5-a30f-46b8-b418-ad060fb67787/resourceGroups/group3fp/providers/Microsoft.Synapse/workspaces/group3fpsynapse/bigDataPools/group3fpspark",
+				"name": "group3fpspark",
+				"type": "Spark",
+				"endpoint": "https://group3fpsynapse.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/group3fpspark",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "3.4",
+				"nodeCount": 10,
+				"cores": 4,
+				"memory": 28,
+				"automaticScaleJobs": true
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"source": [
+					"import pandas as pd\n",
+					"df_raw = spark.read.parquet(\n",
+					"    \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/staging/sweden_medical.parquet\",\n",
+					"    header=True, inferSchema=True\n",
+					")\n",
+					"# convert to pandas\n",
+					"df = df_raw.toPandas()\n",
+					"\n",
+					"# keep only the columns we care about\n",
+					"df_long = df[['ar', 'kon_label', 'atc','antal_expedieringar', 'antal_patienter']]\n",
+					"\n",
+					"# sort based on time, gender, drug\n",
+					"df_long = df_long.sort_values(by=['ar', 'atc']).reset_index(drop=True)\n",
+					"\n",
+					"#Change column names to our standardized names\n",
+					"df_long = df_long.rename(columns={\n",
+					"    'ar': 'year', \n",
+					"'kon_label': 'sex', \n",
+					"'atc':'atc_level_5', \n",
+					"'antal_expedierinagr': 'expedited_ddd', \n",
+					"'antal_patienter': 'users'\n",
+					"})\n",
+					"\n",
+					"#Change Male and Female to M and F\n",
+					"df_long['sex'] = df_long['sex'].replace({\n",
+					"    'K': 'F'\n",
+					"})\n",
+					"df_long.head(30)"
+				],
+				"execution_count": 30
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"# Summera per år, kön, ATC\n",
+					"df_grouped = (\n",
+					"    df_long\n",
+					"    .groupby([\"year\", \"sex\", \"atc_level_5\"], as_index=False)\n",
+					"    [[\"antal_expedieringar\", \"users\"]]\n",
+					"    .sum()\n",
+					"    .sort_values([\"year\", \"atc_level_5\"])\n",
+					"    .reset_index(drop=True)\n",
+					")\n",
+					"\n",
+					"# Visa de första 30 raderna\n",
+					"df_grouped.head(30)\n",
+					""
+				],
+				"execution_count": 32
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"# Summera per år, kön, ATC\n",
+					"df_grouped = (\n",
+					"    df_long\n",
+					"    .groupby([\"year\", \"sex\", \"atc_level_5\"], as_index=False)\n",
+					"    [[\"antal_expedieringar\", \"users\"]]\n",
+					"    .sum()\n",
+					"    .assign(sex_order=lambda d: d[\"sex\"].map({\"M\": 0, \"F\": 1}))\n",
+					"    .sort_values([\"year\", \"atc_level_5\", \"sex_order\"])\n",
+					"    .drop(columns=\"sex_order\")\n",
+					"    .reset_index(drop=True)\n",
+					")\n",
+					"\n",
+					"# Visa de första 30 raderna\n",
+					"df_grouped.head(30)\n",
+					""
+				],
+				"execution_count": 33
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"df_long.query(\"atc_level_5 == 'A10AB03'\").head(20)\n",
+					""
+				],
+				"execution_count": 34
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"#convert into spark df and store in our standardized folder\n",
+					"spark_df = spark.createDataFrame(df_long)\n",
+					"output_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/sweden_medicine.parquet\"\n",
+					"spark_df.write.mode(\"overwrite\").parquet(output_path)"
+				],
+				"execution_count": 35
+			}
+		]
+	}
+}
