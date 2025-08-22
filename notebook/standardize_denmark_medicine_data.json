@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "03da5421-701e-4f44-aa85-d83a8d7857d1"
+				"spark.autotune.trackingId": "9119607a-8e37-4bca-931f-c33cc5c42b49"
 			}
 		},
 		"metadata": {
@@ -154,9 +154,90 @@
 				"source": [
 					"%%sql\n",
 					"\n",
-					"SELECT * FROM raw_data_product;"
+					"CREATE OR REPLACE TEMP VIEW product_minimal AS\n",
+					"SELECT \n",
+					"    atc,\n",
+					"    year,\n",
+					"    sum(a3_units_sold_thousand) as a3_units_sold_thousand\n",
+					"FROM raw_data_product \n",
+					"WHERE sector = 300\n",
+					"  AND atc IN (\n",
+					"    'A10AB01','A10AB03','A10AB04','A10AB05','A10AB06',\n",
+					"    'A10AC01','A10AC03','A10AC30','A10AD01','A10AD03',\n",
+					"    'A10AD04','A10AD05','A10AE01','A10AE02','A10AE04',\n",
+					"    'A10AE05','A10AE06','A10AE54','A10AE56','A10BA02',\n",
+					"    'A10BB01','A10BB02','A10BB07','A10BB12','A10BD03',\n",
+					"    'A10BD04','A10BD05','A10BD07','A10BD08','A10BD10',\n",
+					"    'A10BD11','A10BD15','A10BD19','A10BD20','A10BD21',\n",
+					"    'A10BD23','A10BD24','A10BF01','A10BG01','A10BG02',\n",
+					"    'A10BG03','A10BH01','A10BH02','A10BH03','A10BH05',\n",
+					"    'A10BJ01','A10BJ02','A10BJ03','A10BJ05','A10BJ06',\n",
+					"    'A10BK01','A10BK02','A10BK03','A10BK04','A10BX02','A10BX03'\n",
+					"  )\n",
+					"GROUP BY atc, year;\n",
+					"\n",
+					"SELECT * FROM product_minimal;"
 				],
-				"execution_count": 29
+				"execution_count": 41
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"\n",
+					"-- Aggregate granular 5th-level ATCs up to 4th level (A10AB, A10BK, etc.)\n",
+					"WITH product_granular_agg AS (\n",
+					"    SELECT \n",
+					"        SUBSTRING(atc, 1, 5) AS atc4,  -- roll up to 4th-level ATC\n",
+					"        year,\n",
+					"        SUM(a3_units_sold_thousand) AS total_units_granular\n",
+					"    FROM raw_data_product\n",
+					"    WHERE sector = 300\n",
+					"    GROUP BY SUBSTRING(atc, 1, 5), year\n",
+					")\n",
+					"\n",
+					"SELECT \n",
+					"    a.atc AS atc4,\n",
+					"    a.year,\n",
+					"    a.thousand_units_sold AS total_units_reported,\n",
+					"    g.total_units_granular,\n",
+					"    (g.total_units_granular - a.thousand_units_sold) AS difference,\n",
+					"    ROUND(\n",
+					"        100.0 * g.total_units_granular / NULLIF(a.thousand_units_sold,0),\n",
+					"        2\n",
+					"    ) AS pct_coverage\n",
+					"FROM raw_data_atc a\n",
+					"LEFT JOIN product_granular_agg g\n",
+					"       ON a.atc = g.atc4 AND a.year = g.year\n",
+					"WHERE a.sector = 300\n",
+					"ORDER BY a.year, a.atc;\n",
+					""
+				],
+				"execution_count": 47
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"SELECT DISTINCT atc\n",
+					"FROM raw_data_atc\n",
+					"WHERE sector = 300\n",
+					"ORDER BY atc\n",
+					""
+				],
+				"execution_count": 48
 			}
 		]
 	}
