@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "1a1287d8-6998-4f7c-b59d-5c9aac9f7e6d"
+				"spark.autotune.trackingId": "e2d9b310-98da-4ac0-8a12-141965d04449"
 			}
 		},
 		"metadata": {
@@ -83,9 +83,9 @@
 					"    'Women': 'F'\n",
 					"})\n",
 					"\n",
-					"df_long.head(30)"
+					"df_long.head(1797)"
 				],
-				"execution_count": 1
+				"execution_count": 7
 			},
 			{
 				"cell_type": "code",
