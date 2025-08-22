@@ -79,7 +79,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"notebook": {
-						"referenceName": "copy_denmark_medical_data",
+						"referenceName": "copy_denmark_medicine_data",
 						"type": "NotebookReference"
 					},
 					"snapshot": true,
@@ -112,7 +112,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"notebook": {
-						"referenceName": "standardize_denmark_medical_data",
+						"referenceName": "standardize_denmark_medicine_data",
 						"type": "NotebookReference"
 					},
 					"snapshot": true,
@@ -157,7 +157,13 @@
 						"referenceName": "standardize_norway_medical_data",
 						"type": "NotebookReference"
 					},
-					"snapshot": true
+					"snapshot": true,
+					"conf": {
+						"spark.dynamicAllocation.enabled": null,
+						"spark.dynamicAllocation.minExecutors": null,
+						"spark.dynamicAllocation.maxExecutors": null
+					},
+					"numExecutors": null
 				}
 			}
 		],
