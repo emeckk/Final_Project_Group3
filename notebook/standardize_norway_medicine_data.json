@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "c8f3fe28-0383-4a29-86b0-9b0ff6a70c8a"
+				"spark.autotune.trackingId": "cc2c65f2-834a-44e6-995b-59b53830936a"
 			}
 		},
 		"metadata": {
@@ -71,10 +71,10 @@
 					"#Change column names to our standardized names\n",
 					"df_long = df_long.rename(columns={\n",
 					"    'Valuetime': 'year', \n",
-					"'Valuegender': 'sex', \n",
-					"'Valuedrug':'atc_level_5', \n",
-					"'SumSum_DDD': 'expedited_ddd', \n",
-					"'SumAntall_unike_pasienter': 'users'\n",
+					"    'Valuegender': 'sex', \n",
+					"    'Valuedrug':'atc_level_5', \n",
+					"    'SumSum_DDD': 'expedited_ddd', \n",
+					"    'SumAntall_unike_pasienter': 'users'\n",
 					"})\n",
 					"\n",
 					"#Change Male and Female to M and F\n",
