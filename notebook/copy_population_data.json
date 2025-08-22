@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "2f52d548-1480-40f4-9476-c19a73134bc7"
+				"spark.autotune.trackingId": "c4378387-78d9-4602-9113-1896e779bc53"
 			}
 		},
 		"metadata": {
@@ -98,11 +98,10 @@
 					"df_pandas = pd.DataFrame(rows)\n",
 					"df_pandas.head()\n",
 					"#convert into a spark df and then store it in our staging folder in parquet format\n",
-					"#spark_df = spark.createDataFrame(df_pandas)\n",
 					"\n",
-					"#output_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/staging/population.parquet\"\n",
-					"\n",
-					"#spark_df.write.mode(\"overwrite\").parquet(output_path)\n",
+					"spark_df = spark.createDataFrame(df_pandas)\n",
+					"output_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/staging/population.parquet\"\n",
+					"spark_df.write.mode(\"overwrite\").parquet(output_path)\n",
 					""
 				],
 				"execution_count": 1
