@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "e94bb306-e892-4253-baec-5dbe4642a4cb"
+				"spark.autotune.trackingId": "3b656d45-829b-4b60-a6ab-14fb464a80cc"
 			}
 		},
 		"metadata": {
@@ -181,14 +181,17 @@
 				"execution_count": 6
 			},
 			{
-				"cell_type": "code",
+				"cell_type": "markdown",
 				"metadata": {
-					"collapsed": false
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
 				},
 				"source": [
-					""
-				],
-				"execution_count": 4
+					"##### Check if aggregated data on atc 5 level corresponds with source atc 4 level"
+				]
 			},
 			{
 				"cell_type": "code",
@@ -201,9 +204,52 @@
 				"source": [
 					"%%sql\n",
 					"\n",
-					"SELECT * FROM raw_data_atc;"
+					"CREATE OR REPLACE TEMP VIEW product_minimal_atc4 AS\n",
+					"SELECT\n",
+					"    SUBSTRING(atc, 1, 5) AS atc4,   -- roll up to level 4\n",
+					"    year,\n",
+					"    SUM(a3_units_sold_thousand) AS units_from_atc5\n",
+					"FROM product_minimal\n",
+					"GROUP BY SUBSTRING(atc, 1, 5), year;\n",
+					"\n",
+					"CREATE OR REPLACE TEMP VIEW product_source_atc4 AS\n",
+					"SELECT\n",
+					"    SUBSTRING(atc,1,5) AS atc4,\n",
+					"    year,\n",
+					"    SUM(a3_units_sold_thousand) AS units_reported_atc4\n",
+					"FROM raw_data_product\n",
+					"WHERE sector = 300\n",
+					"GROUP BY SUBSTRING(atc,1,5), year;\n",
+					"\n",
+					"SELECT\n",
+					"    r.atc4,\n",
+					"    r.year,\n",
+					"    r.units_reported_atc4,\n",
+					"    f.units_from_atc5,\n",
+					"    (f.units_from_atc5 - r.units_reported_atc4) AS difference,\n",
+					"    ROUND(100.0 * f.units_from_atc5 / NULLIF(r.units_reported_atc4,0), 2) AS pct_coverage\n",
+					"FROM product_source_atc4 r\n",
+					"LEFT JOIN product_minimal_atc4 f\n",
+					"       ON r.atc4 = f.atc4 AND r.year = f.year\n",
+					"WHERE r.atc4 LIKE \"A10%\"\n",
+					"ORDER BY r.year, r.atc4;"
 				],
-				"execution_count": 12
+				"execution_count": 24
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"\n",
+					"SELECT * FROM raw_data_product WHERE atc LIKE \"A10%\";"
+				],
+				"execution_count": 22
 			},
 			{
 				"cell_type": "code",
