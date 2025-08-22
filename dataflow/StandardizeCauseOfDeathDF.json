@@ -30,6 +30,9 @@
 				},
 				{
 					"name": "RenameColumns"
+				},
+				{
+					"name": "SortByCountryAndYear"
 				}
 			],
 			"scriptLines": [
@@ -38,31 +41,37 @@
 				"          {Diagnosis group} as string,",
 				"          Country as string,",
 				"          Sex as string,",
-				"          Year as short,",
+				"          Year as integer,",
 				"          {[DEATH01] Causes of death (full list)} as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> CauseOfDeath",
 				"FilterDiabetesRelated derive(country = iif(country == 'Denmark', 'DNK', iif(country == 'Norway', 'NOR', iif(country == 'Sweden', 'SWE','NA'))),",
-				"          sex = iif(sex == 'Men', 'M', iif(sex == 'Women', 'F', sex))) ~> StandardizeValues",
+				"          sex = iif(sex == 'Men', 'M', iif(sex == 'Women', 'F', sex)),",
+				"          diagnosis_group = iif(like(diagnosis_group, '%Diabetes%'), 'Diabetes Mellitus', \r",
+				"iif(like(diagnosis_group, '%cardiovascular%'), 'Cardiovascular Disease',\r",
+				"iif(like(diagnosis_group, '%kidney and ureter%'), 'Kidney and Ureter Disease',\r",
+				"iif(like(diagnosis_group, '%myocardial%'), 'Heart Attack', diagnosis_group))))) ~> StandardizeValues",
 				"RenameColumns filter(like(diagnosis_group, '%cardiovascular%') ||",
 				"like(diagnosis_group, '%Diabetes%') ||",
 				"like(diagnosis_group, '%kidney and ureter%') ||",
 				"like(diagnosis_group, '%myocardial%')) ~> FilterDiabetesRelated",
 				"CauseOfDeath select(mapColumn(",
-				"          age_group = {Age group},",
+				"          year = Year,",
 				"          diagnosis_group = {Diagnosis group},",
 				"          country = Country,",
 				"          sex = Sex,",
-				"          year = Year,",
 				"          recorded_deaths = {[DEATH01] Causes of death (full list)}",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> RenameColumns",
-				"StandardizeValues sink(allowSchemaDrift: true,",
+				"StandardizeValues sort(asc(country, true),",
+				"     asc(year, true)) ~> SortByCountryAndYear",
+				"SortByCountryAndYear sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
+				"     truncate: true,",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> SinkToStandardized"
 			]
