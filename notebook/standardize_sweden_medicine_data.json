@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "f55d4ed6-f1ce-4505-8578-52de1fe99cef"
+				"spark.autotune.trackingId": "d9cefe95-e648-4004-b809-8837a8d60576"
 			}
 		},
 		"metadata": {
@@ -139,6 +139,95 @@
 					"spark_df.write.mode(\"overwrite\").parquet(output_path)"
 				],
 				"execution_count": 35
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"import pandas as pd\n",
+					"\n",
+					"# Läs standardized parquet som Pandas DF\n",
+					"df_std = pd.read_parquet(\n",
+					"    \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/sweden_medicine.parquet\",\n",
+					"    engine=\"pyarrow\"\n",
+					")\n",
+					"\n",
+					"#  Antal nulls per kolumn\n",
+					"print(\"Nulls per kolumn:\")\n",
+					"print(df_std.isnull().sum(), \"\\n\")\n",
+					"\n",
+					"# Distinkta värden i viktiga kolumner\n",
+					"print(\"Unika värden i sex:\", df_std[\"sex\"].unique(), \"\\n\")\n",
+					"print(\"Unika år (sorterade):\", sorted(df_std[\"year\"].unique())[:20], \"...\\n\")\n",
+					"print(\"Unika ATC-koder:\", df_std[\"atc_level_5\"].unique(), \"\\n\")\n",
+					"\n",
+					"\n",
+					"# Min / Max på numeriska kolumner\n",
+					"print(\"Min/Max antal_expedieringar:\", df_std[\"antal_expedieringar\"].min(), \"/\", df_std[\"antal_expedieringar\"].max())\n",
+					"print(\"Min/Max users:\", df_std[\"users\"].min(), \"/\", df_std[\"users\"].max())\n",
+					""
+				],
+				"execution_count": 42
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"# Kolla dubletter i hela datasetet\n",
+					"dupes = df_std[df_std.duplicated(keep=False)]\n",
+					"\n",
+					"print(\"Antal exakta dubletter:\", len(dupes))\n",
+					"\n",
+					"# Visa några exempel\n",
+					"dupes.sort_values([\"year\",\"sex\",\"atc_level_5\"]).head(20)\n",
+					""
+				],
+				"execution_count": 43
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"import pandas as pd\n",
+					"\n",
+					"#  Läs standardized-data till Pandas\n",
+					"df_std = pd.read_parquet(\n",
+					"    \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/sweden_medicine.parquet\",\n",
+					"    engine=\"pyarrow\"\n",
+					")\n",
+					"\n",
+					"print(\"Antal rader före dublettrensning:\", len(df_std))\n",
+					"\n",
+					"#  Ta bort exakta dubletter\n",
+					"df_nodup = df_std.drop_duplicates()\n",
+					"\n",
+					"print(\"Antal rader efter dublettrensning:\", len(df_nodup))\n",
+					"\n",
+					"#  Konvertera tillbaka till Spark DataFrame\n",
+					"spark_df = spark.createDataFrame(df_nodup)\n",
+					"\n",
+					"#  Spara \n",
+					"output_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/sweden_medicine.parquet\"\n",
+					"spark_df.write.mode(\"overwrite\").parquet(output_path)\n",
+					"\n",
+					"print(f\" Rensad data utan dubletter sparad till {output_path}\")\n",
+					""
+				],
+				"execution_count": 44
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"\n",
+					"df_check = spark.read.parquet(\"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/sweden_medicine.parquet\")\n",
+					"\n",
+					"# Kolla om några dubletter finns kvar\n",
+					"total_rows = df_check.count()\n",
+					"unique_rows = df_check.dropDuplicates().count()\n",
+					"\n",
+					"print(\"Totala rader:\", total_rows)\n",
+					"print(\"Unika rader:\", unique_rows)\n",
+					"print(\"Dubletter kvar:\", total_rows - unique_rows)\n",
+					""
+				],
+				"execution_count": 45
 			}
 		]
 	}
