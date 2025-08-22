@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "9119607a-8e37-4bca-931f-c33cc5c42b49"
+				"spark.autotune.trackingId": "e94bb306-e892-4253-baec-5dbe4642a4cb"
 			}
 		},
 		"metadata": {
@@ -128,7 +128,7 @@
 					"df_atc_renamed.createOrReplaceTempView(\"raw_data_atc\")\n",
 					"df_product_renamed.createOrReplaceTempView(\"raw_data_product\")"
 				],
-				"execution_count": 28
+				"execution_count": 1
 			},
 			{
 				"cell_type": "markdown",
@@ -140,7 +140,7 @@
 					}
 				},
 				"source": [
-					"##### Join datasets"
+					"##### Clean product dataset"
 				]
 			},
 			{
@@ -178,7 +178,17 @@
 					"\n",
 					"SELECT * FROM product_minimal;"
 				],
-				"execution_count": 41
+				"execution_count": 6
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					""
+				],
+				"execution_count": 4
 			},
 			{
 				"cell_type": "code",
@@ -191,53 +201,19 @@
 				"source": [
 					"%%sql\n",
 					"\n",
-					"-- Aggregate granular 5th-level ATCs up to 4th level (A10AB, A10BK, etc.)\n",
-					"WITH product_granular_agg AS (\n",
-					"    SELECT \n",
-					"        SUBSTRING(atc, 1, 5) AS atc4,  -- roll up to 4th-level ATC\n",
-					"        year,\n",
-					"        SUM(a3_units_sold_thousand) AS total_units_granular\n",
-					"    FROM raw_data_product\n",
-					"    WHERE sector = 300\n",
-					"    GROUP BY SUBSTRING(atc, 1, 5), year\n",
-					")\n",
-					"\n",
-					"SELECT \n",
-					"    a.atc AS atc4,\n",
-					"    a.year,\n",
-					"    a.thousand_units_sold AS total_units_reported,\n",
-					"    g.total_units_granular,\n",
-					"    (g.total_units_granular - a.thousand_units_sold) AS difference,\n",
-					"    ROUND(\n",
-					"        100.0 * g.total_units_granular / NULLIF(a.thousand_units_sold,0),\n",
-					"        2\n",
-					"    ) AS pct_coverage\n",
-					"FROM raw_data_atc a\n",
-					"LEFT JOIN product_granular_agg g\n",
-					"       ON a.atc = g.atc4 AND a.year = g.year\n",
-					"WHERE a.sector = 300\n",
-					"ORDER BY a.year, a.atc;\n",
-					""
+					"SELECT * FROM raw_data_atc;"
 				],
-				"execution_count": 47
+				"execution_count": 12
 			},
 			{
 				"cell_type": "code",
 				"metadata": {
-					"microsoft": {
-						"language": "sparksql"
-					},
 					"collapsed": false
 				},
 				"source": [
-					"%%sql\n",
-					"SELECT DISTINCT atc\n",
-					"FROM raw_data_atc\n",
-					"WHERE sector = 300\n",
-					"ORDER BY atc\n",
 					""
 				],
-				"execution_count": 48
+				"execution_count": 16
 			}
 		]
 	}
