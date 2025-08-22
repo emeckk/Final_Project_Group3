@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "fc08815f-c22e-4009-899a-c730261cce86"
+				"spark.autotune.trackingId": "03d887c2-d4d8-4a1b-a6f1-faef1e38bac6"
 			}
 		},
 		"metadata": {
@@ -332,6 +332,62 @@
 					"ORDER BY r.year, r.atc4;"
 				],
 				"execution_count": 24
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"##### Check for duplicate atc codes"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"\n",
+					"SELECT \n",
+					"    atc_level_5,\n",
+					"    year,\n",
+					"    COUNT(*) as row_count\n",
+					"FROM atc_product_full\n",
+					"GROUP BY atc_level_5, year\n",
+					"ORDER BY row_count DESC;"
+				],
+				"execution_count": 53
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"##### Sink to ADLS"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"df = spark.table(\"atc_product_full\")\n",
+					"\n",
+					"df.write.mode(\"overwrite\").parquet(\"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/denmark_medicine.parquet\")"
+				],
+				"execution_count": 54
 			}
 		]
 	}
