@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "a787f8f5-8501-4b9a-a406-23854ed61038"
+				"spark.autotune.trackingId": "3ce8f990-37b3-4437-be89-38ba006fd7c1"
 			}
 		},
 		"metadata": {
@@ -65,7 +65,7 @@
 					"# keep only the columns we care about\n",
 					"df_long = df[['Valuetime', 'Valuegender', 'Valuedrug','SumSum_DDD', 'SumAntall_unike_pasienter']]\n",
 					"\n",
-					"# sort based on time, gender, drug\n",
+					"# sort based on time, gender, atc-code\n",
 					"df_long = df_long.sort_values(by=['Valuetime', 'Valuedrug']).reset_index(drop=True)\n",
 					"\n",
 					"#Change column names to our standardized names\n",
