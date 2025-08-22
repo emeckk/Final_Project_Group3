@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "a93a68bf-d1ce-4b06-b4b7-97bdfa422e0c"
+				"spark.autotune.trackingId": "28ac4987-5b11-477f-93ca-381da64aa55b"
 			}
 		},
 		"metadata": {
@@ -228,12 +228,12 @@
 				"cell_type": "code",
 				"source": [
 					"# Spark-DF\n",
-					"spark_df = spark.createDataFrame(df_agg)   # använd df_agg eftersom det är den rensade\n",
+					"spark_df = spark.createDataFrame(df_agg)   \n",
 					"\n",
 					"# Path till standardized-mapp\n",
 					"output_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/sweden_medicine.parquet\"\n",
 					"\n",
-					"# Spara (overwrite = ersätter gammal version)\n",
+					"# Spara \n",
 					"spark_df.write.mode(\"overwrite\").parquet(output_path)\n",
 					"\n",
 					"print(f\" Standardized-data sparad till {output_path}\")\n",
