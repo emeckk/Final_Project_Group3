@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "3c02ccec-628a-4a28-a633-2f54c44fd815"
+				"spark.autotune.trackingId": "7aad8238-5445-48e9-b90e-fdb2dd717f54"
 			}
 		},
 		"metadata": {
@@ -128,7 +128,7 @@
 					"df_atc_renamed.createOrReplaceTempView(\"raw_data_atc\")\n",
 					"df_product_renamed.createOrReplaceTempView(\"raw_data_product\")"
 				],
-				"execution_count": 20
+				"execution_count": 33
 			},
 			{
 				"cell_type": "markdown",
@@ -181,7 +181,7 @@
 					"\n",
 					"SELECT * FROM product_minimal LIMIT 5;"
 				],
-				"execution_count": 21
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -235,7 +235,7 @@
 					"\n",
 					"SELECT * FROM atc_minimal LIMIT 5;"
 				],
-				"execution_count": 22
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -275,7 +275,7 @@
 					"\n",
 					"SELECT * FROM atc_product_full LIMIT 5;"
 				],
-				"execution_count": 23
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -331,7 +331,7 @@
 					"WHERE r.atc4 LIKE \"A10%\"\n",
 					"ORDER BY r.year, r.atc4;"
 				],
-				"execution_count": 30
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -365,7 +365,7 @@
 					"GROUP BY atc_level_5, year\n",
 					"ORDER BY row_count DESC;"
 				],
-				"execution_count": 31
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -387,8 +387,7 @@
 					"\n",
 					"df.write.mode(\"overwrite\").parquet(\"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/denmark_medicine.parquet\")"
 				],
-				"execution_count": 26
-
+				"execution_count": null
 			}
 		]
 	}

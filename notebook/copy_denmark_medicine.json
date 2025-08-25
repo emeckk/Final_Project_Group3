@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "54f1bf8e-38a2-4828-8b11-a174e69a05aa"
+				"spark.autotune.trackingId": "857538e0-0891-4e93-abbb-f843675b14ce"
 			}
 		},
 		"metadata": {
@@ -59,7 +59,8 @@
 					"BASE_URL = \"https://www.medstat.dk\"\n",
 					"PAGE_URL = \"https://www.medstat.dk/da/download/\"\n",
 					"ADLS_STAGING = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/staging/\"\n",
-					"ADLS_DIR = ADLS_STAGING + \"denmark_medicine/\"\n",
+					"ADLS_ATC_DIR = ADLS_STAGING + \"denmark_medicine_atc/\"\n",
+					"ADLS_PRODUCT_DIR = ADLS_STAGING + \"denmark_medicine_product/\"\n",
 					"\n",
 					"# Fetch the page\n",
 					"response = requests.get(PAGE_URL)\n",
@@ -71,7 +72,7 @@
 					"    href = link[\"href\"]\n",
 					"    text = link.get_text(strip=True)\n",
 					"    \n",
-					"    if href.startswith(\"/da/download/file/\") and \"atc_code_data\" in text:\n",
+					"    if href.startswith(\"/da/download/file/\") and \"atc_code\" in text:\n",
 					"        file_url = urljoin(BASE_URL, href)\n",
 					"        filename = text  # e.g. \"1996_atc_code_data.txt\"\n",
 					"\n",
@@ -86,13 +87,15 @@
 					"        # Special case for \"atc_code_text.txt\"\n",
 					"        if filename == \"atc_code_text.txt\":\n",
 					"            output_path = ADLS_STAGING + filename\n",
+					"        elif \"product\" in filename:\n",
+					"            output_path = ADLS_PRODUCT_DIR + filename\n",
 					"        else:\n",
-					"            output_path = ADLS_DIR + filename\n",
+					"            output_path = ADLS_ATC_DIR + filename\n",
 					"\n",
 					"        (df.write.mode(\"overwrite\")\n",
 					"           .text(output_path))"
 				],
-				"execution_count": 4
+				"execution_count": 1
 			}
 		]
 	}
