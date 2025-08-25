@@ -1,17 +1,18 @@
 {
-	"name": "HTTP_CauseOfDeath_Binary",
+	"name": "HTTP_DiabetesPrevalence_JSON",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "HTTP_PxWeb",
+			"referenceName": "WHO API Test",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
-		"type": "Binary",
+		"type": "Json",
 		"typeProperties": {
 			"location": {
 				"type": "HttpServerLocation",
-				"relativeUrl": "611abf0e-cf17-48fb-b06b-0624a702d3e8"
+				"relativeUrl": "NCD_DIABETES_PREVALENCE_AGESTD"
 			}
-		}
+		},
+		"schema": {}
 	}
 }

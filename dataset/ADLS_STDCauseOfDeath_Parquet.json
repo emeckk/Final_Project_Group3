@@ -1,19 +1,20 @@
 {
-	"name": "ADLS_WHO_JSON",
+	"name": "ADLS_STDCauseOfDeath_Parquet",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "group3fpadls",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
-		"type": "Json",
+		"type": "Parquet",
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"folderPath": "staging",
+				"folderPath": "standardized/cause_of_death.parquet/",
 				"container": "group3fpfilesystem"
-			}
+			},
+			"compressionCodec": "snappy"
 		},
-		"schema": {}
+		"schema": []
 	}
 }

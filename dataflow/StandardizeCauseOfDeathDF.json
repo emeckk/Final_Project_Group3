@@ -1,0 +1,80 @@
+{
+	"name": "StandardizeCauseOfDeathDF",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ADLS_CauseOfDeath_CSV",
+						"type": "DatasetReference"
+					},
+					"name": "CauseOfDeath"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ADLS_STDCauseOfDeath_Parquet",
+						"type": "DatasetReference"
+					},
+					"name": "SinkToStandardized"
+				}
+			],
+			"transformations": [
+				{
+					"name": "StandardizeValues"
+				},
+				{
+					"name": "FilterDiabetesRelated"
+				},
+				{
+					"name": "RenameColumns"
+				},
+				{
+					"name": "SortByCountryAndYear"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          {Diagnosis group} as string,",
+				"          Country as string,",
+				"          Year as integer,",
+				"          {All ages Men} as integer,",
+				"          {All ages Women} as integer,",
+				"          {All ages Men and Women} as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> CauseOfDeath",
+				"FilterDiabetesRelated derive(country = iif(country == 'Denmark', 'DNK', iif(country == 'Norway', 'NOR', iif(country == 'Sweden', 'SWE','NA'))),",
+				"          diagnosis_group = iif(like(diagnosis_group, '%Diabetes%'), 'Diabetes Mellitus', \r",
+				"iif(like(diagnosis_group, '%cardiovascular%'), 'Cardiovascular Disease',\r",
+				"iif(like(diagnosis_group, '%kidney and ureter%'), 'Kidney and Ureter Disease',\r",
+				"iif(like(diagnosis_group, '%myocardial%'), 'Heart Attack',\r",
+				"iif(like(diagnosis_group, '%ll causes%'), 'Total Deaths', diagnosis_group)))))) ~> StandardizeValues",
+				"RenameColumns filter(like(diagnosis_group, '%cardiovascular%') ||",
+				"like(diagnosis_group, '%Diabetes%') ||",
+				"like(diagnosis_group, '%kidney and ureter%') ||",
+				"like(diagnosis_group, '%myocardial%') ||",
+				"like(diagnosis_group, 'All causes%')) ~> FilterDiabetesRelated",
+				"CauseOfDeath select(mapColumn(",
+				"          diagnosis_group = {Diagnosis group},",
+				"          country = Country,",
+				"          year = Year,",
+				"          deaths = {All ages Men and Women}",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> RenameColumns",
+				"StandardizeValues sort(asc(country, true),",
+				"     asc(year, true)) ~> SortByCountryAndYear",
+				"SortByCountryAndYear sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     truncate: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SinkToStandardized"
+			]
+		}
+	}
+}
