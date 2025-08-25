@@ -5,8 +5,6 @@
 			{
 				"name": "Copy Diabetes Prevalence",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -54,8 +52,6 @@
 			{
 				"name": "Standardize Prevalence Data",
 				"type": "ExecuteDataFlow",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "Copy Diabetes Prevalence",
@@ -87,6 +83,8 @@
 			{
 				"name": "Standardize Cause of Death Data",
 				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",

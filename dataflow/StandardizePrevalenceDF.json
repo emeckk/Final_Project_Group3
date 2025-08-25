@@ -38,7 +38,10 @@
 					"name": "SortValues"
 				},
 				{
-					"name": "DropSexColumnTemp"
+					"name": "DropAgeColumn"
+				},
+				{
+					"name": "aggregate1"
 				}
 			],
 			"scriptLines": [
@@ -59,7 +62,6 @@
 				"FilterScandinavia select(mapColumn(",
 				"          year = value.TimeDim,",
 				"          country = value.SpatialDim,",
-				"          sex = value.Dim1,",
 				"          age = value.Dim2,",
 				"          {diabetes%} = value.NumericValue,",
 				"          lower_confidence = value.Low,",
@@ -67,27 +69,27 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> SelectRelevantColumns",
-				"FlattenValue filter((value.SpatialDim == 'DNK' && value.Dim1 != 'SEX_BTSX') ||",
-				"(value.SpatialDim == 'SWE' && value.Dim1 != 'SEX_BTSX') ||",
-				"(value.SpatialDim == 'NOR' && value.Dim1 != 'SEX_BTSX')) ~> FilterScandinavia",
-				"SelectRelevantColumns derive(sex = iif(sex == 'SEX_MLE', 'M',\r",
-				"  iif(sex == 'SEX_FMLE', 'F', sex)),",
-				"          age = iif(age == 'AGEGROUP_YEARS18-PLUS', '18Above', \r",
+				"FlattenValue filter((value.SpatialDim == 'DNK' && value.Dim1 == 'SEX_BTSX') && value.Dim2 == 'AGEGROUP_YEARS18-PLUS' ||",
+				"(value.SpatialDim == 'SWE' && value.Dim1 == 'SEX_BTSX') && value.Dim2 == 'AGEGROUP_YEARS18-PLUS' ||",
+				"(value.SpatialDim == 'NOR' && value.Dim1 == 'SEX_BTSX') && value.Dim2 == 'AGEGROUP_YEARS18-PLUS') ~> FilterScandinavia",
+				"SelectRelevantColumns derive(age = iif(age == 'AGEGROUP_YEARS18-PLUS', '18Above', \r",
 				"    iif(age == 'AGEGROUP_YEARS30-PLUS', '30Above', age))) ~> RemapGenderAndAge",
 				"RemapGenderAndAge sort(asc(year, true),",
 				"     asc(country, true),",
-				"     asc(sex, true)) ~> SortValues",
+				"     asc(age, true)) ~> SortValues",
 				"SortValues select(mapColumn(",
 				"          year,",
 				"          country,",
-				"          age,",
 				"          {diabetes%},",
 				"          lower_confidence,",
 				"          upper_confidence",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> DropSexColumnTemp",
-				"DropSexColumnTemp sink(allowSchemaDrift: true,",
+				"     skipDuplicateMapOutputs: true) ~> DropAgeColumn",
+				"DropAgeColumn aggregate(groupBy(country,",
+				"          year),",
+				"     {diabetes%} = sum({diabetes%})) ~> aggregate1",
+				"aggregate1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
 				"     truncate: true,",
