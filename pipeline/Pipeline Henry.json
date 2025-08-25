@@ -62,7 +62,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"notebook": {
-						"referenceName": "copy_denmark_medicine",
+						"referenceName": "copy_denmark_medicine_data",
 						"type": "NotebookReference"
 					},
 					"snapshot": true,

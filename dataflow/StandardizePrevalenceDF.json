@@ -41,7 +41,7 @@
 					"name": "DropAgeColumn"
 				},
 				{
-					"name": "aggregate1"
+					"name": "SumPrevalencePerCountry"
 				}
 			],
 			"scriptLines": [
@@ -88,8 +88,8 @@
 				"     skipDuplicateMapOutputs: true) ~> DropAgeColumn",
 				"DropAgeColumn aggregate(groupBy(country,",
 				"          year),",
-				"     {diabetes%} = sum({diabetes%})) ~> aggregate1",
-				"aggregate1 sink(allowSchemaDrift: true,",
+				"     {diabetes%} = sum({diabetes%})) ~> SumPrevalencePerCountry",
+				"SumPrevalencePerCountry sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
 				"     truncate: true,",

@@ -1,5 +1,5 @@
 {
-	"name": "sweden_medicalNB",
+	"name": "copy_sweden_medicine_data",
 	"properties": {
 		"nbformat": 4,
 		"nbformat_minor": 2,
@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "198e1b48-59ad-4e52-8430-0407511d62b7"
+				"spark.autotune.trackingId": "cc93bf3c-557e-48be-8e1e-6fb45e8d2fc0"
 			}
 		},
 		"metadata": {
