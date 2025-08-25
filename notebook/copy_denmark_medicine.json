@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "857538e0-0891-4e93-abbb-f843675b14ce"
+				"spark.autotune.trackingId": "17dfd714-39bb-41f4-90e7-b9d42eb22588"
 			}
 		},
 		"metadata": {
@@ -72,7 +72,7 @@
 					"    href = link[\"href\"]\n",
 					"    text = link.get_text(strip=True)\n",
 					"    \n",
-					"    if href.startswith(\"/da/download/file/\") and \"atc_code\" in text:\n",
+					"    if href.startswith(\"/da/download/file/\"):\n",
 					"        file_url = urljoin(BASE_URL, href)\n",
 					"        filename = text  # e.g. \"1996_atc_code_data.txt\"\n",
 					"\n",
@@ -84,18 +84,18 @@
 					"        lines = file_bytes.decode(\"utf-8\").splitlines()\n",
 					"        df = spark.createDataFrame([Row(value=line) for line in lines])\n",
 					"\n",
-					"        # Special case for \"atc_code_text.txt\"\n",
+					"        # Separate based on file name\n",
 					"        if filename == \"atc_code_text.txt\":\n",
 					"            output_path = ADLS_STAGING + filename\n",
-					"        elif \"product\" in filename:\n",
+					"        elif \"product_name_data\" in filename:\n",
 					"            output_path = ADLS_PRODUCT_DIR + filename\n",
-					"        else:\n",
+					"        elif \"atc_code_data\" in filename:\n",
 					"            output_path = ADLS_ATC_DIR + filename\n",
 					"\n",
 					"        (df.write.mode(\"overwrite\")\n",
 					"           .text(output_path))"
 				],
-				"execution_count": 1
+				"execution_count": 2
 			}
 		]
 	}
