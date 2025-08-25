@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "54f1bf8e-38a2-4828-8b11-a174e69a05aa"
+				"spark.autotune.trackingId": "849bae6e-92b1-432b-b097-fb0f02d3bd2d"
 			}
 		},
 		"metadata": {
@@ -42,7 +42,8 @@
 				"sparkVersion": "3.4",
 				"nodeCount": 10,
 				"cores": 4,
-				"memory": 28
+				"memory": 28,
+				"automaticScaleJobs": true
 			},
 			"sessionKeepAliveTimeout": 30
 		},
@@ -58,7 +59,8 @@
 					"BASE_URL = \"https://www.medstat.dk\"\n",
 					"PAGE_URL = \"https://www.medstat.dk/da/download/\"\n",
 					"ADLS_STAGING = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/staging/\"\n",
-					"ADLS_DIR = ADLS_STAGING + \"denmark_medicine/\"\n",
+					"ADLS_ATC_DIR = ADLS_STAGING + \"denmark_medicine_atc/\"\n",
+					"ADLS_PRODUCT_DIR = ADLS_STAGING + \"denmark_medicine_product/\"\n",
 					"\n",
 					"# Fetch the page\n",
 					"response = requests.get(PAGE_URL)\n",
@@ -70,7 +72,7 @@
 					"    href = link[\"href\"]\n",
 					"    text = link.get_text(strip=True)\n",
 					"    \n",
-					"    if href.startswith(\"/da/download/file/\") and \"atc_code_data\" in text:\n",
+					"    if href.startswith(\"/da/download/file/\"):\n",
 					"        file_url = urljoin(BASE_URL, href)\n",
 					"        filename = text  # e.g. \"1996_atc_code_data.txt\"\n",
 					"\n",
@@ -82,11 +84,13 @@
 					"        lines = file_bytes.decode(\"utf-8\").splitlines()\n",
 					"        df = spark.createDataFrame([Row(value=line) for line in lines])\n",
 					"\n",
-					"        # Special case for \"atc_code_text.txt\"\n",
+					"        # Separate based on file name\n",
 					"        if filename == \"atc_code_text.txt\":\n",
 					"            output_path = ADLS_STAGING + filename\n",
-					"        else:\n",
-					"            output_path = ADLS_DIR + filename\n",
+					"        elif \"product_name_data\" in filename:\n",
+					"            output_path = ADLS_PRODUCT_DIR + filename\n",
+					"        elif \"atc_code_data\" in filename:\n",
+					"            output_path = ADLS_ATC_DIR + filename\n",
 					"\n",
 					"        (df.write.mode(\"overwrite\")\n",
 					"           .text(output_path))"

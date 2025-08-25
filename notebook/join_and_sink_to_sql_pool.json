@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "df254101-dba6-4edd-b8df-2a0a477d6054"
+				"spark.autotune.trackingId": "08bf6d95-6d24-40ce-b55e-d5e63d62e1a4"
 			}
 		},
 		"metadata": {
@@ -83,7 +83,7 @@
 					"population_path = 'abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/population.parquet/'\n",
 					"diabetes_prevalence_path = 'abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/diabetes_prevalence.parquet'"
 				],
-				"execution_count": 38
+				"execution_count": 11
 			},
 			{
 				"cell_type": "code",
@@ -96,7 +96,7 @@
 					"df_population = spark.read.parquet(population_path)\n",
 					"df_diabetes_prevalence = spark.read.parquet(diabetes_prevalence_path)"
 				],
-				"execution_count": 39
+				"execution_count": 12
 			},
 			{
 				"cell_type": "code",
@@ -109,7 +109,7 @@
 					"df_population.createOrReplaceTempView('population')\n",
 					"df_diabetes_prevalence.createOrReplaceTempView('diabetes_prevalence')"
 				],
-				"execution_count": 40
+				"execution_count": 13
 			},
 			{
 				"cell_type": "code",
@@ -124,7 +124,7 @@
 					"\n",
 					"select * from sweden_medicine limit 40"
 				],
-				"execution_count": 43
+				"execution_count": 14
 			},
 			{
 				"cell_type": "code",
@@ -136,11 +136,37 @@
 				"source": [
 					"%%sql\n",
 					"\n",
-					"CREATE OR REPLACE dim_medication AS\n",
+					"CREATE TABLE dim_medicine AS\n",
 					"SELECT \n",
+					"    'Sweden' AS country,\n",
+					"    year,\n",
+					"    atc_level_5,\n",
+					"    dispensed_units,\n",
+					"    users\n",
+					"FROM sweden_medicine\n",
+					"\n",
+					"UNION ALL\n",
+					"\n",
+					"SELECT \n",
+					"    'Norway' AS country,\n",
+					"    year,\n",
+					"    atc_level_5,\n",
+					"    dispensed_units,\n",
+					"    users\n",
+					"FROM norway_medicine\n",
+					"\n",
+					"UNION ALL\n",
+					"\n",
+					"SELECT \n",
+					"    'Denmark' AS country,\n",
+					"    year,\n",
+					"    atc_level_5,\n",
+					"    dispensed_units,\n",
+					"    users\n",
+					"FROM denmark_medicine;\n",
 					"    "
 				],
-				"execution_count": 42
+				"execution_count": 20
 			}
 		]
 	}
