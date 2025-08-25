@@ -1,0 +1,309 @@
+{
+	"name": "standardize_sweden_medicine_data",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "group3fpspark",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 1,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "true",
+				"spark.dynamicAllocation.minExecutors": "1",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "81099ac4-6cc6-4ea2-a6a1-54c77f81db09"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/23b183d5-a30f-46b8-b418-ad060fb67787/resourceGroups/group3fp/providers/Microsoft.Synapse/workspaces/group3fpsynapse/bigDataPools/group3fpspark",
+				"name": "group3fpspark",
+				"type": "Spark",
+				"endpoint": "https://group3fpsynapse.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/group3fpspark",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "3.4",
+				"nodeCount": 10,
+				"cores": 4,
+				"memory": 28,
+				"automaticScaleJobs": true
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"source": [
+					"import pandas as pd\n",
+					"df_raw = spark.read.parquet(\n",
+					"    \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/staging/sweden_medical.parquet\",\n",
+					"    header=True, inferSchema=True\n",
+					")\n",
+					"# convert to pandas\n",
+					"df = df_raw.toPandas()\n",
+					"\n",
+					"# keep only the columns we care about\n",
+					"df_long = df[['ar', 'kon_label', 'atc','antal_expedieringar', 'antal_patienter']]\n",
+					"\n",
+					"# sort based on time, gender, drug\n",
+					"df_long = df_long.sort_values(by=['ar', 'atc']).reset_index(drop=True)\n",
+					"\n",
+					"#Change column names to our standardized names\n",
+					"df_long = df_long.rename(columns={\n",
+					"    'ar': 'year', \n",
+					"    'kon_label': 'sex', \n",
+					"    'atc': 'atc_level_5', \n",
+					"    'antal_expedieringar': 'expedited_units',  \n",
+					"    'antal_patienter': 'users'\n",
+					"})\n",
+					"\n",
+					"\n",
+					"#Change Male and Female to M and F\n",
+					"df_long['sex'] = df_long['sex'].replace({\n",
+					"    'K': 'F'\n",
+					"})\n",
+					"df_long.head(30)"
+				],
+				"execution_count": 5
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"# Summera per år, kön, ATC\n",
+					"df_grouped = (\n",
+					"    df_long\n",
+					"    .groupby([\"year\", \"sex\", \"atc_level_5\"], as_index=False)\n",
+					"    [[\"expedited_units\", \"users\"]]\n",
+					"    .sum()\n",
+					"    .sort_values([\"year\", \"atc_level_5\"])\n",
+					"    .reset_index(drop=True)\n",
+					")\n",
+					"\n",
+					"# Visa de första 30 raderna\n",
+					"df_grouped.head(30)\n",
+					""
+				],
+				"execution_count": 8
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"# Summera per år, kön, ATC\n",
+					"df_grouped = (\n",
+					"    df_long\n",
+					"    .groupby([\"year\", \"sex\", \"atc_level_5\"], as_index=False)\n",
+					"    [[\"expedited_units\", \"users\"]]\n",
+					"    .sum()\n",
+					"    .assign(sex_order=lambda d: d[\"sex\"].map({\"M\": 0, \"F\": 1}))\n",
+					"    .sort_values([\"year\", \"atc_level_5\", \"sex_order\"])\n",
+					"    .drop(columns=\"sex_order\")\n",
+					"    .reset_index(drop=True)\n",
+					")\n",
+					"\n",
+					"# Visa de första 30 raderna\n",
+					"df_grouped.head(30)\n",
+					""
+				],
+				"execution_count": 9
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"df_long.query(\"atc_level_5 == 'A10AB03'\").head(20)\n",
+					""
+				],
+				"execution_count": 89
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"print(\"Kolumner i df_long:\", df_long.columns.tolist())\n",
+					""
+				],
+				"execution_count": 90
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"print(\"Antal rader i df_long:\", len(df_long))\n",
+					"print(\"Kolumner:\", df_long.columns.tolist())\n",
+					"df_long.head(10)   # visar de 10 första raderna\n",
+					""
+				],
+				"execution_count": 91
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"# Aggregera till en rad per (year, sex, atc_level_5)\n",
+					"df_agg = (\n",
+					"    df_long\n",
+					"      .groupby([\"year\",\"sex\",\"atc_level_5\"], as_index=False)[[\"expedited_units\",\"users\"]]\n",
+					"      .sum()\n",
+					"      .assign(sex_order=lambda d: d[\"sex\"].map({\"M\":0,\"F\":1}))\n",
+					"      .sort_values([\"year\",\"atc_level_5\",\"sex_order\"])\n",
+					"      .drop(columns=\"sex_order\")\n",
+					"      .reset_index(drop=True)\n",
+					")\n",
+					"\n",
+					"print(\"Rader före (df_long):\", len(df_long))\n",
+					"print(\"Rader efter agg (df_agg):\", len(df_agg))\n",
+					"print(\"Unika år:\", df_agg[\"year\"].nunique(),\n",
+					"      \"| Unika ATC:\", df_agg[\"atc_level_5\"].nunique(),\n",
+					"      \"| Kön:\", df_agg[\"sex\"].nunique())\n",
+					"\n",
+					"# Säkerställ att inga logiska dubletter finns kvar\n",
+					"print(\"Logiska dubletter kvar:\", df_agg.duplicated(subset=[\"year\",\"sex\",\"atc_level_5\"]).sum())\n",
+					"\n",
+					"# Titta snabbt\n",
+					"df_agg.head(1300)\n",
+					""
+				],
+				"execution_count": 11
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"dups = df_agg.duplicated(subset=[\"year\", \"sex\", \"atc_level_5\"]).sum()\n",
+					"print(\"Antal dubletter (ska vara 0):\", dups)\n",
+					""
+				],
+				"execution_count": 12
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"import numpy as np\n",
+					"expected_years = set(np.arange(2006, 2025))\n",
+					"missing_years = expected_years - set(df_agg[\"year\"])\n",
+					"print(\"Saknade år:\", missing_years if missing_years else \"Inga\")\n",
+					""
+				],
+				"execution_count": 13
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"sex_per_year = df_agg.groupby(\"year\")[\"sex\"].unique()\n",
+					"print(sex_per_year)\n",
+					""
+				],
+				"execution_count": 14
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"atc_sex = df_agg.groupby(\"atc_level_5\")[\"sex\"].nunique()\n",
+					"print(\"ATC-koder som bara har ett kön:\", atc_sex[atc_sex == 1].index.tolist())\n",
+					""
+				],
+				"execution_count": 15
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"df_check_atc = df_agg[df_agg[\"atc_level_5\"].isin([\"A10BB03\",\"A10BD16\"])]\n",
+					"print(df_check_atc.sort_values([\"atc_level_5\",\"year\",\"sex\"]))\n",
+					""
+				],
+				"execution_count": 16
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"# Spark-DF\n",
+					"spark_df = spark.createDataFrame(df_agg)   \n",
+					"\n",
+					"# Path till standardized-mapp\n",
+					"output_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/sweden_medicine.parquet\"\n",
+					"\n",
+					"# Spara \n",
+					"spark_df.write.mode(\"overwrite\").parquet(output_path)\n",
+					"\n",
+					"print(f\" Standardized-data sparad till {output_path}\")\n",
+					""
+				],
+				"execution_count": 17
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"import pandas as pd\n",
+					"\n",
+					"# Läs standardized parquet (från staging eller befintlig standardize)\n",
+					"df_std = spark.read.parquet(\n",
+					"    \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/sweden_medicine.parquet\"\n",
+					").toPandas()\n",
+					"\n",
+					"# Summera över båda könen\n",
+					"df_both = (\n",
+					"    df_std\n",
+					"    .groupby([\"year\", \"atc_level_5\"], as_index=False)\n",
+					"    [[\"expedited_units\", \"users\"]]\n",
+					"    .sum()\n",
+					")\n",
+					"\n",
+					"# Lägg till kolumn sex = \"Båda könen\"\n",
+					"df_both[\"sex\"] = \"Båda könen\"\n",
+					"\n",
+					"# Anpassa kolumnordningen\n",
+					"df_both = df_both[[\"year\", \"sex\", \"atc_level_5\", \"expedited_units\", \"users\"]]\n",
+					"\n",
+					"# Kontroll\n",
+					"print(\"Antal rader efter summering:\", len(df_both))\n",
+					"print(\"Könskategorier:\", df_both[\"sex\"].unique())\n",
+					"\n",
+					"# Förhandsvisa\n",
+					"df_both.head(20)\n",
+					""
+				],
+				"execution_count": 20
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"import pandas as pd\n",
+					"\n",
+					"# Läs standardized parquet\n",
+					"df_std = spark.read.parquet(\n",
+					"    \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/sweden_medicine.parquet\"\n",
+					").toPandas()\n",
+					"\n",
+					"# Summera över båda könen (slå ihop M + F)\n",
+					"df_no_sex = (\n",
+					"    df_std\n",
+					"    .groupby([\"year\", \"atc_level_5\"], as_index=False)\n",
+					"    [[\"expedited_units\", \"users\"]]\n",
+					"    .sum()\n",
+					")\n",
+					"\n",
+					"# Kontroll\n",
+					"print(\"Antal rader efter summering:\", len(df_no_sex))\n",
+					"print(\"Kolumner:\", df_no_sex.columns.tolist())\n",
+					"print(df_no_sex.count())\n",
+					"# Förhandsvisa\n",
+					"df_no_sex.head(670)\n",
+					""
+				],
+				"execution_count": 21
+			}
+		]
+	}
+}
