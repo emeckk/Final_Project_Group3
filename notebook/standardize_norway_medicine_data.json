@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "56ea72ea-38c3-47d0-af40-89f1787daca5"
+				"spark.autotune.trackingId": "fec7b93e-c3f2-45a8-9d75-f05f779bdb5e"
 			}
 		},
 		"metadata": {
@@ -72,7 +72,7 @@
 					"df_long = df_long.rename(columns={\n",
 					"    'Valuetime': 'year',  \n",
 					"    'Valuedrug':'atc_level_5', \n",
-					"    'SumSum_DDD': 'expedited_ddd', \n",
+					"    'SumSum_DDD': 'dispensed_ddd', \n",
 					"    'SumAntall_unike_pasienter': 'users'\n",
 					"})\n",
 					"\n",

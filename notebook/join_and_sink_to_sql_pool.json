@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "1f148224-caf2-4309-98b0-84e4a0005fca"
+				"spark.autotune.trackingId": "d8827a25-7e1d-4cc3-8c4b-386ca1351a3b"
 			}
 		},
 		"metadata": {
@@ -83,7 +83,7 @@
 					"population_path = 'abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/population.parquet/'\n",
 					"diabetes_prevalence_path = 'abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/diabetes_prevalence.parquet'"
 				],
-				"execution_count": 16
+				"execution_count": 20
 			},
 			{
 				"cell_type": "code",
@@ -96,7 +96,7 @@
 					"df_population = spark.read.parquet(population_path)\n",
 					"df_diabetes_prevalence = spark.read.parquet(diabetes_prevalence_path)"
 				],
-				"execution_count": 17
+				"execution_count": 21
 			},
 			{
 				"cell_type": "code",
@@ -109,7 +109,7 @@
 					"df_population.createOrReplaceTempView('population')\n",
 					"df_diabetes_prevalence.createOrReplaceTempView('diabetes_prevalence')"
 				],
-				"execution_count": 18
+				"execution_count": 22
 			},
 			{
 				"cell_type": "code",
@@ -124,7 +124,7 @@
 					"\n",
 					"select * from diabetes_prevalence"
 				],
-				"execution_count": 19
+				"execution_count": 23
 			},
 			{
 				"cell_type": "code",

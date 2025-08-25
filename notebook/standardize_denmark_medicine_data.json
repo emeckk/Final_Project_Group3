@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "3c02ccec-628a-4a28-a633-2f54c44fd815"
+				"spark.autotune.trackingId": "7a0487cf-b184-40ef-b629-cba3ad2f4c1e"
 			}
 		},
 		"metadata": {
@@ -128,7 +128,7 @@
 					"df_atc_renamed.createOrReplaceTempView(\"raw_data_atc\")\n",
 					"df_product_renamed.createOrReplaceTempView(\"raw_data_product\")"
 				],
-				"execution_count": 20
+				"execution_count": 1
 			},
 			{
 				"cell_type": "markdown",
@@ -161,7 +161,7 @@
 					"SELECT \n",
 					"    atc,\n",
 					"    year,\n",
-					"    round(sum(a3_units_sold_thousand) * 1000, 0) as expedited_units\n",
+					"    round(sum(a3_units_sold_thousand) * 1000, 0) as dispensed_units\n",
 					"FROM raw_data_product\n",
 					"WHERE sector = 300\n",
 					"  AND atc IN (\n",
@@ -181,7 +181,7 @@
 					"\n",
 					"SELECT * FROM product_minimal LIMIT 5;"
 				],
-				"execution_count": 21
+				"execution_count": 2
 			},
 			{
 				"cell_type": "markdown",
@@ -212,7 +212,7 @@
 					"    atc,\n",
 					"    year,\n",
 					"    sum(users) as users,\n",
-					"    sum(thousand_units_sold) * 1000 as expedited_ddd\n",
+					"    sum(thousand_units_sold) * 1000 as dispensed_ddd\n",
 					"FROM raw_data_atc \n",
 					"WHERE sector = 0\n",
 					"  AND region = 0\n",
@@ -235,7 +235,7 @@
 					"\n",
 					"SELECT * FROM atc_minimal LIMIT 5;"
 				],
-				"execution_count": 22
+				"execution_count": 3
 			},
 			{
 				"cell_type": "markdown",
@@ -266,8 +266,8 @@
 					"    a.atc as atc_level_5,\n",
 					"    a.year,\n",
 					"    a.users,\n",
-					"    a.expedited_ddd,\n",
-					"    p.expedited_units\n",
+					"    a.dispensed_ddd,\n",
+					"    p.dispensed_units\n",
 					"FROM atc_minimal a\n",
 					"LEFT JOIN product_minimal p\n",
 					"    ON a.atc = p.atc\n",
@@ -275,7 +275,7 @@
 					"\n",
 					"SELECT * FROM atc_product_full LIMIT 5;"
 				],
-				"execution_count": 23
+				"execution_count": 4
 			},
 			{
 				"cell_type": "markdown",
@@ -305,7 +305,7 @@
 					"SELECT\n",
 					"    SUBSTRING(atc, 1, 5) AS atc4,   -- roll up to level 4\n",
 					"    year,\n",
-					"    SUM(expedited_units) AS units_from_atc5\n",
+					"    SUM(dispensed_units) AS units_from_atc5\n",
 					"FROM product_minimal\n",
 					"GROUP BY SUBSTRING(atc, 1, 5), year;\n",
 					"\n",
@@ -331,7 +331,7 @@
 					"WHERE r.atc4 LIKE \"A10%\"\n",
 					"ORDER BY r.year, r.atc4;"
 				],
-				"execution_count": 30
+				"execution_count": 5
 			},
 			{
 				"cell_type": "markdown",
@@ -365,7 +365,7 @@
 					"GROUP BY atc_level_5, year\n",
 					"ORDER BY row_count DESC;"
 				],
-				"execution_count": 31
+				"execution_count": 6
 			},
 			{
 				"cell_type": "markdown",
@@ -387,8 +387,7 @@
 					"\n",
 					"df.write.mode(\"overwrite\").parquet(\"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/denmark_medicine.parquet\")"
 				],
-				"execution_count": 26
-
+				"execution_count": 7
 			}
 		]
 	}
