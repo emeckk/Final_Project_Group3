@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "a842033a-91ea-433a-987f-05e4950e2481"
+				"spark.autotune.trackingId": "474fb900-f924-4857-8a80-0cb0510a5269"
 			}
 		},
 		"metadata": {
@@ -81,7 +81,7 @@
 					"})\n",
 					"df_long.head(30)"
 				],
-				"execution_count": 5
+				"execution_count": 18
 			},
 			{
 				"cell_type": "code",
@@ -100,7 +100,7 @@
 					"df_grouped.head(30)\n",
 					""
 				],
-				"execution_count": 8
+				"execution_count": 19
 			},
 			{
 				"cell_type": "code",
@@ -121,7 +121,7 @@
 					"df_grouped.head(30)\n",
 					""
 				],
-				"execution_count": 9
+				"execution_count": 20
 			},
 			{
 				"cell_type": "code",
@@ -129,7 +129,7 @@
 					"df_long.query(\"atc_level_5 == 'A10AB03'\").head(20)\n",
 					""
 				],
-				"execution_count": 89
+				"execution_count": 21
 			},
 			{
 				"cell_type": "code",
@@ -137,7 +137,7 @@
 					"print(\"Kolumner i df_long:\", df_long.columns.tolist())\n",
 					""
 				],
-				"execution_count": 90
+				"execution_count": 22
 			},
 			{
 				"cell_type": "code",
@@ -147,7 +147,7 @@
 					"df_long.head(10)   # visar de 10 första raderna\n",
 					""
 				],
-				"execution_count": 91
+				"execution_count": 23
 			},
 			{
 				"cell_type": "code",
@@ -176,7 +176,7 @@
 					"df_agg.head(1300)\n",
 					""
 				],
-				"execution_count": 11
+				"execution_count": 24
 			},
 			{
 				"cell_type": "code",
@@ -185,7 +185,7 @@
 					"print(\"Antal dubletter (ska vara 0):\", dups)\n",
 					""
 				],
-				"execution_count": 12
+				"execution_count": 25
 			},
 			{
 				"cell_type": "code",
@@ -196,7 +196,7 @@
 					"print(\"Saknade år:\", missing_years if missing_years else \"Inga\")\n",
 					""
 				],
-				"execution_count": 13
+				"execution_count": 26
 			},
 			{
 				"cell_type": "code",
@@ -205,7 +205,7 @@
 					"print(sex_per_year)\n",
 					""
 				],
-				"execution_count": 14
+				"execution_count": 27
 			},
 			{
 				"cell_type": "code",
@@ -214,7 +214,7 @@
 					"print(\"ATC-koder som bara har ett kön:\", atc_sex[atc_sex == 1].index.tolist())\n",
 					""
 				],
-				"execution_count": 15
+				"execution_count": 28
 			},
 			{
 				"cell_type": "code",
@@ -223,7 +223,7 @@
 					"print(df_check_atc.sort_values([\"atc_level_5\",\"year\",\"sex\"]))\n",
 					""
 				],
-				"execution_count": 16
+				"execution_count": 29
 			},
 			{
 				"cell_type": "code",
@@ -240,7 +240,7 @@
 					"print(f\" Standardized-data sparad till {output_path}\")\n",
 					""
 				],
-				"execution_count": 17
+				"execution_count": 30
 			},
 			{
 				"cell_type": "code",
@@ -274,7 +274,7 @@
 					"df_both.head(20)\n",
 					""
 				],
-				"execution_count": 20
+				"execution_count": 31
 			},
 			{
 				"cell_type": "code",
@@ -300,9 +300,13 @@
 					"print(df_no_sex.count())\n",
 					"# Förhandsvisa\n",
 					"df_no_sex.head(670)\n",
-					""
+					"\n",
+					"# Skriv över existerade fil\n",
+					"spark_df_no_sex = spark.createDataFrame(df_no_sex)\n",
+					"\n",
+					"spark_df_no_sex.write.mode('overwrite').parquet(output_path)"
 				],
-				"execution_count": 21
+				"execution_count": 32
 			}
 		]
 	}
