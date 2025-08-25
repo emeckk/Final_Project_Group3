@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "cc37beb2-52df-45c3-888e-7473de1e1773"
+				"spark.autotune.trackingId": "81099ac4-6cc6-4ea2-a6a1-54c77f81db09"
 			}
 		},
 		"metadata": {
@@ -68,11 +68,12 @@
 					"#Change column names to our standardized names\n",
 					"df_long = df_long.rename(columns={\n",
 					"    'ar': 'year', \n",
-					"'kon_label': 'sex', \n",
-					"'atc':'atc_level_5', \n",
-					"'antal_expedierinagr': 'expedited_ddd', \n",
-					"'antal_patienter': 'users'\n",
+					"    'kon_label': 'sex', \n",
+					"    'atc': 'atc_level_5', \n",
+					"    'antal_expedieringar': 'expedited_units',  \n",
+					"    'antal_patienter': 'users'\n",
 					"})\n",
+					"\n",
 					"\n",
 					"#Change Male and Female to M and F\n",
 					"df_long['sex'] = df_long['sex'].replace({\n",
@@ -80,7 +81,7 @@
 					"})\n",
 					"df_long.head(30)"
 				],
-				"execution_count": 86
+				"execution_count": 5
 			},
 			{
 				"cell_type": "code",
@@ -89,7 +90,7 @@
 					"df_grouped = (\n",
 					"    df_long\n",
 					"    .groupby([\"year\", \"sex\", \"atc_level_5\"], as_index=False)\n",
-					"    [[\"antal_expedieringar\", \"users\"]]\n",
+					"    [[\"expedited_units\", \"users\"]]\n",
 					"    .sum()\n",
 					"    .sort_values([\"year\", \"atc_level_5\"])\n",
 					"    .reset_index(drop=True)\n",
@@ -99,7 +100,7 @@
 					"df_grouped.head(30)\n",
 					""
 				],
-				"execution_count": 87
+				"execution_count": 8
 			},
 			{
 				"cell_type": "code",
@@ -108,7 +109,7 @@
 					"df_grouped = (\n",
 					"    df_long\n",
 					"    .groupby([\"year\", \"sex\", \"atc_level_5\"], as_index=False)\n",
-					"    [[\"antal_expedieringar\", \"users\"]]\n",
+					"    [[\"expedited_units\", \"users\"]]\n",
 					"    .sum()\n",
 					"    .assign(sex_order=lambda d: d[\"sex\"].map({\"M\": 0, \"F\": 1}))\n",
 					"    .sort_values([\"year\", \"atc_level_5\", \"sex_order\"])\n",
@@ -120,7 +121,7 @@
 					"df_grouped.head(30)\n",
 					""
 				],
-				"execution_count": 88
+				"execution_count": 9
 			},
 			{
 				"cell_type": "code",
@@ -154,7 +155,7 @@
 					"# Aggregera till en rad per (year, sex, atc_level_5)\n",
 					"df_agg = (\n",
 					"    df_long\n",
-					"      .groupby([\"year\",\"sex\",\"atc_level_5\"], as_index=False)[[\"antal_expedieringar\",\"users\"]]\n",
+					"      .groupby([\"year\",\"sex\",\"atc_level_5\"], as_index=False)[[\"expedited_units\",\"users\"]]\n",
 					"      .sum()\n",
 					"      .assign(sex_order=lambda d: d[\"sex\"].map({\"M\":0,\"F\":1}))\n",
 					"      .sort_values([\"year\",\"atc_level_5\",\"sex_order\"])\n",
@@ -175,7 +176,7 @@
 					"df_agg.head(1300)\n",
 					""
 				],
-				"execution_count": 93
+				"execution_count": 11
 			},
 			{
 				"cell_type": "code",
@@ -184,7 +185,7 @@
 					"print(\"Antal dubletter (ska vara 0):\", dups)\n",
 					""
 				],
-				"execution_count": 95
+				"execution_count": 12
 			},
 			{
 				"cell_type": "code",
@@ -195,7 +196,7 @@
 					"print(\"Saknade år:\", missing_years if missing_years else \"Inga\")\n",
 					""
 				],
-				"execution_count": 96
+				"execution_count": 13
 			},
 			{
 				"cell_type": "code",
@@ -204,7 +205,7 @@
 					"print(sex_per_year)\n",
 					""
 				],
-				"execution_count": 97
+				"execution_count": 14
 			},
 			{
 				"cell_type": "code",
@@ -213,7 +214,7 @@
 					"print(\"ATC-koder som bara har ett kön:\", atc_sex[atc_sex == 1].index.tolist())\n",
 					""
 				],
-				"execution_count": 98
+				"execution_count": 15
 			},
 			{
 				"cell_type": "code",
@@ -222,7 +223,7 @@
 					"print(df_check_atc.sort_values([\"atc_level_5\",\"year\",\"sex\"]))\n",
 					""
 				],
-				"execution_count": 99
+				"execution_count": 16
 			},
 			{
 				"cell_type": "code",
@@ -239,7 +240,7 @@
 					"print(f\" Standardized-data sparad till {output_path}\")\n",
 					""
 				],
-				"execution_count": 102
+				"execution_count": 17
 			},
 			{
 				"cell_type": "code",
@@ -255,7 +256,7 @@
 					"df_both = (\n",
 					"    df_std\n",
 					"    .groupby([\"year\", \"atc_level_5\"], as_index=False)\n",
-					"    [[\"antal_expedieringar\", \"users\"]]\n",
+					"    [[\"expedited_units\", \"users\"]]\n",
 					"    .sum()\n",
 					")\n",
 					"\n",
@@ -263,7 +264,7 @@
 					"df_both[\"sex\"] = \"Båda könen\"\n",
 					"\n",
 					"# Anpassa kolumnordningen\n",
-					"df_both = df_both[[\"year\", \"sex\", \"atc_level_5\", \"antal_expedieringar\", \"users\"]]\n",
+					"df_both = df_both[[\"year\", \"sex\", \"atc_level_5\", \"expedited_units\", \"users\"]]\n",
 					"\n",
 					"# Kontroll\n",
 					"print(\"Antal rader efter summering:\", len(df_both))\n",
@@ -273,7 +274,7 @@
 					"df_both.head(20)\n",
 					""
 				],
-				"execution_count": 110
+				"execution_count": 20
 			},
 			{
 				"cell_type": "code",
@@ -289,7 +290,7 @@
 					"df_no_sex = (\n",
 					"    df_std\n",
 					"    .groupby([\"year\", \"atc_level_5\"], as_index=False)\n",
-					"    [[\"antal_expedieringar\", \"users\"]]\n",
+					"    [[\"expedited_units\", \"users\"]]\n",
 					"    .sum()\n",
 					")\n",
 					"\n",
@@ -301,7 +302,7 @@
 					"df_no_sex.head(670)\n",
 					""
 				],
-				"execution_count": 113
+				"execution_count": 21
 			}
 		]
 	}
