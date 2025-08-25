@@ -361,7 +361,7 @@
 			},
 			{
 				"name": "Join and Sink to SQL Pool",
-				"type": "ExecuteDataFlow",
+				"type": "SynapseNotebook",
 				"dependsOn": [
 					{
 						"activity": "Clean Population Data",
@@ -371,6 +371,12 @@
 					},
 					{
 						"activity": "Standardize Prevalence Data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Standardize Norway Medicine Data",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -392,12 +398,6 @@
 						"dependencyConditions": [
 							"Succeeded"
 						]
-					},
-					{
-						"activity": "Standardize Norway Medicine Data",
-						"dependencyConditions": [
-							"Succeeded"
-						]
 					}
 				],
 				"policy": {
@@ -409,15 +409,11 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"dataflow": {
-						"referenceName": "JoinAndSink",
-						"type": "DataFlowReference"
+					"notebook": {
+						"referenceName": "join_and_sink_to_sql_pool",
+						"type": "NotebookReference"
 					},
-					"compute": {
-						"coreCount": 8,
-						"computeType": "General"
-					},
-					"traceLevel": "Fine"
+					"snapshot": true
 				}
 			}
 		],

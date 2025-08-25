@@ -1,0 +1,138 @@
+{
+	"name": "join_and_sink_to_sql_pool",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "group3fpspark",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 1,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "true",
+				"spark.dynamicAllocation.minExecutors": "1",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "1f148224-caf2-4309-98b0-84e4a0005fca"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/23b183d5-a30f-46b8-b418-ad060fb67787/resourceGroups/group3fp/providers/Microsoft.Synapse/workspaces/group3fpsynapse/bigDataPools/group3fpspark",
+				"name": "group3fpspark",
+				"type": "Spark",
+				"endpoint": "https://group3fpsynapse.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/group3fpspark",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "3.4",
+				"nodeCount": 10,
+				"cores": 4,
+				"memory": 28,
+				"automaticScaleJobs": true
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"##### Read data from staging layer"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"denmark_medicine_path = 'abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/denmark_medicine.parquet/'\n",
+					"norway_medicine_path = 'abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/norway_medicine.parquet/'\n",
+					"sweden_medicine_path = 'abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/sweden_medicine.parquet/'\n",
+					"\n",
+					"cause_of_death_path = 'abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/cause_of_death.parquet/'\n",
+					"population_path = 'abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/population.parquet/'\n",
+					"diabetes_prevalence_path = 'abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/diabetes_prevalence.parquet'"
+				],
+				"execution_count": 16
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"df_denmark_medicine = spark.read.parquet(denmark_medicine_path)\n",
+					"df_norway_medicine = spark.read.parquet(norway_medicine_path)\n",
+					"df_sweden_medicine = spark.read.parquet(sweden_medicine_path)\n",
+					"\n",
+					"df_cause_of_death = spark.read.parquet(cause_of_death_path)\n",
+					"df_population = spark.read.parquet(population_path)\n",
+					"df_diabetes_prevalence = spark.read.parquet(diabetes_prevalence_path)"
+				],
+				"execution_count": 17
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"df_denmark_medicine.createOrReplaceTempView('denmark_medicice')\n",
+					"df_norway_medicine.createOrReplaceTempView('denmark_medicice')\n",
+					"df_sweden_medicine.createOrReplaceTempView('sweden_medicine')\n",
+					"\n",
+					"df_cause_of_death.createOrReplaceTempView('cause_of_death')\n",
+					"df_population.createOrReplaceTempView('population')\n",
+					"df_diabetes_prevalence.createOrReplaceTempView('diabetes_prevalence')"
+				],
+				"execution_count": 18
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"\n",
+					"select * from diabetes_prevalence"
+				],
+				"execution_count": 19
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					""
+				],
+				"execution_count": null
+			}
+		]
+	}
+}
