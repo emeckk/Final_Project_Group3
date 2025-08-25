@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "d8827a25-7e1d-4cc3-8c4b-386ca1351a3b"
+				"spark.autotune.trackingId": "5825598e-bf86-440d-899f-2e58ecd0ff60"
 			}
 		},
 		"metadata": {
@@ -83,7 +83,7 @@
 					"population_path = 'abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/population.parquet/'\n",
 					"diabetes_prevalence_path = 'abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/diabetes_prevalence.parquet'"
 				],
-				"execution_count": 20
+				"execution_count": 38
 			},
 			{
 				"cell_type": "code",
@@ -96,20 +96,20 @@
 					"df_population = spark.read.parquet(population_path)\n",
 					"df_diabetes_prevalence = spark.read.parquet(diabetes_prevalence_path)"
 				],
-				"execution_count": 21
+				"execution_count": 39
 			},
 			{
 				"cell_type": "code",
 				"source": [
-					"df_denmark_medicine.createOrReplaceTempView('denmark_medicice')\n",
-					"df_norway_medicine.createOrReplaceTempView('denmark_medicice')\n",
+					"df_denmark_medicine.createOrReplaceTempView('denmark_medicine')\n",
+					"df_norway_medicine.createOrReplaceTempView('norway_medicine')\n",
 					"df_sweden_medicine.createOrReplaceTempView('sweden_medicine')\n",
 					"\n",
 					"df_cause_of_death.createOrReplaceTempView('cause_of_death')\n",
 					"df_population.createOrReplaceTempView('population')\n",
 					"df_diabetes_prevalence.createOrReplaceTempView('diabetes_prevalence')"
 				],
-				"execution_count": 22
+				"execution_count": 40
 			},
 			{
 				"cell_type": "code",
@@ -122,16 +122,25 @@
 				"source": [
 					"%%sql\n",
 					"\n",
-					"select * from diabetes_prevalence"
+					"select * from sweden_medicine limit 40"
 				],
-				"execution_count": 23
+				"execution_count": 43
 			},
 			{
 				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "sparksql"
+					}
+				},
 				"source": [
-					""
+					"%%sql\n",
+					"\n",
+					"CREATE OR REPLACE dim_medication AS\n",
+					"SELECT \n",
+					"    "
 				],
-				"execution_count": null
+				"execution_count": 42
 			}
 		]
 	}
