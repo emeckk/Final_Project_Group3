@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "505949aa-e06b-4ab1-9070-a6be79bc762c"
+				"spark.autotune.trackingId": "1b364391-8649-49fc-b560-4c85b98bf50d"
 			}
 		},
 		"metadata": {
@@ -58,18 +58,18 @@
 				"source": [
 					"import pandas as pd\n",
 					"\n",
-					"# read the parquet file from our staging folder\n",
+					"#read the parquet file from our staging folder\n",
 					"df_raw = spark.read.parquet(\n",
 					"    \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/staging/population.parquet/\"\n",
 					")\n",
 					"\n",
-					"# convert to a pandas df\n",
+					"#convert to a pandas df\n",
 					"df = df_raw.toPandas()\n",
 					"\n",
-					"# Only keep rows with the total population\n",
+					"#Only keep rows with the total population\n",
 					"df_total = df[df['SEX'] == '_T'][['TIME_PERIOD', 'REF_AREA', 'POPULATION']]\n",
 					"\n",
-					"# rename columns to our standardized names\n",
+					"#rename columns to our standardized names\n",
 					"df_total = df_total.rename(columns={\n",
 					"    'TIME_PERIOD': 'year', \n",
 					"    'REF_AREA': 'country',  \n",
