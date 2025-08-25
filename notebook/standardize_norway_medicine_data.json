@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "c16efb39-b234-4f0f-b90b-1a2ef0e55faf"
+				"spark.autotune.trackingId": "041b2eaa-1657-45fb-9489-56703747300f"
 			}
 		},
 		"metadata": {
@@ -75,10 +75,12 @@
 					"    'SumSum_DDD': 'expedited_ddd', \n",
 					"    'SumAntall_unike_pasienter': 'users'\n",
 					"})\n",
+					"\n",
+					"#for testing purposes\n",
 					"#print(df_long.count())\n",
 					"#df_long.head(900)"
 				],
-				"execution_count": 24
+				"execution_count": 2
 			},
 			{
 				"cell_type": "code",

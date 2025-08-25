@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "33be174d-3e58-4f93-b3d7-668601e8e4af"
+				"spark.autotune.trackingId": "505949aa-e06b-4ab1-9070-a6be79bc762c"
 			}
 		},
 		"metadata": {
@@ -80,10 +80,10 @@
 					"#sort on year and country\n",
 					"df_total = df_total.sort_values(by=['year', 'country']).reset_index(drop=True)\n",
 					"\n",
-					"#testing purposes\n",
+					"#for testing purposes\n",
 					"#df_total.head(100)"
 				],
-				"execution_count": 18
+				"execution_count": 2
 			},
 			{
 				"cell_type": "code",
