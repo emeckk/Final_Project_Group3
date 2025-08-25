@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "041b2eaa-1657-45fb-9489-56703747300f"
+				"spark.autotune.trackingId": "56ea72ea-38c3-47d0-af40-89f1787daca5"
 			}
 		},
 		"metadata": {
@@ -53,19 +53,19 @@
 				"source": [
 					"import pandas as pd\n",
 					"\n",
-					"# read the csv file from staging\n",
+					"#read the csv file from staging\n",
 					"df_raw = spark.read.csv(\n",
 					"    \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/staging/norway_medicine.csv\",\n",
 					"    header=True, inferSchema=True\n",
 					")\n",
 					"\n",
-					"# convert to pandas\n",
+					"#convert to pandas\n",
 					"df = df_raw.toPandas()\n",
 					"\n",
-					"# keep only the columns we care about\n",
+					"#keep only the columns we care about\n",
 					"\n",
 					"df_long = df[df['Valuegender'] == 'Both sexes'][['Valuetime','Valuedrug','SumSum_DDD', 'SumAntall_unike_pasienter']]\n",
-					"# sort based on time, gender, atc-code\n",
+					"#sort based on time, gender, atc-code\n",
 					"df_long = df_long.sort_values(by=['Valuetime', 'Valuedrug']).reset_index(drop=True)\n",
 					"\n",
 					"#Change column names to our standardized names\n",
