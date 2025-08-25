@@ -1,10 +1,10 @@
 {
-	"name": "HTTP_PxWeb",
+	"name": "WHO GhoApi",
 	"properties": {
 		"annotations": [],
 		"type": "HttpServer",
 		"typeProperties": {
-			"url": "https://pxweb.nhwstat.org:443/Prod/sq/",
+			"url": "https://ghoapi.azureedge.net/api/",
 			"enableServerCertificateValidation": true,
 			"authenticationType": "Anonymous"
 		},

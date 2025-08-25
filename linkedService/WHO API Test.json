@@ -1,11 +1,11 @@
 {
-	"name": "WHO_API",
+	"name": "WHO API Test",
 	"properties": {
 		"annotations": [],
 		"type": "HttpServer",
 		"typeProperties": {
-			"url": "https://ghoapi.azureedge.net/api",
-			"enableServerCertificateValidation": true,
+			"url": "https://ghoapi.azureedge.net/api/",
+			"enableServerCertificateValidation": false,
 			"authenticationType": "Anonymous"
 		},
 		"connectVia": {

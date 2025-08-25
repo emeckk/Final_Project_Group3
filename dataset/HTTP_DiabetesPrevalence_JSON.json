@@ -1,8 +1,8 @@
 {
-	"name": "HTTP_WHO_JSON",
+	"name": "HTTP_DiabetesPrevalence_JSON",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "WHO_API",
+			"referenceName": "WHO API Test",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
@@ -10,7 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "HttpServerLocation",
-				"relativeUrl": "/NCD_DIABETES_PREVALENCE_AGESTD?$filter=SpatialDim%20eq%20%27SWE%27%20or%20SpatialDim%20eq%20%27DNK%27%20or%20SpatialDim%20eq%20%27NOR%27"
+				"relativeUrl": "NCD_DIABETES_PREVALENCE_AGESTD"
 			}
 		},
 		"schema": {}
