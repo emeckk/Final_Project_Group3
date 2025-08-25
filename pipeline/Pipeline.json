@@ -35,8 +35,6 @@
 			{
 				"name": "Copy Diabetes Prevalence",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -121,8 +119,6 @@
 			{
 				"name": "Standardize Prevalence Data",
 				"type": "ExecuteDataFlow",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "Copy Diabetes Prevalence",
@@ -154,8 +150,6 @@
 			{
 				"name": "Standardize Norway Medicine Data",
 				"type": "SynapseNotebook",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -186,8 +180,6 @@
 			{
 				"name": "Copy Denmark Medicine Data",
 				"type": "SynapseNotebook",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -218,8 +210,6 @@
 			{
 				"name": "Standardize Denmark Medicine Data",
 				"type": "SynapseNotebook",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "Copy Denmark Medicine Data",
@@ -257,8 +247,6 @@
 			{
 				"name": "Copy Cause of Death Data",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -303,8 +291,6 @@
 			{
 				"name": "Standardize Cause of Death Data",
 				"type": "ExecuteDataFlow",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "Copy Cause of Death Data",
@@ -336,8 +322,6 @@
 			{
 				"name": "Copy Sweden Medicine Data",
 				"type": "SynapseNotebook",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -368,8 +352,6 @@
 			{
 				"name": "Standardize Sweden Medicine Data",
 				"type": "SynapseNotebook",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "Copy Sweden Medicine Data",
