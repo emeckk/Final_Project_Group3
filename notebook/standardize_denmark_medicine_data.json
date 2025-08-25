@@ -42,25 +42,353 @@
 				"sparkVersion": "3.4",
 				"nodeCount": 10,
 				"cores": 4,
-				"memory": 28
+				"memory": 28,
+				"automaticScaleJobs": true
 			},
 			"sessionKeepAliveTimeout": 30
 		},
 		"cells": [
 			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"##### Load CSV files into temporary views"
+				]
+			},
+			{
 				"cell_type": "code",
 				"source": [
-					"import pandas as pd\n",
+					"# Path to your ADLS folder\n",
+					"atc_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/staging/denmark_medicine_atc/\"\n",
+					"product_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/staging/denmark_medicine_product/\"\n",
 					"\n",
-					"#read the parquet file from our staging folder\n",
-					"df_raw = spark.read.parquet(\n",
-					"    \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/staging/denmark_medical.parquet/\"\n",
+					"# Read all CSVs from both datasets recursively into separate dataframes\n",
+					"df_atc = (\n",
+					"    spark.read\n",
+					"    .option(\"header\", \"false\")\n",
+					"    .option(\"delimiter\", \";\")\n",
+					"    .csv(atc_path, recursiveFileLookup=True)\n",
 					")\n",
 					"\n",
-					"#convert to a pandas df\n",
-					"df = df_raw.toPandas()"
+					"df_product = (\n",
+					"    spark.read\n",
+					"    .option(\"header\", \"false\")\n",
+					"    .option(\"delimiter\", \";\")\n",
+					"    .csv(product_path, recursiveFileLookup=True)\n",
+					")\n",
+					"\n",
+					"# Drop empty columns\n",
+					"df_atc = df_atc.drop(\"_c13\")\n",
+					"df_product = df_product.drop(\"_c14\")\n",
+					"\n",
+					"# Add headers\n",
+					"new_cols_atc = [\n",
+					"    \"atc\", \n",
+					"    \"year\", \n",
+					"    \"sector\", \n",
+					"    \"region\", \n",
+					"    \"sex\", \n",
+					"    \"age_group\", \n",
+					"    \"users\", \n",
+					"    \"users_per_thousand_inhabitants\", \n",
+					"    \"turnover_thousand_dkk\", \n",
+					"    \"regional_subsidy_thousand_dkk\", \n",
+					"    \"thousand_units_sold\", \n",
+					"    \"units_sold_per_thousand_inhabitants_per_day\", \n",
+					"    \"share_of_sales_linked_to_person\"\n",
+					"]\n",
+					"\n",
+					"new_cols_product = [\n",
+					"    \"atc\",\n",
+					"    \"year\",\n",
+					"    \"sector\",\n",
+					"    \"item_number\",\n",
+					"    \"a1_units_sold_thousand\",\n",
+					"    \"a1_quantity_thousand\",\n",
+					"    \"a1_turnover_thousand_dkk\",\n",
+					"    \"a2_units_sold_thousand\",\n",
+					"    \"a2_units_sold_subsidy_thousand\",\n",
+					"    \"a2_quantity_thousand\",\n",
+					"    \"a2_turnover_thousand_dkk\",\n",
+					"    \"a2_regional_subsidy_thousand_dkk\",\n",
+					"    \"a3_units_sold_thousand\",\n",
+					"    \"a3_quantity_thousand\"\n",
+					"]\n",
+					"\n",
+					"df_atc_renamed = df_atc.toDF(*new_cols_atc)\n",
+					"df_product_renamed = df_product.toDF(*new_cols_product)\n",
+					"\n",
+					"# Create temp views\n",
+					"df_atc_renamed.createOrReplaceTempView(\"raw_data_atc\")\n",
+					"df_product_renamed.createOrReplaceTempView(\"raw_data_product\")"
 				],
-				"execution_count": null
+				"execution_count": 20
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"##### Clean product dataset"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"jupyter": {
+						"outputs_hidden": false
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"\n",
+					"CREATE OR REPLACE TEMP VIEW product_minimal AS\n",
+					"SELECT \n",
+					"    atc,\n",
+					"    year,\n",
+					"    round(sum(a3_units_sold_thousand) * 1000, 0) as expedited_units\n",
+					"FROM raw_data_product\n",
+					"WHERE sector = 300\n",
+					"  AND atc IN (\n",
+					"    'A10AB01','A10AB03','A10AB04','A10AB05','A10AB06',\n",
+					"    'A10AC01','A10AC03','A10AC30','A10AD01','A10AD03',\n",
+					"    'A10AD04','A10AD05','A10AE01','A10AE02','A10AE04',\n",
+					"    'A10AE05','A10AE06','A10AE54','A10AE56','A10BA02',\n",
+					"    'A10BB01','A10BB02','A10BB07','A10BB12','A10BD03',\n",
+					"    'A10BD04','A10BD05','A10BD07','A10BD08','A10BD10',\n",
+					"    'A10BD11','A10BD15','A10BD19','A10BD20','A10BD21',\n",
+					"    'A10BD23','A10BD24','A10BF01','A10BG01','A10BG02',\n",
+					"    'A10BG03','A10BH01','A10BH02','A10BH03','A10BH05',\n",
+					"    'A10BJ01','A10BJ02','A10BJ03','A10BJ05','A10BJ06',\n",
+					"    'A10BK01','A10BK02','A10BK03','A10BK04','A10BX02','A10BX03'\n",
+					"  )\n",
+					"GROUP BY atc, year;\n",
+					"\n",
+					"SELECT * FROM product_minimal LIMIT 5;"
+				],
+				"execution_count": 21
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"##### Clean atc dataset"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"\n",
+					"CREATE OR REPLACE TEMP VIEW atc_minimal AS\n",
+					"SELECT \n",
+					"    atc,\n",
+					"    year,\n",
+					"    sum(users) as users,\n",
+					"    sum(thousand_units_sold) * 1000 as expedited_ddd\n",
+					"FROM raw_data_atc \n",
+					"WHERE sector = 0\n",
+					"  AND region = 0\n",
+					"  AND sex = 0\n",
+					"  AND age_group = \"T\"\n",
+					"  AND atc IN (\n",
+					"    'A10AB01','A10AB03','A10AB04','A10AB05','A10AB06',\n",
+					"    'A10AC01','A10AC03','A10AC30','A10AD01','A10AD03',\n",
+					"    'A10AD04','A10AD05','A10AE01','A10AE02','A10AE04',\n",
+					"    'A10AE05','A10AE06','A10AE54','A10AE56','A10BA02',\n",
+					"    'A10BB01','A10BB02','A10BB07','A10BB12','A10BD03',\n",
+					"    'A10BD04','A10BD05','A10BD07','A10BD08','A10BD10',\n",
+					"    'A10BD11','A10BD15','A10BD19','A10BD20','A10BD21',\n",
+					"    'A10BD23','A10BD24','A10BF01','A10BG01','A10BG02',\n",
+					"    'A10BG03','A10BH01','A10BH02','A10BH03','A10BH05',\n",
+					"    'A10BJ01','A10BJ02','A10BJ03','A10BJ05','A10BJ06',\n",
+					"    'A10BK01','A10BK02','A10BK03','A10BK04','A10BX02','A10BX03'\n",
+					"  )\n",
+					"GROUP BY atc, year;\n",
+					"\n",
+					"SELECT * FROM atc_minimal LIMIT 5;"
+				],
+				"execution_count": 22
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"##### Join product and atc data"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"\n",
+					"CREATE OR REPLACE TEMP VIEW atc_product_full AS\n",
+					"SELECT \n",
+					"    a.atc as atc_level_5,\n",
+					"    a.year,\n",
+					"    a.users,\n",
+					"    a.expedited_ddd,\n",
+					"    p.expedited_units\n",
+					"FROM atc_minimal a\n",
+					"LEFT JOIN product_minimal p\n",
+					"    ON a.atc = p.atc\n",
+					"   AND a.year = p.year;\n",
+					"\n",
+					"SELECT * FROM atc_product_full LIMIT 5;"
+				],
+				"execution_count": 23
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"##### Check if aggregated data on atc 5 level corresponds with source atc 4 level"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"\n",
+					"CREATE OR REPLACE TEMP VIEW product_minimal_atc4 AS\n",
+					"SELECT\n",
+					"    SUBSTRING(atc, 1, 5) AS atc4,   -- roll up to level 4\n",
+					"    year,\n",
+					"    SUM(expedited_units) AS units_from_atc5\n",
+					"FROM product_minimal\n",
+					"GROUP BY SUBSTRING(atc, 1, 5), year;\n",
+					"\n",
+					"CREATE OR REPLACE TEMP VIEW product_source_atc4 AS\n",
+					"SELECT\n",
+					"    SUBSTRING(atc,1,5) AS atc4,\n",
+					"    year,\n",
+					"    ROUND(SUM(a3_units_sold_thousand) * 1000, 0) AS units_reported_atc4\n",
+					"FROM raw_data_product\n",
+					"WHERE sector = 300\n",
+					"GROUP BY SUBSTRING(atc,1,5), year;\n",
+					"\n",
+					"SELECT\n",
+					"    r.atc4,\n",
+					"    r.year,\n",
+					"    r.units_reported_atc4,\n",
+					"    f.units_from_atc5,\n",
+					"    (f.units_from_atc5 - r.units_reported_atc4) AS difference,\n",
+					"    ROUND(100.0 * f.units_from_atc5 / NULLIF(r.units_reported_atc4,0), 2) AS pct_coverage\n",
+					"FROM product_source_atc4 r\n",
+					"LEFT JOIN product_minimal_atc4 f\n",
+					"       ON r.atc4 = f.atc4 AND r.year = f.year\n",
+					"WHERE r.atc4 LIKE \"A10%\"\n",
+					"ORDER BY r.year, r.atc4;"
+				],
+				"execution_count": 30
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"##### Check for duplicate atc codes"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"\n",
+					"SELECT \n",
+					"    atc_level_5,\n",
+					"    year,\n",
+					"    COUNT(*) as row_count\n",
+					"FROM atc_product_full\n",
+					"GROUP BY atc_level_5, year\n",
+					"ORDER BY row_count DESC;"
+				],
+				"execution_count": 31
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"##### Sink to ADLS"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"df = spark.table(\"atc_product_full\")\n",
+					"\n",
+					"df.write.mode(\"overwrite\").parquet(\"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/denmark_medicine.parquet\")"
+				],
+				"execution_count": 26
+
 			}
 		]
 	}
