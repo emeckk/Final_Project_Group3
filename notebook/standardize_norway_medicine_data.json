@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "56ea72ea-38c3-47d0-af40-89f1787daca5"
+				"spark.autotune.trackingId": "1916859d-d59b-4813-991c-c8645e1715d4"
 			}
 		},
 		"metadata": {
@@ -49,43 +49,82 @@
 		},
 		"cells": [
 			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"##### Load data from ADLS (staging)"
+				]
+			},
+			{
 				"cell_type": "code",
 				"source": [
 					"import pandas as pd\n",
 					"\n",
-					"#read the csv file from staging\n",
+					"# Read csv file\n",
 					"df_raw = spark.read.csv(\n",
 					"    \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/staging/norway_medicine.csv\",\n",
 					"    header=True, inferSchema=True\n",
 					")\n",
 					"\n",
-					"#convert to pandas\n",
-					"df = df_raw.toPandas()\n",
-					"\n",
-					"#keep only the columns we care about\n",
-					"\n",
+					"# Convert to pandas dataframe\n",
+					"df = df_raw.toPandas()"
+				],
+				"execution_count": 2
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"##### Clean data"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"# Remove irrelevant columns and keep only data on both sexes\n",
 					"df_long = df[df['Valuegender'] == 'Both sexes'][['Valuetime','Valuedrug','SumSum_DDD', 'SumAntall_unike_pasienter']]\n",
-					"#sort based on time, gender, atc-code\n",
+					"\n",
+					"# Sort based on time, gender, atc-code\n",
 					"df_long = df_long.sort_values(by=['Valuetime', 'Valuedrug']).reset_index(drop=True)\n",
 					"\n",
-					"#Change column names to our standardized names\n",
+					"# Change column names\n",
 					"df_long = df_long.rename(columns={\n",
 					"    'Valuetime': 'year',  \n",
 					"    'Valuedrug':'atc_level_5', \n",
 					"    'SumSum_DDD': 'expedited_ddd', \n",
 					"    'SumAntall_unike_pasienter': 'users'\n",
-					"})\n",
-					"\n",
-					"#for testing purposes\n",
-					"#print(df_long.count())\n",
-					"#df_long.head(900)"
+					"})"
 				],
-				"execution_count": 2
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"##### Sink data to ADLS (normalized)"
+				]
 			},
 			{
 				"cell_type": "code",
 				"source": [
-					"#convert into spark df and store in our standardized folder\n",
 					"spark_df = spark.createDataFrame(df_long)\n",
 					"output_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/norway_medicine.parquet\"\n",
 					"spark_df.write.mode(\"overwrite\").parquet(output_path)"
