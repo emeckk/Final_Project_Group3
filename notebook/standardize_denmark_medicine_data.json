@@ -12,12 +12,12 @@
 			"driverCores": 4,
 			"executorMemory": "28g",
 			"executorCores": 4,
-			"numExecutors": 1,
+			"numExecutors": 2,
 			"conf": {
-				"spark.dynamicAllocation.enabled": "true",
-				"spark.dynamicAllocation.minExecutors": "1",
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "c9802f67-b924-4700-8e4a-ecb49d10ce18"
+				"spark.autotune.trackingId": "3c02ccec-628a-4a28-a633-2f54c44fd815"
 			}
 		},
 		"metadata": {
@@ -388,6 +388,7 @@
 					"df.write.mode(\"overwrite\").parquet(\"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/denmark_medicine.parquet\")"
 				],
 				"execution_count": 26
+
 			}
 		]
 	}
