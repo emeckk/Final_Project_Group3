@@ -1,0 +1,100 @@
+{
+	"name": "standardize_population_data",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "group3fpspark",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 1,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "true",
+				"spark.dynamicAllocation.minExecutors": "1",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "1b364391-8649-49fc-b560-4c85b98bf50d"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/23b183d5-a30f-46b8-b418-ad060fb67787/resourceGroups/group3fp/providers/Microsoft.Synapse/workspaces/group3fpsynapse/bigDataPools/group3fpspark",
+				"name": "group3fpspark",
+				"type": "Spark",
+				"endpoint": "https://group3fpsynapse.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/group3fpspark",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "3.4",
+				"nodeCount": 10,
+				"cores": 4,
+				"memory": 28,
+				"automaticScaleJobs": true
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"outputs_hidden": false
+					}
+				},
+				"source": [
+					"import pandas as pd\n",
+					"\n",
+					"#read the parquet file from our staging folder\n",
+					"df_raw = spark.read.parquet(\n",
+					"    \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/staging/population.parquet/\"\n",
+					")\n",
+					"\n",
+					"#convert to a pandas df\n",
+					"df = df_raw.toPandas()\n",
+					"\n",
+					"#Only keep rows with the total population\n",
+					"df_total = df[df['SEX'] == '_T'][['TIME_PERIOD', 'REF_AREA', 'POPULATION']]\n",
+					"\n",
+					"#rename columns to our standardized names\n",
+					"df_total = df_total.rename(columns={\n",
+					"    'TIME_PERIOD': 'year', \n",
+					"    'REF_AREA': 'country',  \n",
+					"    'POPULATION': 'population'\n",
+					"})\n",
+					"\n",
+					"\n",
+					"#sort on year and country\n",
+					"df_total = df_total.sort_values(by=['year', 'country']).reset_index(drop=True)\n",
+					"\n",
+					"#for testing purposes\n",
+					"#df_total.head(100)"
+				],
+				"execution_count": 2
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"#convert into spark df and store in our standardized folder\n",
+					"spark_df = spark.createDataFrame(df_long)\n",
+					"output_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/population.parquet\"\n",
+					"spark_df.write.mode(\"overwrite\").parquet(output_path)"
+				],
+				"execution_count": 16
+			}
+		]
+	}
+}

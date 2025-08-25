@@ -1,0 +1,99 @@
+{
+	"name": "copy_denmark_medicine_data",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "group3fpspark",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 1,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "true",
+				"spark.dynamicAllocation.minExecutors": "1",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "ce9f1136-9958-45e8-9696-a4b80b71df54"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/23b183d5-a30f-46b8-b418-ad060fb67787/resourceGroups/group3fp/providers/Microsoft.Synapse/workspaces/group3fpsynapse/bigDataPools/group3fpspark",
+				"name": "group3fpspark",
+				"type": "Spark",
+				"endpoint": "https://group3fpsynapse.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/group3fpspark",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "3.4",
+				"nodeCount": 10,
+				"cores": 4,
+				"memory": 28,
+				"automaticScaleJobs": true
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "python"
+					}
+				},
+				"source": [
+					"%%pyspark\n",
+					"import pandas as pd\n",
+					"import requests\n",
+					"from bs4 import BeautifulSoup\n",
+					"\n",
+					"#Copy data from already filtered data source(all the different diabetes medications)\n",
+					"url = \"https://www.medstat.dk/en/viewDataTables/medicineAndMedicalGroups/%7B%22year%22:[%222024%22,%222023%22,%222022%22,%222021%22,%222020%22,%222019%22,%222018%22,%222017%22,%222016%22,%222015%22,%222014%22,%222013%22,%222012%22,%222011%22,%222010%22,%222009%22,%222008%22,%222007%22,%222006%22,%222005%22,%222004%22,%222003%22,%222002%22,%222001%22,%222000%22,%221999%22,%221998%22,%221997%22,%221996%22],%22region%22:[%220%22],%22gender%22:[%22A%22,%221%22,%222%22],%22ageGroup%22:[%22A%22],%22searchVariable%22:[%22people_count%22],%22errorMessages%22:[],%22atcCode%22:[%22A10A%22,%22A10AB%22,%22A10AB01%22,%22A10AB04%22,%22A10AB05%22,%22A10AB06%22,%22A10AC%22,%22A10AC01%22,%22A10AD%22,%22A10AD01%22,%22A10AD04%22,%22A10AD05%22,%22A10AD06%22,%22A10AE%22,%22A10AE01%22,%22A10AE04%22,%22A10AE05%22,%22A10AE06%22,%22A10AE54%22,%22A10AE56%22,%22A10BA%22,%22A10BA02%22,%22A10BB%22,%22A10BB01%22,%22A10BB03%22,%22A10BB07%22,%22A10BB09%22,%22A10BB12%22,%22A10BH%22,%22A10BH01%22,%22A10BH02%22,%22A10BH03%22,%22A10BH04%22,%22A10BH05%22,%22A10BJ%22,%22A10BJ01%22,%22A10BJ02%22,%22A10BJ03%22,%22A10BJ05%22,%22A10BJ06%22,%22A10BK%22,%22A10BK01%22,%22A10BK02%22,%22A10BK03%22,%22A10BK04%22],%22sector%22:[%220%22]%7D\"\n",
+					"\n",
+					"resp = requests.get(url, headers={\"User-Agent\": \"Mozilla/5.0\"})\n",
+					"soup = BeautifulSoup(resp.text, \"html.parser\")\n",
+					"\n",
+					"# Get the ATC codes from the <ul> element\n",
+					"ul = soup.find(\"ul\", style=\"margin-top: 0\")\n",
+					"atc_text = ul.find(\"li\").b.text  #first occurence of <li> contains all of the ATC codes for different medicines\n",
+					"atc_codes = [code.strip() for code in atc_text.split(\",\")]\n",
+					"\n",
+					"# Read all tables from the source\n",
+					"tables = pd.read_html(str(soup))\n",
+					"\n",
+					"# Assign each ATC code to the corresponding table\n",
+					"cleaned_tables = []\n",
+					"for atc_code, table in zip(atc_codes, tables):\n",
+					"    df = table.copy()\n",
+					"    df[\"ATC_CODE\"] = atc_code\n",
+					"    cleaned_tables.append(df)\n",
+					"\n",
+					"# Combine all the tables into one dataframe\n",
+					"df_final = pd.concat(cleaned_tables, ignore_index=True)\n",
+					"#df_final.head()\n",
+					"#turn it into a spark df and then store it in our staging folder in parquet format\n",
+					"spark_df = spark.createDataFrame(df_final)\n",
+					"\n",
+					"output_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/staging/denmark_medical.parquet\"\n",
+					"\n",
+					"spark_df.write.mode(\"overwrite\").parquet(output_path)"
+				],
+				"execution_count": 1
+			}
+		]
+	}
+}
