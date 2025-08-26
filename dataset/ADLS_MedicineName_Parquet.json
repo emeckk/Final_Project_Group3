@@ -1,0 +1,46 @@
+{
+	"name": "ADLS_MedicineName_Parquet",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "group3fpadls",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "medicine_name.parquet",
+				"folderPath": "staging",
+				"container": "group3fpfilesystem"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": [
+			{
+				"name": "atc_code",
+				"type": "UTF8"
+			},
+			{
+				"name": "atc_name",
+				"type": "UTF8"
+			},
+			{
+				"name": "ddd",
+				"type": "UTF8"
+			},
+			{
+				"name": "uom",
+				"type": "UTF8"
+			},
+			{
+				"name": "adm_r",
+				"type": "UTF8"
+			},
+			{
+				"name": "note",
+				"type": "UTF8"
+			}
+		]
+	}
+}
