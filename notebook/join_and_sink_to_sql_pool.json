@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "1a8fd08d-0dcc-419a-b6c7-ffafcd2e5ba1"
+				"spark.autotune.trackingId": "a305abaf-6dca-4538-a978-574be3ff9f5c"
 			}
 		},
 		"metadata": {
@@ -90,7 +90,7 @@
 					"atc_name_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/atc_name.parquet\"\n",
 					""
 				],
-				"execution_count": 28
+				"execution_count": 2
 			},
 			{
 				"cell_type": "code",
@@ -111,7 +111,7 @@
 					"df_diabetes_prevalence = spark.read.parquet(diabetes_prevalence_path)\n",
 					"df_atc_name = spark.read.parquet(atc_name_path)"
 				],
-				"execution_count": 29
+				"execution_count": 3
 			},
 			{
 				"cell_type": "code",
@@ -132,7 +132,7 @@
 					"df_diabetes_prevalence.createOrReplaceTempView(\"diabetes_prevalence\")\n",
 					"df_atc_name.createOrReplaceTempView('atc_name')"
 				],
-				"execution_count": 30
+				"execution_count": 4
 			},
 			{
 				"cell_type": "code",
@@ -160,7 +160,7 @@
 					"\n",
 					""
 				],
-				"execution_count": 55
+				"execution_count": 5
 			},
 			{
 				"cell_type": "code",
@@ -183,7 +183,7 @@
 					"SELECT * FROM dim_country;\n",
 					""
 				],
-				"execution_count": 19
+				"execution_count": 6
 			},
 			{
 				"cell_type": "code",
@@ -198,7 +198,7 @@
 					"\n",
 					"SELECT * FROM dim_year;"
 				],
-				"execution_count": 20
+				"execution_count": 7
 			},
 			{
 				"cell_type": "code",
@@ -206,15 +206,72 @@
 					"collapsed": false
 				},
 				"source": [
-					"select * from norway_medicine limit 5\n",
-					""
+					"DROP TABLE IF EXISTS fact_medicine;\n",
+					"\n",
+					"CREATE TABLE fact_medicine AS\n",
+					"SELECT\n",
+					"    md5(CONCAT_WS('|', atc_level_5, CAST(year AS STRING), 'SWE')) AS id,\n",
+					"    atc_level_5,\n",
+					"    year,\n",
+					"    'SWE' AS country_code,\n",
+					"    dispensed_units,\n",
+					"    users,\n",
+					"    NULL AS dispensed_ddd\n",
+					"FROM\n",
+					"    sweden_medicine \n",
+					"\n",
+					"UNION ALL\n",
+					"\n",
+					"SELECT\n",
+					"    md5(CONCAT_WS('|', atc_level_5, CAST(year AS STRING), 'DNK')) AS id,\n",
+					"    atc_level_5,\n",
+					"    year,\n",
+					"    'DNK' AS country_code,\n",
+					"    dispensed_units,\n",
+					"    users,\n",
+					"    dispensed_ddd\n",
+					"FROM\n",
+					"    denmark_medicine\n",
+					"\n",
+					"UNION ALL\n",
+					"\n",
+					"SELECT \n",
+					"    md5(CONCAT_WS('|', atc_level_5, CAST(year AS STRING), 'NOR')) AS id,\n",
+					"    atc_level_5,\n",
+					"    year,\n",
+					"    'NOR' AS country_code,\n",
+					"    NULL AS dispensed_units,\n",
+					"    users,\n",
+					"    dispensed_ddd\n",
+					"FROM\n",
+					"    norway_medicine\n",
+					"ORDER BY year, country_code ASC;\n",
+					"\n",
+					"SELECT * FROM fact_medicine;"
 				],
-				"execution_count": 58
+				"execution_count": 29
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"select * from population limit 2;\n",
+					"select * from cause_of_death limit 2;\n",
+					"select * from diabetes_prevalence limit 2;"
+				],
+				"execution_count": 31
 			},
 			{
 				"cell_type": "code",
 				"source": [
-					"select * from "
+					"SELECT\n",
+					"    md5(CONCAT_WS('|', year, country_code)) AS id,\n",
+					"    p.year,\n",
+					"    p.country_code,\n",
+					"    d.\n",
+					""
 				],
 				"execution_count": null
 			}
