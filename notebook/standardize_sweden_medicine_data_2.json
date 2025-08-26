@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "1daf5cea-83a9-49c1-a9a1-24a1edf8a6d9"
+				"spark.autotune.trackingId": "233e31da-08c7-4d67-98c4-b153b9c37279"
 			}
 		},
 		"metadata": {
@@ -68,6 +68,7 @@
 					"import os\n",
 					"from io import BytesIO\n",
 					"import pandas as pd\n",
+					"from pyspark.sql.functions import col\n",
 					"\n",
 					"zip_file_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/staging/sweden_medicine.zip\"\n",
 					"extract_path = \"/tmp/unzipped\"\n",
@@ -83,15 +84,9 @@
 					"\n",
 					"# List extracted CSV files\n",
 					"csv_files = [f for f in os.listdir(extract_path) if f.endswith('.csv')]\n",
-					"print(csv_files)\n",
-					"\n",
-					"for f in csv_files:\n",
-					"    file_path = os.path.join(extract_path, f)\n",
-					"    size_bytes = os.path.getsize(file_path)\n",
-					"    size_mb = size_bytes / (1024 * 1024)\n",
-					"    print(f\"{f}: {size_bytes} bytes ({size_mb:.2f} MB)\")"
+					"print(csv_files)"
 				],
-				"execution_count": 39
+				"execution_count": 1
 			},
 			{
 				"cell_type": "markdown",
@@ -109,18 +104,92 @@
 			{
 				"cell_type": "code",
 				"source": [
-					"# Path to extracted CSV\n",
-					"dispensed_units_path = extract_path + \"/\" + \"'\" + csv_files[-1] + \"'\"\n",
-					"users_path = extract_path + \"/\" + \"'\" + csv_files[-2] + \"'\"\n",
+					"# Construct paths\n",
+					"dispensed_units_path = \"file://\" + os.path.join(extract_path, csv_files[-1])\n",
+					"users_path = \"file://\" + os.path.join(extract_path, csv_files[-2])\n",
 					"\n",
-					"# Read CSVs with Spark\n",
+					"# Convert CSVs to spark dataframes\n",
 					"df_dispensed_units = spark.read.option(\"header\", True).option(\"delimiter\", \";\").csv(dispensed_units_path)\n",
-					"df_users = spark.read.option(\"header\", True).option(\"delimiter\", \";\").csv(users_path)\n",
-					"\n",
-					"df_dispensed_units.show(5)\n",
-					"df_users.show(5)"
+					"df_users = spark.read.option(\"header\", True).option(\"delimiter\", \";\").csv(users_path)"
 				],
-				"execution_count": 41
+				"execution_count": 4
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"##### Filter data to include correct measure, all ages and both sexes"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"# Filter dispensed units dataframe\n",
+					"df_dispensed_units_filtered = df_dispensed_units.filter(\n",
+					"    (col(\"Mått\") == 3) &\n",
+					"    (col(\"Region\") == 0) &\n",
+					"    (col(\"ATC-kod\") != \"TOTALT\") &\n",
+					"    (col(\"Ålder\") == 99) &\n",
+					"    (col(\"Kön\") == 3)\n",
+					")\n",
+					"\n",
+					"# Filter users dataframe\n",
+					"df_users_filtered = df_users.filter(\n",
+					"    (col(\"Mått\") == 1) &\n",
+					"    (col(\"Region\") == 0) &\n",
+					"    (col(\"ATC-kod\") in [\"TOTALT\"]) &\n",
+					"    (col(\"Ålder\") == 99) &\n",
+					"    (col(\"Kön\") == 3)\n",
+					")\n",
+					"\n",
+					"df_dispensed_units_filtered.show(5)\n",
+					"df_users_filtered.show(5)"
+				],
+				"execution_count": 24
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"##### Remove unnecessary and rename columns"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"df_dispensed_units_minimal = df_dispensed_units_filtered[[\"År\", \"ATC-kod\", \"Värde\"]]\n",
+					"df_users_minimal = df_users_filtered[[\"År\", \"ATC-kod\", \"Värde\"]]\n",
+					"\n",
+					"df_dispensed_units_renamed = (\n",
+					"    df_dispensed_units_minimal\n",
+					"    .withColumnRenamed(\"År\", \"year\")\n",
+					"    .withColumnRenamed(\"ATC-kod\", \"atc_level_5\")\n",
+					"    .withColumnRenamed(\"Värde\", \"dispensed_units\")\n",
+					")\n",
+					"\n",
+					"df_users_renamed = (\n",
+					"    df_users_minimal\n",
+					"    .withColumnRenamed(\"År\", \"year\")\n",
+					"    .withColumnRenamed(\"ATC-kod\", \"atc_level_5\")\n",
+					"    .withColumnRenamed(\"Värde\", \"users\")\n",
+					")\n",
+					"\n",
+					"df_dispensed_units_renamed.show(5)\n",
+					"df_users_renamed.show(5)"
+				],
+				"execution_count": 27
 			}
 		]
 	}
