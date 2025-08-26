@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "1c7560cd-b661-43fe-9efc-eac72da20ccc"
+				"spark.autotune.trackingId": "951c4f55-b8c6-41b0-a0d8-cfeb26ad638b"
 			}
 		},
 		"metadata": {
@@ -113,8 +113,7 @@
 					"df_users = spark.read.option(\"header\", True).option(\"delimiter\", \";\").csv(users_path)\n",
 					"\n",
 					"df_dispensed_units.show(5)\n",
-					"df_users.show(5)\n",
-					""
+					"df_users.show(5)"
 				],
 				"execution_count": 35
 			},
