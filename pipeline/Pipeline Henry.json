@@ -120,10 +120,6 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"notebook": {
-						"referenceName": "standardize_medicine_name_data",
-						"type": "NotebookReference"
-					},
 					"snapshot": true
 				}
 			}
