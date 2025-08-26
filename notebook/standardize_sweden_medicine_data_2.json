@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "c4262683-122e-4051-9153-e42a6d35134a"
+				"spark.autotune.trackingId": "eefcdecf-5d63-4416-870e-334a9261c47f"
 			}
 		},
 		"metadata": {
@@ -58,35 +58,50 @@
 					}
 				},
 				"source": [
-					"##### Unzip folder"
+					"##### Unzip folder into ADLS"
 				]
 			},
 			{
 				"cell_type": "code",
 				"source": [
-					"import zipfile\n",
-					"import os\n",
+					"import zipfile, os, shutil, time\n",
 					"from io import BytesIO\n",
-					"import pandas as pd\n",
 					"from pyspark.sql.functions import col\n",
 					"\n",
 					"zip_file_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/staging/sweden_medicine.zip\"\n",
-					"extract_path = \"/tmp/unzipped\"\n",
+					"local_extract = \"/tmp/unzipped\"\n",
+					"dest_folder = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/staging/sweden_medicine/\"\n",
+					"os.makedirs(local_extract, exist_ok=True)\n",
 					"\n",
-					"os.makedirs(extract_path, exist_ok=True)\n",
-					"\n",
-					"# Load zip file as binary from ADLS\n",
+					"# load zip bytes (driver)\n",
 					"zip_bytes = spark.read.format(\"binaryFile\").load(zip_file_path).collect()[0].content\n",
 					"\n",
-					"# Open it as a zip archive in memory\n",
-					"with zipfile.ZipFile(BytesIO(zip_bytes), 'r') as zip_ref:\n",
-					"    zip_ref.extractall(extract_path)\n",
+					"# get Hadoop FS handle\n",
+					"fs = spark._jvm.org.apache.hadoop.fs.FileSystem.get(spark._jsc.hadoopConfiguration())\n",
 					"\n",
-					"# List extracted CSV files\n",
-					"csv_files = [f for f in os.listdir(extract_path) if f.endswith('.csv')]\n",
-					"print(csv_files)"
+					"# Unpack and copy\n",
+					"with zipfile.ZipFile(BytesIO(zip_bytes), \"r\") as z:\n",
+					"    csv_entries = [n for n in z.namelist() if n.lower().endswith(\".csv\")]\n",
+					"\n",
+					"    for entry in csv_entries:\n",
+					"        base = os.path.basename(entry)                  \n",
+					"        local_path = os.path.join(local_extract, base)\n",
+					"\n",
+					"        # Ensure parent local folder\n",
+					"        os.makedirs(os.path.dirname(local_path) or local_extract, exist_ok=True)\n",
+					"\n",
+					"        # Extract to local file\n",
+					"        with z.open(entry) as src, open(local_path, \"wb\") as dst:\n",
+					"            shutil.copyfileobj(src, dst)\n",
+					"\n",
+					"        # Copy local file -> ADLS using Hadoop FS (copyFromLocalFile)\n",
+					"        src_path = spark._jvm.org.apache.hadoop.fs.Path(\"file://\" + local_path)\n",
+					"        dst_path = spark._jvm.org.apache.hadoop.fs.Path(dest_folder + base)\n",
+					"\n",
+					"        fs.copyFromLocalFile(False, True, src_path, dst_path)\n",
+					""
 				],
-				"execution_count": 33
+				"execution_count": 20
 			},
 			{
 				"cell_type": "markdown",
@@ -104,18 +119,14 @@
 			{
 				"cell_type": "code",
 				"source": [
-					"# Construct paths\n",
-					"dispensed_units_path = \"file://\" + os.path.join(extract_path, csv_files[-1])\n",
-					"users_path = \"file://\" + os.path.join(extract_path, csv_files[-2])\n",
-					"\n",
 					"# Create spark dataframes out of CSVs\n",
-					"df_dispensed_units = spark.read.option(\"header\", True).option(\"delimiter\", \";\").csv(dispensed_units_path)\n",
-					"df_users = spark.read.option(\"header\", True).option(\"delimiter\", \";\").csv(users_path)\n",
+					"df_dispensed_units = spark.read.option(\"header\", True).option(\"delimiter\", \";\").csv(\"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/staging/sweden_medicine/läkemedel - data - antal expedieringar - 2006-2024.csv\")\n",
+					"df_users = spark.read.option(\"header\", True).option(\"delimiter\", \";\").csv(\"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/staging/sweden_medicine/läkemedel - data - antal patienter - 2006-2024.csv\")\n",
 					"\n",
 					"df_dispensed_units.show(5)\n",
 					"df_users.show(5)"
 				],
-				"execution_count": 35
+				"execution_count": 22
 			},
 			{
 				"cell_type": "markdown",
@@ -168,9 +179,9 @@
 					"\n",
 					"df_dispensed_units_filtered.show(5)\n",
 					"df_users_filtered.show(5)\n",
-					"df_dispensed_units_filtered.select(\"ATC-kod\").distinct().show()"
+					"df_dispensed_units_filtered.select(\"ATC-kod\").distinct().count()"
 				],
-				"execution_count": null
+				"execution_count": 26
 			},
 			{
 				"cell_type": "markdown",
@@ -192,7 +203,7 @@
 					"df_dispensed_units_minimal = df_dispensed_units_filtered[[\"År\", \"ATC-kod\", \"Värde\"]]\n",
 					"df_users_minimal = df_users_filtered[[\"År\", \"ATC-kod\", \"Värde\"]]\n",
 					"\n",
-					"# Rename columns\n",
+					"# Rename dispensed units dataframe columns\n",
 					"df_dispensed_units_renamed = (\n",
 					"    df_dispensed_units_minimal\n",
 					"    .withColumnRenamed(\"År\", \"year\")\n",
@@ -200,6 +211,7 @@
 					"    .withColumnRenamed(\"Värde\", \"dispensed_units\")\n",
 					")\n",
 					"\n",
+					"# Rename users dataframe columns\n",
 					"df_users_renamed = (\n",
 					"    df_users_minimal\n",
 					"    .withColumnRenamed(\"År\", \"year\")\n",
@@ -210,7 +222,7 @@
 					"df_dispensed_units_renamed.show(5)\n",
 					"df_users_renamed.show(5)"
 				],
-				"execution_count": null
+				"execution_count": 25
 			}
 		]
 	}
