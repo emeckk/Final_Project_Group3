@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "2efe1106-3145-4041-88eb-f6660a2c80cb"
+				"spark.autotune.trackingId": "3fa87763-15e4-4aad-8c4e-fa546dd3e986"
 			}
 		},
 		"metadata": {
@@ -84,7 +84,7 @@
 					"    csv_entries = [n for n in z.namelist() if n.lower().endswith(\".csv\")]\n",
 					"\n",
 					"    for entry in csv_entries:\n",
-					"        base = os.path.basename(entry)                  \n",
+					"        base = os.path.basename(entry)\n",
 					"        local_path = os.path.join(local_extract, base)\n",
 					"\n",
 					"        # Ensure parent local folder\n",
@@ -179,9 +179,9 @@
 					"\n",
 					"df_dispensed_units_filtered.show(5)\n",
 					"df_users_filtered.show(5)\n",
-					"# df_dispensed_units_filtered.select(\"ATC-kod\").distinct().count()"
+					"df_users_filtered.select(\"ATC-kod\").distinct().count()"
 				],
-				"execution_count": 26
+				"execution_count": 30
 			},
 			{
 				"cell_type": "markdown",
