@@ -168,6 +168,33 @@
 				"typeProperties": {
 					"snapshot": true
 				}
+			},
+			{
+				"name": "Standardize Sweden Medicine Data",
+				"type": "SynapseNotebook",
+				"dependsOn": [
+					{
+						"activity": "Copy Sweden Medicine Data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebook": {
+						"referenceName": "standardize_sweden_medicine_data_2",
+						"type": "NotebookReference"
+					},
+					"snapshot": true
+				}
 			}
 		],
 		"annotations": []

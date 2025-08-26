@@ -1,0 +1,111 @@
+{
+	"name": "standardize_sweden_medicine_data_2",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "group3fpspark",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 1,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "true",
+				"spark.dynamicAllocation.minExecutors": "1",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "b17a9be0-c4c6-4f36-95e1-9a6c1f495fec"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/23b183d5-a30f-46b8-b418-ad060fb67787/resourceGroups/group3fp/providers/Microsoft.Synapse/workspaces/group3fpsynapse/bigDataPools/group3fpspark",
+				"name": "group3fpspark",
+				"type": "Spark",
+				"endpoint": "https://group3fpsynapse.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/group3fpspark",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "3.4",
+				"nodeCount": 10,
+				"cores": 4,
+				"memory": 28,
+				"automaticScaleJobs": true
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"##### Unzip folder"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"import zipfile\n",
+					"import os\n",
+					"from io import BytesIO\n",
+					"\n",
+					"zip_file_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/staging/sweden_medicine.zip\"\n",
+					"extract_path = \"/tmp/unzipped\"\n",
+					"\n",
+					"os.makedirs(extract_path, exist_ok=True)\n",
+					"\n",
+					"# Load zip file as binary from ADLS\n",
+					"zip_bytes = spark.read.format(\"binaryFile\").load(zip_file_path).collect()[0].content\n",
+					"\n",
+					"# Open it as a zip archive in memory\n",
+					"with zipfile.ZipFile(BytesIO(zip_bytes), 'r') as zip_ref:\n",
+					"    zip_ref.extractall(extract_path)\n",
+					"\n",
+					"# List extracted CSV files\n",
+					"csv_files = [f for f in os.listdir(extract_path) if f.endswith('.csv')]\n",
+					"print(csv_files)"
+				],
+				"execution_count": 32
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"##### Create dataframes out of correct CSV files"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"df "
+				],
+				"execution_count": null
+			}
+		]
+	}
+}
