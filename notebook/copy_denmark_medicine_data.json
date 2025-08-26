@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "849bae6e-92b1-432b-b097-fb0f02d3bd2d"
+				"spark.autotune.trackingId": "e1fc25d0-dd9a-4a20-84d6-761f0d379e04"
 			}
 		},
 		"metadata": {
@@ -85,9 +85,7 @@
 					"        df = spark.createDataFrame([Row(value=line) for line in lines])\n",
 					"\n",
 					"        # Separate based on file name\n",
-					"        if filename == \"atc_code_text.txt\":\n",
-					"            output_path = ADLS_STAGING + filename\n",
-					"        elif \"product_name_data\" in filename:\n",
+					"        if \"product_name_data\" in filename:\n",
 					"            output_path = ADLS_PRODUCT_DIR + filename\n",
 					"        elif \"atc_code_data\" in filename:\n",
 					"            output_path = ADLS_ATC_DIR + filename\n",
