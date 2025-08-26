@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "233e31da-08c7-4d67-98c4-b153b9c37279"
+				"spark.autotune.trackingId": "3a311b98-9d01-4157-89e7-99ca5c0ffc16"
 			}
 		},
 		"metadata": {
@@ -130,11 +130,14 @@
 			{
 				"cell_type": "code",
 				"source": [
+					"# List of relevant ATC codes\n",
+					"atc_codes = \n",
+					"\n",
 					"# Filter dispensed units dataframe\n",
 					"df_dispensed_units_filtered = df_dispensed_units.filter(\n",
 					"    (col(\"Mått\") == 3) &\n",
 					"    (col(\"Region\") == 0) &\n",
-					"    (col(\"ATC-kod\") != \"TOTALT\") &\n",
+					"    (col(\"ATC-kod\") in atc_codes) &\n",
 					"    (col(\"Ålder\") == 99) &\n",
 					"    (col(\"Kön\") == 3)\n",
 					")\n",
@@ -143,7 +146,7 @@
 					"df_users_filtered = df_users.filter(\n",
 					"    (col(\"Mått\") == 1) &\n",
 					"    (col(\"Region\") == 0) &\n",
-					"    (col(\"ATC-kod\") in [\"TOTALT\"]) &\n",
+					"    (col(\"ATC-kod\") in atc_codes) &\n",
 					"    (col(\"Ålder\") == 99) &\n",
 					"    (col(\"Kön\") == 3)\n",
 					")\n",
