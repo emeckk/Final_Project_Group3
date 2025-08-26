@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "1b364391-8649-49fc-b560-4c85b98bf50d"
+				"spark.autotune.trackingId": "159f0319-8ae9-4392-b7c3-c5f3bc81a31d"
 			}
 		},
 		"metadata": {
@@ -89,7 +89,7 @@
 				"cell_type": "code",
 				"source": [
 					"#convert into spark df and store in our standardized folder\n",
-					"spark_df = spark.createDataFrame(df_long)\n",
+					"spark_df = spark.createDataFrame(df_total)\n",
 					"output_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/population.parquet\"\n",
 					"spark_df.write.mode(\"overwrite\").parquet(output_path)"
 				],
