@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "44f9ab26-b363-4b73-af10-f1518765ba80"
+				"spark.autotune.trackingId": "201fd7b0-20a2-43b3-a5ca-f274724344b4"
 			}
 		},
 		"metadata": {
@@ -94,6 +94,7 @@
 					"        row[\"TIME_PERIOD\"] = year\n",
 					"        row[\"POPULATION\"] = int(value)\n",
 					"        rows.append(row)\n",
+					"        \n",
 					"#Convert the rows into a pandas dataframe\n",
 					"df_pandas = pd.DataFrame(rows)\n",
 					"df_pandas.head(30)\n",
