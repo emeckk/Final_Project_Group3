@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "eefcdecf-5d63-4416-870e-334a9261c47f"
+				"spark.autotune.trackingId": "8d753c6e-07aa-416a-9faa-ff32543f1838"
 			}
 		},
 		"metadata": {
@@ -179,7 +179,7 @@
 					"\n",
 					"df_dispensed_units_filtered.show(5)\n",
 					"df_users_filtered.show(5)\n",
-					"df_dispensed_units_filtered.select(\"ATC-kod\").distinct().count()"
+					"# df_dispensed_units_filtered.select(\"ATC-kod\").distinct().count()"
 				],
 				"execution_count": 26
 			},
@@ -223,6 +223,29 @@
 					"df_users_renamed.show(5)"
 				],
 				"execution_count": 25
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"##### Inner join tables"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"combined = df_dispensed_units_renamed \\\n",
+					"    .join(df_users_renamed, on=[\"year\", \"atc_level_5\"], how=\"inner\")\n",
+					"\n",
+					"combined.show(5)"
+				],
+				"execution_count": 28
 			}
 		]
 	}
