@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "8d753c6e-07aa-416a-9faa-ff32543f1838"
+				"spark.autotune.trackingId": "2efe1106-3145-4041-88eb-f6660a2c80cb"
 			}
 		},
 		"metadata": {
@@ -246,6 +246,26 @@
 					"combined.show(5)"
 				],
 				"execution_count": 28
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"##### Sink to ADLS"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"combined.write.mode(\"overwrite\").parquet(\"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/sweden_medicine_2.parquet\")"
+				],
+				"execution_count": 29
 			}
 		]
 	}
