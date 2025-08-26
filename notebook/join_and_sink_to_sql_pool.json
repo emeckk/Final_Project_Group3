@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "3ea6b816-7783-4c77-9ff2-9c7cc701c8d0"
+				"spark.autotune.trackingId": "1aaf8b47-328e-46e9-b30e-0c19d7c08a78"
 			}
 		},
 		"metadata": {
@@ -222,7 +222,7 @@
 					"\n",
 					"CREATE TABLE IF NOT EXISTS dim_country(\n",
 					"    country_code STRING,\n",
-					"    country STRING\n",
+					"    country_name STRING\n",
 					");\n",
 					"\n",
 					"INSERT INTO dim_country VALUES\n",
@@ -233,7 +233,7 @@
 					"SELECT * FROM dim_country;\n",
 					""
 				],
-				"execution_count": 47
+				"execution_count": 52
 			},
 			{
 				"cell_type": "code",
