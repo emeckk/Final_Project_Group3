@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "dd8f16db-1d69-48e5-9776-22c1d84e3856"
+				"spark.autotune.trackingId": "3ea6b816-7783-4c77-9ff2-9c7cc701c8d0"
 			}
 		},
 		"metadata": {
@@ -86,7 +86,9 @@
 					"\n",
 					"cause_of_death_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/cause_of_death.parquet/\"\n",
 					"population_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/population.parquet/\"\n",
-					"diabetes_prevalence_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/diabetes_prevalence.parquet\""
+					"diabetes_prevalence_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/diabetes_prevalence.parquet\"\n",
+					"# medicine_names_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/diabetes_prevalence.parquet\"\n",
+					""
 				],
 				"execution_count": 33
 			},
@@ -212,10 +214,41 @@
 			},
 			{
 				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
 				"source": [
+					"DROP TABLE IF EXISTS dim_country;\n",
+					"\n",
+					"CREATE TABLE IF NOT EXISTS dim_country(\n",
+					"    country_code STRING,\n",
+					"    country STRING\n",
+					");\n",
+					"\n",
+					"INSERT INTO dim_country VALUES\n",
+					"('DNK', 'Denmark'),\n",
+					"('SWE', 'Sweden'),\n",
+					"('NOR', 'Norway');\n",
+					"\n",
+					"SELECT * FROM dim_country;\n",
 					""
 				],
-				"execution_count": null
+				"execution_count": 47
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"DROP TABLE IF EXISTS dim_year;\n",
+					"\n",
+					"CREATE TABLE dim_year AS\n",
+					"SELECT explode(sequence(1980, 2025)) AS year;\n",
+					"\n",
+					"SELECT * FROM dim_year;"
+				],
+				"execution_count": 50
 			}
 		]
 	}
