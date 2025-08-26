@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "1aaf8b47-328e-46e9-b30e-0c19d7c08a78"
+				"spark.autotune.trackingId": "1a8fd08d-0dcc-419a-b6c7-ffafcd2e5ba1"
 			}
 		},
 		"metadata": {
@@ -87,10 +87,10 @@
 					"cause_of_death_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/cause_of_death.parquet/\"\n",
 					"population_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/population.parquet/\"\n",
 					"diabetes_prevalence_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/diabetes_prevalence.parquet\"\n",
-					"# medicine_names_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/diabetes_prevalence.parquet\"\n",
+					"atc_name_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/atc_name.parquet\"\n",
 					""
 				],
-				"execution_count": 33
+				"execution_count": 28
 			},
 			{
 				"cell_type": "code",
@@ -108,9 +108,10 @@
 					"\n",
 					"df_cause_of_death = spark.read.parquet(cause_of_death_path)\n",
 					"df_population = spark.read.parquet(population_path)\n",
-					"df_diabetes_prevalence = spark.read.parquet(diabetes_prevalence_path)"
+					"df_diabetes_prevalence = spark.read.parquet(diabetes_prevalence_path)\n",
+					"df_atc_name = spark.read.parquet(atc_name_path)"
 				],
-				"execution_count": 34
+				"execution_count": 29
 			},
 			{
 				"cell_type": "code",
@@ -128,9 +129,10 @@
 					"\n",
 					"df_cause_of_death.createOrReplaceTempView(\"cause_of_death\")\n",
 					"df_population.createOrReplaceTempView(\"population\")\n",
-					"df_diabetes_prevalence.createOrReplaceTempView(\"diabetes_prevalence\")"
+					"df_diabetes_prevalence.createOrReplaceTempView(\"diabetes_prevalence\")\n",
+					"df_atc_name.createOrReplaceTempView('atc_name')"
 				],
-				"execution_count": 35
+				"execution_count": 30
 			},
 			{
 				"cell_type": "code",
@@ -138,79 +140,27 @@
 					"collapsed": false
 				},
 				"source": [
-					"select * from sweden_medicine limit 40"
-				],
-				"execution_count": 36
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"microsoft": {
-						"language": "sparksql"
-					},
-					"collapsed": false
-				},
-				"source": [
+					"DROP TABLE IF EXISTS dim_medicine;\n",
 					"\n",
-					"%%sql\n",
-					"-- Get distinct ATC codes from each country\n",
-					"WITH sweden AS (\n",
-					"    SELECT DISTINCT atc_level_5 FROM sweden_medicine\n",
-					"),\n",
-					"norway AS (\n",
-					"    SELECT DISTINCT atc_level_5 FROM norway_medicine\n",
-					"),\n",
-					"denmark AS (\n",
-					"    SELECT DISTINCT atc_level_5 FROM denmark_medicine\n",
-					")\n",
+					"CREATE TABLE dim_medicine AS\n",
+					"SELECT DISTINCT\n",
+					"    s.atc_level_5,\n",
+					"    n5.atc_name AS atc_level_5_name,\n",
+					"    SUBSTRING(s.atc_level_5, 1, 5) AS atc_level_4,\n",
+					"    n4.atc_name AS atc_level_4_name,\n",
+					"    SUBSTRING(s.atc_level_5, 1, 3) AS atc_level_3,\n",
+					"    n3.atc_name AS atc_level_3_name\n",
+					"FROM \n",
+					"    sweden_medicine s \n",
+					"LEFT JOIN atc_name n5 ON n5.atc_code = s.atc_level_5  \n",
+					"LEFT JOIN atc_name n4 ON n4.atc_code = SUBSTRING(s.atc_level_5, 1, 5)\n",
+					"LEFT JOIN atc_name n3 ON n3.atc_code = SUBSTRING(s.atc_level_5, 1, 3);\n",
 					"\n",
-					"-- Full outer join on the ATC codes\n",
-					"SELECT \n",
-					"    s.atc_level_5 AS sweden_atc,\n",
-					"    n.atc_level_5 AS norway_atc,\n",
-					"    d.atc_level_5 AS denmark_atc\n",
-					"FROM sweden s\n",
-					"FULL OUTER JOIN norway n ON s.atc_level_5 = n.atc_level_5\n",
-					"FULL OUTER JOIN denmark d ON COALESCE(s.atc_level_5, n.atc_level_5) = d.atc_level_5;\n",
+					"SELECT * FROM dim_medicine;\n",
+					"\n",
 					""
 				],
-				"execution_count": 24
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"collapsed": false
-				},
-				"source": [
-					"select distinct atc_level_5 from norway_medicine"
-				],
-				"execution_count": 40
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"collapsed": false
-				},
-				"source": [
-					"CREATE TABLE IF NOT EXISTS dim_medicine AS \n",
-					"SELECT\n",
-					"    DISTINCT atc_level_5\n",
-					"FROM\n",
-					"    norway_medicine\n",
-					"ORDER BY\n",
-					"    atc_level_5 ASC;"
-				],
-				"execution_count": 41
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"collapsed": false
-				},
-				"source": [
-					"SELECT * FROM dim_medicine"
-				],
-				"execution_count": 42
+				"execution_count": 55
 			},
 			{
 				"cell_type": "code",
@@ -233,7 +183,7 @@
 					"SELECT * FROM dim_country;\n",
 					""
 				],
-				"execution_count": 52
+				"execution_count": 19
 			},
 			{
 				"cell_type": "code",
@@ -248,7 +198,25 @@
 					"\n",
 					"SELECT * FROM dim_year;"
 				],
-				"execution_count": 50
+				"execution_count": 20
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"select * from norway_medicine limit 5\n",
+					""
+				],
+				"execution_count": 58
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"select * from "
+				],
+				"execution_count": null
 			}
 		]
 	}
