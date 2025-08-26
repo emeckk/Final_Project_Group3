@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "951c4f55-b8c6-41b0-a0d8-cfeb26ad638b"
+				"spark.autotune.trackingId": "e6a8d8f5-e067-4360-b7ba-8f38538f2b02"
 			}
 		},
 		"metadata": {
@@ -188,9 +188,11 @@
 			{
 				"cell_type": "code",
 				"source": [
+					"# Remove unnecessary columns\n",
 					"df_dispensed_units_minimal = df_dispensed_units_filtered[[\"År\", \"ATC-kod\", \"Värde\"]]\n",
 					"df_users_minimal = df_users_filtered[[\"År\", \"ATC-kod\", \"Värde\"]]\n",
 					"\n",
+					"# Rename columns\n",
 					"df_dispensed_units_renamed = (\n",
 					"    df_dispensed_units_minimal\n",
 					"    .withColumnRenamed(\"År\", \"year\")\n",
