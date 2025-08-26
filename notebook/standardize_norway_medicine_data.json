@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "1916859d-d59b-4813-991c-c8645e1715d4"
+				"spark.autotune.trackingId": "964f41bb-1e31-43ad-ba19-df4e93420a54"
 			}
 		},
 		"metadata": {
@@ -73,7 +73,8 @@
 					")\n",
 					"\n",
 					"# Convert to pandas dataframe\n",
-					"df = df_raw.toPandas()"
+					"df = df_raw.toPandas()\n",
+					"df.head()"
 				],
 				"execution_count": 2
 			},
@@ -105,9 +106,10 @@
 					"    'Valuedrug':'atc_level_5', \n",
 					"    'SumSum_DDD': 'expedited_ddd', \n",
 					"    'SumAntall_unike_pasienter': 'users'\n",
-					"})"
+					"})\n",
+					"df_long.head()"
 				],
-				"execution_count": null
+				"execution_count": 3
 			},
 			{
 				"cell_type": "markdown",
