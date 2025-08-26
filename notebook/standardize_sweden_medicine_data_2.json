@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "3a311b98-9d01-4157-89e7-99ca5c0ffc16"
+				"spark.autotune.trackingId": "1c7560cd-b661-43fe-9efc-eac72da20ccc"
 			}
 		},
 		"metadata": {
@@ -86,7 +86,7 @@
 					"csv_files = [f for f in os.listdir(extract_path) if f.endswith('.csv')]\n",
 					"print(csv_files)"
 				],
-				"execution_count": 1
+				"execution_count": 33
 			},
 			{
 				"cell_type": "markdown",
@@ -108,11 +108,15 @@
 					"dispensed_units_path = \"file://\" + os.path.join(extract_path, csv_files[-1])\n",
 					"users_path = \"file://\" + os.path.join(extract_path, csv_files[-2])\n",
 					"\n",
-					"# Convert CSVs to spark dataframes\n",
+					"# Create spark dataframes out of CSVs\n",
 					"df_dispensed_units = spark.read.option(\"header\", True).option(\"delimiter\", \";\").csv(dispensed_units_path)\n",
-					"df_users = spark.read.option(\"header\", True).option(\"delimiter\", \";\").csv(users_path)"
+					"df_users = spark.read.option(\"header\", True).option(\"delimiter\", \";\").csv(users_path)\n",
+					"\n",
+					"df_dispensed_units.show(5)\n",
+					"df_users.show(5)\n",
+					""
 				],
-				"execution_count": 4
+				"execution_count": 35
 			},
 			{
 				"cell_type": "markdown",
@@ -131,13 +135,25 @@
 				"cell_type": "code",
 				"source": [
 					"# List of relevant ATC codes\n",
-					"atc_codes = \n",
+					"atc_codes = [\n",
+					"    'A10AB01','A10AB03','A10AB04','A10AB05','A10AB06',\n",
+					"    'A10AC01','A10AC03','A10AC30','A10AD01','A10AD03',\n",
+					"    'A10AD04','A10AD05','A10AE01','A10AE02','A10AE04',\n",
+					"    'A10AE05','A10AE06','A10AE54','A10AE56','A10BA02',\n",
+					"    'A10BB01','A10BB02','A10BB07','A10BB12','A10BD03',\n",
+					"    'A10BD04','A10BD05','A10BD07','A10BD08','A10BD10',\n",
+					"    'A10BD11','A10BD15','A10BD19','A10BD20','A10BD21',\n",
+					"    'A10BD23','A10BD24','A10BF01','A10BG01','A10BG02',\n",
+					"    'A10BG03','A10BH01','A10BH02','A10BH03','A10BH05',\n",
+					"    'A10BJ01','A10BJ02','A10BJ03','A10BJ05','A10BJ06',\n",
+					"    'A10BK01','A10BK02','A10BK03','A10BK04','A10BX02','A10BX03'\n",
+					"    ]\n",
 					"\n",
 					"# Filter dispensed units dataframe\n",
 					"df_dispensed_units_filtered = df_dispensed_units.filter(\n",
 					"    (col(\"Mått\") == 3) &\n",
 					"    (col(\"Region\") == 0) &\n",
-					"    (col(\"ATC-kod\") in atc_codes) &\n",
+					"    (col(\"ATC-kod\").isin(atc_codes)) &\n",
 					"    (col(\"Ålder\") == 99) &\n",
 					"    (col(\"Kön\") == 3)\n",
 					")\n",
@@ -146,15 +162,16 @@
 					"df_users_filtered = df_users.filter(\n",
 					"    (col(\"Mått\") == 1) &\n",
 					"    (col(\"Region\") == 0) &\n",
-					"    (col(\"ATC-kod\") in atc_codes) &\n",
+					"    (col(\"ATC-kod\").isin(atc_codes)) &\n",
 					"    (col(\"Ålder\") == 99) &\n",
 					"    (col(\"Kön\") == 3)\n",
 					")\n",
 					"\n",
 					"df_dispensed_units_filtered.show(5)\n",
-					"df_users_filtered.show(5)"
+					"df_users_filtered.show(5)\n",
+					"df_dispensed_units_filtered.select(\"ATC-kod\").distinct().show()"
 				],
-				"execution_count": 24
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -192,7 +209,7 @@
 					"df_dispensed_units_renamed.show(5)\n",
 					"df_users_renamed.show(5)"
 				],
-				"execution_count": 27
+				"execution_count": null
 			}
 		]
 	}
