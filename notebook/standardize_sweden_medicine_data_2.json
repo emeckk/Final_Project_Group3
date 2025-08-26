@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "b17a9be0-c4c6-4f36-95e1-9a6c1f495fec"
+				"spark.autotune.trackingId": "1daf5cea-83a9-49c1-a9a1-24a1edf8a6d9"
 			}
 		},
 		"metadata": {
@@ -67,6 +67,7 @@
 					"import zipfile\n",
 					"import os\n",
 					"from io import BytesIO\n",
+					"import pandas as pd\n",
 					"\n",
 					"zip_file_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/staging/sweden_medicine.zip\"\n",
 					"extract_path = \"/tmp/unzipped\"\n",
@@ -82,9 +83,15 @@
 					"\n",
 					"# List extracted CSV files\n",
 					"csv_files = [f for f in os.listdir(extract_path) if f.endswith('.csv')]\n",
-					"print(csv_files)"
+					"print(csv_files)\n",
+					"\n",
+					"for f in csv_files:\n",
+					"    file_path = os.path.join(extract_path, f)\n",
+					"    size_bytes = os.path.getsize(file_path)\n",
+					"    size_mb = size_bytes / (1024 * 1024)\n",
+					"    print(f\"{f}: {size_bytes} bytes ({size_mb:.2f} MB)\")"
 				],
-				"execution_count": 32
+				"execution_count": 39
 			},
 			{
 				"cell_type": "markdown",
@@ -102,9 +109,18 @@
 			{
 				"cell_type": "code",
 				"source": [
-					"df "
+					"# Path to extracted CSV\n",
+					"dispensed_units_path = extract_path + \"/\" + \"'\" + csv_files[-1] + \"'\"\n",
+					"users_path = extract_path + \"/\" + \"'\" + csv_files[-2] + \"'\"\n",
+					"\n",
+					"# Read CSVs with Spark\n",
+					"df_dispensed_units = spark.read.option(\"header\", True).option(\"delimiter\", \";\").csv(dispensed_units_path)\n",
+					"df_users = spark.read.option(\"header\", True).option(\"delimiter\", \";\").csv(users_path)\n",
+					"\n",
+					"df_dispensed_units.show(5)\n",
+					"df_users.show(5)"
 				],
-				"execution_count": null
+				"execution_count": 41
 			}
 		]
 	}
