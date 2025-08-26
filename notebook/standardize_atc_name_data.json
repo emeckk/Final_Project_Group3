@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "37c9fe98-100b-433f-9163-c0f2db856cda"
+				"spark.autotune.trackingId": "97016441-33b7-4db9-a33f-8f650ebf71cc"
 			}
 		},
 		"metadata": {
@@ -75,7 +75,7 @@
 					"\n",
 					"df.head()"
 				],
-				"execution_count": 22
+				"execution_count": 26
 			},
 			{
 				"cell_type": "markdown",
@@ -98,7 +98,7 @@
 					"\n",
 					"df.head()"
 				],
-				"execution_count": 23
+				"execution_count": 27
 			},
 			{
 				"cell_type": "markdown",
@@ -120,7 +120,7 @@
 					"\n",
 					"df.write.mode(\"overwrite\").parquet(\"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/atc_name.parquet\")"
 				],
-				"execution_count": 25
+				"execution_count": 28
 			}
 		]
 	}
