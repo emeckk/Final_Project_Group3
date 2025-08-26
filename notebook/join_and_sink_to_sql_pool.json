@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "08bf6d95-6d24-40ce-b55e-d5e63d62e1a4"
+				"spark.autotune.trackingId": "dd8f16db-1d69-48e5-9776-22c1d84e3856"
 			}
 		},
 		"metadata": {
@@ -28,7 +28,7 @@
 				"display_name": "Synapse PySpark"
 			},
 			"language_info": {
-				"name": "python"
+				"name": "sql"
 			},
 			"a365ComputeOptions": {
 				"id": "/subscriptions/23b183d5-a30f-46b8-b418-ad060fb67787/resourceGroups/group3fp/providers/Microsoft.Synapse/workspaces/group3fpsynapse/bigDataPools/group3fpspark",
@@ -72,22 +72,34 @@
 						"transient": {
 							"deleting": false
 						}
+					},
+					"microsoft": {
+						"language": "python"
 					}
 				},
 				"source": [
-					"denmark_medicine_path = 'abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/denmark_medicine.parquet/'\n",
-					"norway_medicine_path = 'abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/norway_medicine.parquet/'\n",
-					"sweden_medicine_path = 'abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/sweden_medicine.parquet/'\n",
+					"%%pyspark\n",
 					"\n",
-					"cause_of_death_path = 'abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/cause_of_death.parquet/'\n",
-					"population_path = 'abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/population.parquet/'\n",
-					"diabetes_prevalence_path = 'abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/diabetes_prevalence.parquet'"
+					"denmark_medicine_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/denmark_medicine.parquet/\"\n",
+					"norway_medicine_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/norway_medicine.parquet/\"\n",
+					"sweden_medicine_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/sweden_medicine.parquet/\"\n",
+					"\n",
+					"cause_of_death_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/cause_of_death.parquet/\"\n",
+					"population_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/population.parquet/\"\n",
+					"diabetes_prevalence_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/diabetes_prevalence.parquet\""
 				],
-				"execution_count": 11
+				"execution_count": 33
 			},
 			{
 				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "python"
+					}
+				},
 				"source": [
+					"%%pyspark\n",
+					"\n",
 					"df_denmark_medicine = spark.read.parquet(denmark_medicine_path)\n",
 					"df_norway_medicine = spark.read.parquet(norway_medicine_path)\n",
 					"df_sweden_medicine = spark.read.parquet(sweden_medicine_path)\n",
@@ -96,20 +108,37 @@
 					"df_population = spark.read.parquet(population_path)\n",
 					"df_diabetes_prevalence = spark.read.parquet(diabetes_prevalence_path)"
 				],
-				"execution_count": 12
+				"execution_count": 34
 			},
 			{
 				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "python"
+					}
+				},
 				"source": [
-					"df_denmark_medicine.createOrReplaceTempView('denmark_medicine')\n",
-					"df_norway_medicine.createOrReplaceTempView('norway_medicine')\n",
-					"df_sweden_medicine.createOrReplaceTempView('sweden_medicine')\n",
+					"%%pyspark\n",
 					"\n",
-					"df_cause_of_death.createOrReplaceTempView('cause_of_death')\n",
-					"df_population.createOrReplaceTempView('population')\n",
-					"df_diabetes_prevalence.createOrReplaceTempView('diabetes_prevalence')"
+					"df_denmark_medicine.createOrReplaceTempView(\"denmark_medicine\")\n",
+					"df_norway_medicine.createOrReplaceTempView(\"norway_medicine\")\n",
+					"df_sweden_medicine.createOrReplaceTempView(\"sweden_medicine\")\n",
+					"\n",
+					"df_cause_of_death.createOrReplaceTempView(\"cause_of_death\")\n",
+					"df_population.createOrReplaceTempView(\"population\")\n",
+					"df_diabetes_prevalence.createOrReplaceTempView(\"diabetes_prevalence\")"
 				],
-				"execution_count": 13
+				"execution_count": 35
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"select * from sweden_medicine limit 40"
+				],
+				"execution_count": 36
 			},
 			{
 				"cell_type": "code",
@@ -120,53 +149,73 @@
 					"collapsed": false
 				},
 				"source": [
-					"%%sql\n",
 					"\n",
-					"select * from sweden_medicine limit 40"
+					"%%sql\n",
+					"-- Get distinct ATC codes from each country\n",
+					"WITH sweden AS (\n",
+					"    SELECT DISTINCT atc_level_5 FROM sweden_medicine\n",
+					"),\n",
+					"norway AS (\n",
+					"    SELECT DISTINCT atc_level_5 FROM norway_medicine\n",
+					"),\n",
+					"denmark AS (\n",
+					"    SELECT DISTINCT atc_level_5 FROM denmark_medicine\n",
+					")\n",
+					"\n",
+					"-- Full outer join on the ATC codes\n",
+					"SELECT \n",
+					"    s.atc_level_5 AS sweden_atc,\n",
+					"    n.atc_level_5 AS norway_atc,\n",
+					"    d.atc_level_5 AS denmark_atc\n",
+					"FROM sweden s\n",
+					"FULL OUTER JOIN norway n ON s.atc_level_5 = n.atc_level_5\n",
+					"FULL OUTER JOIN denmark d ON COALESCE(s.atc_level_5, n.atc_level_5) = d.atc_level_5;\n",
+					""
 				],
-				"execution_count": 14
+				"execution_count": 24
 			},
 			{
 				"cell_type": "code",
 				"metadata": {
-					"microsoft": {
-						"language": "sparksql"
-					}
+					"collapsed": false
 				},
 				"source": [
-					"%%sql\n",
-					"\n",
-					"CREATE TABLE dim_medicine AS\n",
-					"SELECT \n",
-					"    'Sweden' AS country,\n",
-					"    year,\n",
-					"    atc_level_5,\n",
-					"    dispensed_units,\n",
-					"    users\n",
-					"FROM sweden_medicine\n",
-					"\n",
-					"UNION ALL\n",
-					"\n",
-					"SELECT \n",
-					"    'Norway' AS country,\n",
-					"    year,\n",
-					"    atc_level_5,\n",
-					"    dispensed_units,\n",
-					"    users\n",
-					"FROM norway_medicine\n",
-					"\n",
-					"UNION ALL\n",
-					"\n",
-					"SELECT \n",
-					"    'Denmark' AS country,\n",
-					"    year,\n",
-					"    atc_level_5,\n",
-					"    dispensed_units,\n",
-					"    users\n",
-					"FROM denmark_medicine;\n",
-					"    "
+					"select distinct atc_level_5 from norway_medicine"
 				],
-				"execution_count": 20
+				"execution_count": 40
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"CREATE TABLE IF NOT EXISTS dim_medicine AS \n",
+					"SELECT\n",
+					"    DISTINCT atc_level_5\n",
+					"FROM\n",
+					"    norway_medicine\n",
+					"ORDER BY\n",
+					"    atc_level_5 ASC;"
+				],
+				"execution_count": 41
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"SELECT * FROM dim_medicine"
+				],
+				"execution_count": 42
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					""
+				],
+				"execution_count": null
 			}
 		]
 	}
