@@ -379,8 +379,6 @@
 			{
 				"name": "Create Dim and Fact Tables",
 				"type": "SynapseNotebook",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "Clean Population Data",
