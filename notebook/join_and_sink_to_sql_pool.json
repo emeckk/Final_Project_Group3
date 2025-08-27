@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "a36c59e5-96a9-44ce-83df-febec652edf4"
+				"spark.autotune.trackingId": "387b61e6-d51b-4dd8-8e8e-26b2ef621aa9"
 			}
 		},
 		"metadata": {
@@ -90,7 +90,7 @@
 					"atc_name_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/atc_name.parquet\"\n",
 					""
 				],
-				"execution_count": 1
+				"execution_count": 55
 			},
 			{
 				"cell_type": "code",
@@ -111,7 +111,7 @@
 					"df_diabetes_prevalence = spark.read.parquet(diabetes_prevalence_path)\n",
 					"df_atc_name = spark.read.parquet(atc_name_path)"
 				],
-				"execution_count": 2
+				"execution_count": 56
 			},
 			{
 				"cell_type": "code",
@@ -132,22 +132,13 @@
 					"df_diabetes_prevalence.createOrReplaceTempView(\"diabetes_prevalence\")\n",
 					"df_atc_name.createOrReplaceTempView('atc_name')"
 				],
-				"execution_count": 3
-			},
-			{
-				"cell_type": "code",
-				"source": [
-					"sql_dwh_url = \"https://web.azuresynapse.net?workspace=%2fsubscriptions%2f23b183d5-a30f-46b8-b418-ad060fb67787%2fresourceGroups%2fgroup3fp%2fproviders%2fMicrosoft.Synapse%2fworkspaces%2fgroup3fpsynapse\"\n",
-					"sql_dwh_user = \"sqladminuser\"\n",
-					"sql_dwh_password = \"Password!!\""
-				],
-				"execution_count": null
+				"execution_count": 57
 			},
 			{
 				"cell_type": "code",
 				"metadata": {
 					"jupyter": {
-						"outputs_hidden": true
+						"outputs_hidden": false
 					},
 					"collapsed": false
 				},
@@ -170,23 +161,10 @@
 					"\n",
 					"--For testing\n",
 					"--SELECT * FROM dim_medicine;\n",
+					"\n",
 					""
 				],
-				"execution_count": 4
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"microsoft": {
-						"language": "scala"
-					}
-				},
-				"source": [
-					"%%spark\n",
-					"\n",
-					"sweden_prod = spark.table()"
-				],
-				"execution_count": null
+				"execution_count": 66
 			},
 			{
 				"cell_type": "code",
@@ -210,7 +188,7 @@
 					"--SELECT * FROM dim_country;\n",
 					""
 				],
-				"execution_count": 5
+				"execution_count": 59
 			},
 			{
 				"cell_type": "code",
@@ -226,7 +204,7 @@
 					"--For testing\n",
 					"--SELECT * FROM dim_year;"
 				],
-				"execution_count": 6
+				"execution_count": 60
 			},
 			{
 				"cell_type": "code",
@@ -278,7 +256,7 @@
 					"--For testing\n",
 					"--SELECT * FROM fact_medicine;"
 				],
-				"execution_count": 7
+				"execution_count": 61
 			},
 			{
 				"cell_type": "code",
@@ -313,7 +291,36 @@
 					"\n",
 					""
 				],
-				"execution_count": 15
+				"execution_count": 62
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "python"
+					}
+				},
+				"source": [
+					"%%pyspark\n",
+					"\n",
+					"# Convert tables to suitible format\n",
+					"dim_medicine_prod = spark.table(\"dim_medicine\")\n",
+					"dim_year_prod = spark.table(\"dim_year\")\n",
+					"dim_country_prod = spark.table(\"dim_country\")\n",
+					"fact_medicine_prod = spark.table(\"fact_medicine\")\n",
+					"fact_country_prod = spark.table(\"fact_country\")\n",
+					"\n",
+					"# Saves as parquet to production folder\n",
+					"dim_medicine_prod.write.mode(\"overwrite\").parquet(\"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/production/dim_medicine.parquet\")\n",
+					"dim_year_prod.write.mode(\"overwrite\").parquet(\"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/production/dim_year.parquet\")\n",
+					"dim_country_prod.write.mode(\"overwrite\").parquet(\"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/production/dim_country.parquet\")\n",
+					"fact_medicine_prod.write.mode(\"overwrite\").parquet(\"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/production/fact_medicine.parquet\")\n",
+					"fact_country_prod.write.mode(\"overwrite\").parquet(\"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/production/fact_country.parquet\")\n",
+					"\n",
+					"\n",
+					""
+				],
+				"execution_count": 69
 			}
 		]
 	}
