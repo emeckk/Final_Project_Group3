@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "c7ee997d-170e-457b-b041-e6935831bbd7"
+				"spark.autotune.trackingId": "d0f5deee-df20-419b-9533-aec40c0fc37f"
 			}
 		},
 		"metadata": {
@@ -66,21 +66,73 @@
 					"df_sweden_medicine.createOrReplaceTempView(\"sweden_medicine\")\n",
 					"df_sweden_medicine_2.createOrReplaceTempView(\"sweden_medicine_2\")"
 				],
-				"execution_count": null
+				"execution_count": 10
 			},
 			{
 				"cell_type": "code",
 				"metadata": {
 					"microsoft": {
 						"language": "sparksql"
-					}
+					},
+					"collapsed": false
 				},
 				"source": [
 					"%%sql\n",
 					"\n",
+					"REFRESH TABLE sweden_medicine;\n",
+					"\n",
+					"--- Sort based on values missing from the other sweden dataset\n",
+					"SELECT * FROM sweden_medicine WHERE atc_level_5 IN (\"A10AC03\", \"A10AC30\", \"A10AD03\", \"A10AE02\", \"A10BG01\");\n",
+					"\n",
+					"-- Count rows for the full table\n",
+					"SELECT COUNT(*) AS total_rows\n",
+					"FROM sweden_medicine WHERE sex = \"Båda könen\";\n",
+					"\n",
+					"-- Count rows for the filtered ATC codes\n",
+					"SELECT COUNT(*) AS filtered_rows\n",
+					"FROM sweden_medicine\n",
+					"WHERE atc_level_5 IN (\n",
+					"    'A10BD05','A10BH03','A10BD08','A10AD04','A10BJ03','A10BD19','A10BD07','A10BF01',\n",
+					"    'A10BD11','A10BK04','A10AB06','A10BB01','A10BH02','A10BG03','A10BK03','A10BH01',\n",
+					"    'A10BB07','A10AB03','A10BD04','A10BJ06','A10BK02','A10AD05','A10AE01','A10AB04',\n",
+					"    'A10AE54','A10BK01','A10BH05','A10BX02','A10BD23','A10BJ01','A10AD01','A10BA02',\n",
+					"    'A10AB05','A10BB02','A10AE06','A10BD20','A10BD10','A10AE04','A10BJ02','A10BX03',\n",
+					"    'A10AC01','A10BJ05','A10BB12','A10BG02','A10BD15','A10BD03','A10AB01','A10BD24',\n",
+					"    'A10AE56','A10BD21','A10AE05'\n",
+					") AND sex = \"Båda könen\";\n",
+					"\n",
+					"SELECT *\n",
+					"FROM sweden_medicine\n",
+					"WHERE atc_level_5 NOT IN (\n",
+					"    'A10BD05','A10BH03','A10BD08','A10AD04','A10BJ03','A10BD19','A10BD07','A10BF01',\n",
+					"    'A10BD11','A10BK04','A10AB06','A10BB01','A10BH02','A10BG03','A10BK03','A10BH01',\n",
+					"    'A10BB07','A10AB03','A10BD04','A10BJ06','A10BK02','A10AD05','A10AE01','A10AB04',\n",
+					"    'A10AE54','A10BK01','A10BH05','A10BX02','A10BD23','A10BJ01','A10AD01','A10BA02',\n",
+					"    'A10AB05','A10BB02','A10AE06','A10BD20','A10BD10','A10AE04','A10BJ02','A10BX03',\n",
+					"    'A10AC01','A10BJ05','A10BB12','A10BG02','A10BD15','A10BD03','A10AB01','A10BD24',\n",
+					"    'A10AE56','A10BD21','A10AE05'\n",
+					") AND sex = \"Båda könen\";\n",
+					"\n",
+					"SELECT * FROM sweden_medicine_2 WHERE atc_level_5 = \"A10BX16\";"
+				],
+				"execution_count": 16
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"\n",
+					"SELECT * FROM sweden_medicine WHERE year = 2006 AND sex = \"Båda könen\";\n",
+					"SELECT * FROM sweden_medicine_2 WHERE year = 2006;\n",
 					""
 				],
-				"execution_count": null
+				"execution_count": 17
 			}
 		]
 	}
