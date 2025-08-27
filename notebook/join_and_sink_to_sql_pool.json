@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "ac21cfd5-61f9-4b8e-82f9-7b54fa07c858"
+				"spark.autotune.trackingId": "0f20cafc-1d0e-406a-b585-3fc99e080c50"
 			}
 		},
 		"metadata": {
@@ -90,7 +90,7 @@
 					"atc_name_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/atc_name.parquet\"\n",
 					""
 				],
-				"execution_count": 1
+				"execution_count": 10
 			},
 			{
 				"cell_type": "code",
@@ -270,7 +270,10 @@
 					"    md5(CONCAT_WS('|', year, country_code)) AS id,\n",
 					"    p.year,\n",
 					"    p.country_code,\n",
-					"    d.\n",
+					"    d.deaths_diabetes_mellitus,\n",
+					"    d.deaths_cardiovascular_disease,\n",
+					"    d.deaths_myocardial_infarction,\n",
+					"    d.deaths_kidney_and_ureter_disease,\n",
 					""
 				],
 				"execution_count": null
