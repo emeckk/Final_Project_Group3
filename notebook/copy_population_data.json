@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "201fd7b0-20a2-43b3-a5ca-f274724344b4"
+				"spark.autotune.trackingId": "fc30f703-0c7d-4df3-a48b-2f39270e5211"
 			}
 		},
 		"metadata": {
@@ -82,17 +82,22 @@
 					"\n",
 					"#Convert this into a table\n",
 					"rows = []\n",
+					"#find all the values, in this case country, measue(population), sex, age \n",
 					"for series in root.findall(\".//generic:Series\", ns):\n",
 					"    series_key = {v.attrib[\"id\"]: v.attrib[\"value\"]\n",
 					"                  for v in series.findall(\"generic:SeriesKey/generic:Value\", ns)}\n",
-					"    \n",
+					"\n",
+					"#find all the observations in the series, for this xml it is year and population\n",
 					"    for obs in series.findall(\"generic:Obs\", ns):\n",
 					"        year = obs.find(\"generic:ObsDimension\", ns).attrib[\"value\"]\n",
 					"        value = obs.find(\"generic:ObsValue\", ns).attrib[\"value\"]\n",
 					"        \n",
+					"        #create row with all the series_key, id and value, and also \n",
+					"        #create the year and value from the observations found earlier and assign appropriate names\n",
 					"        row = series_key.copy()\n",
 					"        row[\"TIME_PERIOD\"] = year\n",
 					"        row[\"POPULATION\"] = int(value)\n",
+					"        #put all of this into a list\n",
 					"        rows.append(row)\n",
 					"        \n",
 					"#Convert the rows into a pandas dataframe\n",
