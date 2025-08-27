@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "8754cd40-3539-4e40-8160-e32c431c6ac9"
+				"spark.autotune.trackingId": "a36c59e5-96a9-44ce-83df-febec652edf4"
 			}
 		},
 		"metadata": {
@@ -136,7 +136,19 @@
 			},
 			{
 				"cell_type": "code",
+				"source": [
+					"sql_dwh_url = \"https://web.azuresynapse.net?workspace=%2fsubscriptions%2f23b183d5-a30f-46b8-b418-ad060fb67787%2fresourceGroups%2fgroup3fp%2fproviders%2fMicrosoft.Synapse%2fworkspaces%2fgroup3fpsynapse\"\n",
+					"sql_dwh_user = \"sqladminuser\"\n",
+					"sql_dwh_password = \"Password!!\""
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
 				"metadata": {
+					"jupyter": {
+						"outputs_hidden": true
+					},
 					"collapsed": false
 				},
 				"source": [
@@ -156,11 +168,25 @@
 					"LEFT JOIN atc_name n4 ON n4.atc_code = SUBSTRING(s.atc_level_5, 1, 5)\n",
 					"LEFT JOIN atc_name n3 ON n3.atc_code = SUBSTRING(s.atc_level_5, 1, 3);\n",
 					"\n",
-					"SELECT * FROM dim_medicine;\n",
-					"\n",
+					"--For testing\n",
+					"--SELECT * FROM dim_medicine;\n",
 					""
 				],
 				"execution_count": 4
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "scala"
+					}
+				},
+				"source": [
+					"%%spark\n",
+					"\n",
+					"sweden_prod = spark.table()"
+				],
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -180,7 +206,8 @@
 					"('SWE', 'Sweden'),\n",
 					"('NOR', 'Norway');\n",
 					"\n",
-					"SELECT * FROM dim_country;\n",
+					"--For testing\n",
+					"--SELECT * FROM dim_country;\n",
 					""
 				],
 				"execution_count": 5
@@ -196,7 +223,8 @@
 					"CREATE TABLE dim_year AS\n",
 					"SELECT explode(sequence(1980, 2025)) AS year;\n",
 					"\n",
-					"SELECT * FROM dim_year;"
+					"--For testing\n",
+					"--SELECT * FROM dim_year;"
 				],
 				"execution_count": 6
 			},
@@ -247,7 +275,8 @@
 					"    norway_medicine\n",
 					"ORDER BY year, country_code ASC;\n",
 					"\n",
-					"SELECT * FROM fact_medicine;"
+					"--For testing\n",
+					"--SELECT * FROM fact_medicine;"
 				],
 				"execution_count": 7
 			},
@@ -257,6 +286,9 @@
 					"collapsed": false
 				},
 				"source": [
+					"DROP TABLE IF EXISTS fact_country;\n",
+					"\n",
+					"CREATE TABLE fact_country AS\n",
 					"SELECT\n",
 					"    md5(CONCAT_WS('|', pop.year, pop.country)) AS id,\n",
 					"    pop.year,\n",
@@ -274,20 +306,14 @@
 					"INNER JOIN cause_of_death dth ON dth.year = pop.year AND dth.country = pop.country\n",
 					"INNER JOIN diabetes_prevalence pre ON pre.year = pop.year AND pre.country = pop.country\n",
 					"ORDER BY \n",
-					"    year, country ASC \n",
+					"    year, country ASC;\n",
 					"\n",
-					"\n",
+					"--For testing\n",
+					"--Select * from fact_country;\n",
 					"\n",
 					""
 				],
 				"execution_count": 15
-			},
-			{
-				"cell_type": "code",
-				"source": [
-					""
-				],
-				"execution_count": null
 			}
 		]
 	}
