@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "a305abaf-6dca-4538-a978-574be3ff9f5c"
+				"spark.autotune.trackingId": "ac21cfd5-61f9-4b8e-82f9-7b54fa07c858"
 			}
 		},
 		"metadata": {
@@ -90,7 +90,7 @@
 					"atc_name_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/atc_name.parquet\"\n",
 					""
 				],
-				"execution_count": 2
+				"execution_count": 1
 			},
 			{
 				"cell_type": "code",
@@ -111,7 +111,7 @@
 					"df_diabetes_prevalence = spark.read.parquet(diabetes_prevalence_path)\n",
 					"df_atc_name = spark.read.parquet(atc_name_path)"
 				],
-				"execution_count": 3
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -132,7 +132,7 @@
 					"df_diabetes_prevalence.createOrReplaceTempView(\"diabetes_prevalence\")\n",
 					"df_atc_name.createOrReplaceTempView('atc_name')"
 				],
-				"execution_count": 4
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -160,7 +160,7 @@
 					"\n",
 					""
 				],
-				"execution_count": 5
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -183,7 +183,7 @@
 					"SELECT * FROM dim_country;\n",
 					""
 				],
-				"execution_count": 6
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -198,7 +198,7 @@
 					"\n",
 					"SELECT * FROM dim_year;"
 				],
-				"execution_count": 7
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -249,7 +249,7 @@
 					"\n",
 					"SELECT * FROM fact_medicine;"
 				],
-				"execution_count": 29
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -261,7 +261,7 @@
 					"select * from cause_of_death limit 2;\n",
 					"select * from diabetes_prevalence limit 2;"
 				],
-				"execution_count": 31
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
