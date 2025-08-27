@@ -125,8 +125,6 @@
 			{
 				"name": "Standardize Prevalence Data",
 				"type": "ExecuteDataFlow",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "Copy Diabetes Prevalence",
@@ -307,6 +305,8 @@
 			{
 				"name": "Standardize Cause of Death Data",
 				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "Copy Cause of Death Data",

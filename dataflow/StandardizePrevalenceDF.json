@@ -39,9 +39,6 @@
 				},
 				{
 					"name": "DropAgeColumn"
-				},
-				{
-					"name": "SumPrevalencePerCountry"
 				}
 			],
 			"scriptLines": [
@@ -63,7 +60,7 @@
 				"          year = value.TimeDim,",
 				"          country = value.SpatialDim,",
 				"          age = value.Dim2,",
-				"          diabetes_share = value.NumericValue,",
+				"          diabetic_share = value.NumericValue,",
 				"          lower_confidence = value.Low,",
 				"          upper_confidence = value.High",
 				"     ),",
@@ -80,16 +77,13 @@
 				"SortValues select(mapColumn(",
 				"          year,",
 				"          country,",
-				"          diabetes_share,",
+				"          diabetic_share,",
 				"          lower_confidence,",
 				"          upper_confidence",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> DropAgeColumn",
-				"DropAgeColumn aggregate(groupBy(country,",
-				"          year),",
-				"     diabetes_share = sum(diabetes_share)) ~> SumPrevalencePerCountry",
-				"SumPrevalencePerCountry sink(allowSchemaDrift: true,",
+				"DropAgeColumn sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
 				"     truncate: true,",
