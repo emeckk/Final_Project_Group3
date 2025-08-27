@@ -97,7 +97,6 @@
 					"df = df[[\"atc_code\", \"atc_name\"]]\n",
 					"df.head()"
 				],
-				"execution_count": 2
 			},
 			{
 				"cell_type": "markdown",
