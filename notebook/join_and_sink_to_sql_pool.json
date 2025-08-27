@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "1a3c095e-f596-4a11-a2a5-9865f3a24cf4"
+				"spark.autotune.trackingId": "a649078c-41f0-4c14-9201-6d6eb6468174"
 			}
 		},
 		"metadata": {
@@ -87,10 +87,9 @@
 					"cause_of_death_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/cause_of_death.parquet/\"\n",
 					"population_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/population.parquet/\"\n",
 					"diabetes_prevalence_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/diabetes_prevalence.parquet\"\n",
-					"atc_name_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/atc_name.parquet\"\n",
-					""
+					"atc_name_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/atc_name.parquet\""
 				],
-				"execution_count": 55
+				"execution_count": 2
 			},
 			{
 				"cell_type": "code",
@@ -111,7 +110,7 @@
 					"df_diabetes_prevalence = spark.read.parquet(diabetes_prevalence_path)\n",
 					"df_atc_name = spark.read.parquet(atc_name_path)"
 				],
-				"execution_count": 56
+				"execution_count": 3
 			},
 			{
 				"cell_type": "code",
@@ -132,7 +131,7 @@
 					"df_diabetes_prevalence.createOrReplaceTempView(\"diabetes_prevalence\")\n",
 					"df_atc_name.createOrReplaceTempView('atc_name')"
 				],
-				"execution_count": 57
+				"execution_count": 4
 			},
 			{
 				"cell_type": "code",
@@ -160,11 +159,9 @@
 					"LEFT JOIN atc_name n3 ON n3.atc_code = SUBSTRING(s.atc_level_5, 1, 3);\n",
 					"\n",
 					"--For testing\n",
-					"--SELECT * FROM dim_medicine;\n",
-					"\n",
-					""
+					"--SELECT * FROM dim_medicine;"
 				],
-				"execution_count": 66
+				"execution_count": 5
 			},
 			{
 				"cell_type": "code",
@@ -188,7 +185,7 @@
 					"--SELECT * FROM dim_country;\n",
 					""
 				],
-				"execution_count": 59
+				"execution_count": 6
 			},
 			{
 				"cell_type": "code",
@@ -204,7 +201,7 @@
 					"--For testing\n",
 					"--SELECT * FROM dim_year;"
 				],
-				"execution_count": 60
+				"execution_count": 7
 			},
 			{
 				"cell_type": "code",
@@ -256,7 +253,7 @@
 					"--For testing\n",
 					"--SELECT * FROM fact_medicine;"
 				],
-				"execution_count": 61
+				"execution_count": 8
 			},
 			{
 				"cell_type": "code",
@@ -277,8 +274,8 @@
 					"    dth.deaths_kidney_and_ureter_disease,\n",
 					"    dth.deaths_total,\n",
 					"    pop.population,\n",
-					"    ROUND(pop.population * (pre.diabetic_share * 1/100)) AS diabetic_population,\n",
-					"    pre.diabetic_share\n",
+					"    pre.diabetic_share / 100 AS diabetic_share,\n",
+					"    ROUND(pop.population * pre.diabetic_share) AS diabetic_population\n",
 					"FROM \n",
 					"    population pop \n",
 					"INNER JOIN cause_of_death dth ON dth.year = pop.year AND dth.country = pop.country\n",
@@ -287,11 +284,11 @@
 					"    year, country ASC;\n",
 					"\n",
 					"--For testing\n",
-					"--Select * from fact_country;\n",
+					"Select * from fact_country;\n",
 					"\n",
 					""
 				],
-				"execution_count": 62
+				"execution_count": 11
 			},
 			{
 				"cell_type": "code",
@@ -320,7 +317,7 @@
 					"\n",
 					""
 				],
-				"execution_count": 69
+				"execution_count": 10
 			}
 		]
 	}
