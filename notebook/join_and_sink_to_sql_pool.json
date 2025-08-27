@@ -17,15 +17,15 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "a649078c-41f0-4c14-9201-6d6eb6468174"
+				"spark.autotune.trackingId": "2fdfce48-4916-43b7-a7dd-4004086a2b38"
 			}
 		},
 		"metadata": {
 			"saveOutput": true,
 			"enableDebugMode": false,
 			"kernelspec": {
-				"name": "synapse_pyspark",
-				"display_name": "Synapse PySpark"
+				"name": "synapse_sparksql",
+				"display_name": "sql"
 			},
 			"language_info": {
 				"name": "sql"
@@ -284,9 +284,7 @@
 					"    year, country ASC;\n",
 					"\n",
 					"--For testing\n",
-					"Select * from fact_country;\n",
-					"\n",
-					""
+					"--SELECT * FROM fact_country;"
 				],
 				"execution_count": 11
 			},
@@ -312,10 +310,7 @@
 					"dim_year_prod.write.mode(\"overwrite\").parquet(\"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/production/dim_year.parquet\")\n",
 					"dim_country_prod.write.mode(\"overwrite\").parquet(\"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/production/dim_country.parquet\")\n",
 					"fact_medicine_prod.write.mode(\"overwrite\").parquet(\"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/production/fact_medicine.parquet\")\n",
-					"fact_country_prod.write.mode(\"overwrite\").parquet(\"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/production/fact_country.parquet\")\n",
-					"\n",
-					"\n",
-					""
+					"fact_country_prod.write.mode(\"overwrite\").parquet(\"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/production/fact_country.parquet\")"
 				],
 				"execution_count": 10
 			}
