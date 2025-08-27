@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "964f41bb-1e31-43ad-ba19-df4e93420a54"
+				"spark.autotune.trackingId": "b6a12d66-08ab-4ace-bcc1-f5865c447736"
 			}
 		},
 		"metadata": {
@@ -76,7 +76,7 @@
 					"df = df_raw.toPandas()\n",
 					"df.head()"
 				],
-				"execution_count": 2
+				"execution_count": 4
 			},
 			{
 				"cell_type": "markdown",
@@ -109,7 +109,7 @@
 					"})\n",
 					"df_long.head()"
 				],
-				"execution_count": 3
+				"execution_count": 8
 			},
 			{
 				"cell_type": "markdown",
