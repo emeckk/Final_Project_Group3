@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "40114bff-6107-4abc-ba43-88cb88ee083c"
+				"spark.autotune.trackingId": "c7ee997d-170e-457b-b041-e6935831bbd7"
 			}
 		},
 		"metadata": {
@@ -66,7 +66,7 @@
 					"df_sweden_medicine.createOrReplaceTempView(\"sweden_medicine\")\n",
 					"df_sweden_medicine_2.createOrReplaceTempView(\"sweden_medicine_2\")"
 				],
-				"execution_count": 4
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
