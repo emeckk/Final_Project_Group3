@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "28d6500e-6474-4429-bdd2-95f84250029c"
+				"spark.autotune.trackingId": "ee16033a-f7ae-4d95-bc8a-c6df05ddbc52"
 			}
 		},
 		"metadata": {
@@ -76,11 +76,17 @@
 					"    'SumAntall_unike_pasienter': 'users'\n",
 					"})\n",
 					"\n",
+					"#round columns and convert to int\n",
+					"df_long['dispensed_ddd'] = df_long['dispensed_ddd'].round(decimals=0).fillna(0).astype(int)\n",
+					"df_long['users'] = df_long['users'].round(decimals=0).fillna(0).astype(int)\n",
+					"\n",
+					"\n",
+					"\n",
 					"#for testing purposes\n",
-					"#print(df_long.count())\n",
-					"#df_long.head(900)"
+					"print(df_long.count())\n",
+					"df_long.head(900)"
 				],
-				"execution_count": 1
+				"execution_count": 7
 			},
 			{
 				"cell_type": "code",
@@ -90,7 +96,7 @@
 					"output_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/norway_medicine.parquet\"\n",
 					"spark_df.write.mode(\"overwrite\").parquet(output_path)"
 				],
-				"execution_count": 23
+				"execution_count": 8
 			}
 		]
 	}

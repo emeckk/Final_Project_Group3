@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "08bf6d95-6d24-40ce-b55e-d5e63d62e1a4"
+				"spark.autotune.trackingId": "a305abaf-6dca-4538-a978-574be3ff9f5c"
 			}
 		},
 		"metadata": {
@@ -28,7 +28,7 @@
 				"display_name": "Synapse PySpark"
 			},
 			"language_info": {
-				"name": "python"
+				"name": "sql"
 			},
 			"a365ComputeOptions": {
 				"id": "/subscriptions/23b183d5-a30f-46b8-b418-ad060fb67787/resourceGroups/group3fp/providers/Microsoft.Synapse/workspaces/group3fpsynapse/bigDataPools/group3fpspark",
@@ -72,101 +72,208 @@
 						"transient": {
 							"deleting": false
 						}
+					},
+					"microsoft": {
+						"language": "python"
 					}
 				},
 				"source": [
-					"denmark_medicine_path = 'abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/denmark_medicine.parquet/'\n",
-					"norway_medicine_path = 'abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/norway_medicine.parquet/'\n",
-					"sweden_medicine_path = 'abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/sweden_medicine.parquet/'\n",
+					"%%pyspark\n",
 					"\n",
-					"cause_of_death_path = 'abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/cause_of_death.parquet/'\n",
-					"population_path = 'abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/population.parquet/'\n",
-					"diabetes_prevalence_path = 'abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/diabetes_prevalence.parquet'"
+					"denmark_medicine_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/denmark_medicine.parquet/\"\n",
+					"norway_medicine_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/norway_medicine.parquet/\"\n",
+					"sweden_medicine_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/sweden_medicine.parquet/\"\n",
+					"\n",
+					"cause_of_death_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/cause_of_death.parquet/\"\n",
+					"population_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/population.parquet/\"\n",
+					"diabetes_prevalence_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/diabetes_prevalence.parquet\"\n",
+					"atc_name_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/atc_name.parquet\"\n",
+					""
 				],
-				"execution_count": 11
+				"execution_count": 2
 			},
 			{
 				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "python"
+					}
+				},
 				"source": [
+					"%%pyspark\n",
+					"\n",
 					"df_denmark_medicine = spark.read.parquet(denmark_medicine_path)\n",
 					"df_norway_medicine = spark.read.parquet(norway_medicine_path)\n",
 					"df_sweden_medicine = spark.read.parquet(sweden_medicine_path)\n",
 					"\n",
 					"df_cause_of_death = spark.read.parquet(cause_of_death_path)\n",
 					"df_population = spark.read.parquet(population_path)\n",
-					"df_diabetes_prevalence = spark.read.parquet(diabetes_prevalence_path)"
+					"df_diabetes_prevalence = spark.read.parquet(diabetes_prevalence_path)\n",
+					"df_atc_name = spark.read.parquet(atc_name_path)"
 				],
-				"execution_count": 12
-			},
-			{
-				"cell_type": "code",
-				"source": [
-					"df_denmark_medicine.createOrReplaceTempView('denmark_medicine')\n",
-					"df_norway_medicine.createOrReplaceTempView('norway_medicine')\n",
-					"df_sweden_medicine.createOrReplaceTempView('sweden_medicine')\n",
-					"\n",
-					"df_cause_of_death.createOrReplaceTempView('cause_of_death')\n",
-					"df_population.createOrReplaceTempView('population')\n",
-					"df_diabetes_prevalence.createOrReplaceTempView('diabetes_prevalence')"
-				],
-				"execution_count": 13
+				"execution_count": 3
 			},
 			{
 				"cell_type": "code",
 				"metadata": {
 					"microsoft": {
-						"language": "sparksql"
-					},
-					"collapsed": false
-				},
-				"source": [
-					"%%sql\n",
-					"\n",
-					"select * from sweden_medicine limit 40"
-				],
-				"execution_count": 14
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"microsoft": {
-						"language": "sparksql"
+						"language": "python"
 					}
 				},
 				"source": [
-					"%%sql\n",
+					"%%pyspark\n",
+					"\n",
+					"df_denmark_medicine.createOrReplaceTempView(\"denmark_medicine\")\n",
+					"df_norway_medicine.createOrReplaceTempView(\"norway_medicine\")\n",
+					"df_sweden_medicine.createOrReplaceTempView(\"sweden_medicine\")\n",
+					"\n",
+					"df_cause_of_death.createOrReplaceTempView(\"cause_of_death\")\n",
+					"df_population.createOrReplaceTempView(\"population\")\n",
+					"df_diabetes_prevalence.createOrReplaceTempView(\"diabetes_prevalence\")\n",
+					"df_atc_name.createOrReplaceTempView('atc_name')"
+				],
+				"execution_count": 4
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"DROP TABLE IF EXISTS dim_medicine;\n",
 					"\n",
 					"CREATE TABLE dim_medicine AS\n",
-					"SELECT \n",
-					"    'Sweden' AS country,\n",
-					"    year,\n",
-					"    atc_level_5,\n",
-					"    dispensed_units,\n",
-					"    users\n",
-					"FROM sweden_medicine\n",
+					"SELECT DISTINCT\n",
+					"    s.atc_level_5,\n",
+					"    n5.atc_name AS atc_level_5_name,\n",
+					"    SUBSTRING(s.atc_level_5, 1, 5) AS atc_level_4,\n",
+					"    n4.atc_name AS atc_level_4_name,\n",
+					"    SUBSTRING(s.atc_level_5, 1, 3) AS atc_level_3,\n",
+					"    n3.atc_name AS atc_level_3_name\n",
+					"FROM \n",
+					"    sweden_medicine s \n",
+					"LEFT JOIN atc_name n5 ON n5.atc_code = s.atc_level_5  \n",
+					"LEFT JOIN atc_name n4 ON n4.atc_code = SUBSTRING(s.atc_level_5, 1, 5)\n",
+					"LEFT JOIN atc_name n3 ON n3.atc_code = SUBSTRING(s.atc_level_5, 1, 3);\n",
 					"\n",
-					"UNION ALL\n",
+					"SELECT * FROM dim_medicine;\n",
 					"\n",
-					"SELECT \n",
-					"    'Norway' AS country,\n",
-					"    year,\n",
-					"    atc_level_5,\n",
-					"    dispensed_units,\n",
-					"    users\n",
-					"FROM norway_medicine\n",
-					"\n",
-					"UNION ALL\n",
-					"\n",
-					"SELECT \n",
-					"    'Denmark' AS country,\n",
-					"    year,\n",
-					"    atc_level_5,\n",
-					"    dispensed_units,\n",
-					"    users\n",
-					"FROM denmark_medicine;\n",
-					"    "
+					""
 				],
-				"execution_count": 20
+				"execution_count": 5
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"DROP TABLE IF EXISTS dim_country;\n",
+					"\n",
+					"CREATE TABLE IF NOT EXISTS dim_country(\n",
+					"    country_code STRING,\n",
+					"    country_name STRING\n",
+					");\n",
+					"\n",
+					"INSERT INTO dim_country VALUES\n",
+					"('DNK', 'Denmark'),\n",
+					"('SWE', 'Sweden'),\n",
+					"('NOR', 'Norway');\n",
+					"\n",
+					"SELECT * FROM dim_country;\n",
+					""
+				],
+				"execution_count": 6
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"DROP TABLE IF EXISTS dim_year;\n",
+					"\n",
+					"CREATE TABLE dim_year AS\n",
+					"SELECT explode(sequence(1980, 2025)) AS year;\n",
+					"\n",
+					"SELECT * FROM dim_year;"
+				],
+				"execution_count": 7
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"DROP TABLE IF EXISTS fact_medicine;\n",
+					"\n",
+					"CREATE TABLE fact_medicine AS\n",
+					"SELECT\n",
+					"    md5(CONCAT_WS('|', atc_level_5, CAST(year AS STRING), 'SWE')) AS id,\n",
+					"    atc_level_5,\n",
+					"    year,\n",
+					"    'SWE' AS country_code,\n",
+					"    dispensed_units,\n",
+					"    users,\n",
+					"    NULL AS dispensed_ddd\n",
+					"FROM\n",
+					"    sweden_medicine \n",
+					"\n",
+					"UNION ALL\n",
+					"\n",
+					"SELECT\n",
+					"    md5(CONCAT_WS('|', atc_level_5, CAST(year AS STRING), 'DNK')) AS id,\n",
+					"    atc_level_5,\n",
+					"    year,\n",
+					"    'DNK' AS country_code,\n",
+					"    dispensed_units,\n",
+					"    users,\n",
+					"    dispensed_ddd\n",
+					"FROM\n",
+					"    denmark_medicine\n",
+					"\n",
+					"UNION ALL\n",
+					"\n",
+					"SELECT \n",
+					"    md5(CONCAT_WS('|', atc_level_5, CAST(year AS STRING), 'NOR')) AS id,\n",
+					"    atc_level_5,\n",
+					"    year,\n",
+					"    'NOR' AS country_code,\n",
+					"    NULL AS dispensed_units,\n",
+					"    users,\n",
+					"    dispensed_ddd\n",
+					"FROM\n",
+					"    norway_medicine\n",
+					"ORDER BY year, country_code ASC;\n",
+					"\n",
+					"SELECT * FROM fact_medicine;"
+				],
+				"execution_count": 29
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"select * from population limit 2;\n",
+					"select * from cause_of_death limit 2;\n",
+					"select * from diabetes_prevalence limit 2;"
+				],
+				"execution_count": 31
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"SELECT\n",
+					"    md5(CONCAT_WS('|', year, country_code)) AS id,\n",
+					"    p.year,\n",
+					"    p.country_code,\n",
+					"    d.\n",
+					""
+				],
+				"execution_count": null
 			}
 		]
 	}

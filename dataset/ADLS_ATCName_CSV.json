@@ -1,0 +1,24 @@
+{
+	"name": "ADLS_ATCName_CSV",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "group3fpadls",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "atc_name.csv",
+				"folderPath": "staging",
+				"container": "group3fpfilesystem"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
