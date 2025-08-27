@@ -1,0 +1,87 @@
+{
+	"name": "check_atc_codes",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "group3fpspark",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 1,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "true",
+				"spark.dynamicAllocation.minExecutors": "1",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "40114bff-6107-4abc-ba43-88cb88ee083c"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/23b183d5-a30f-46b8-b418-ad060fb67787/resourceGroups/group3fp/providers/Microsoft.Synapse/workspaces/group3fpsynapse/bigDataPools/group3fpspark",
+				"name": "group3fpspark",
+				"type": "Spark",
+				"endpoint": "https://group3fpsynapse.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/group3fpspark",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "3.4",
+				"nodeCount": 10,
+				"cores": 4,
+				"memory": 28,
+				"automaticScaleJobs": true
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"source": [
+					"#denmark_medicine_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/denmark_medicine.parquet/\"\n",
+					"#norway_medicine_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/norway_medicine.parquet/\"\n",
+					"sweden_medicine_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/sweden_medicine.parquet/\"\n",
+					"sweden_medicine_path_2 = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/sweden_medicine_2.parquet/\"\n",
+					"\n",
+					"#df_denmark_medicine = spark.read.parquet(denmark_medicine_path)\n",
+					"#df_norway_medicine = spark.read.parquet(norway_medicine_path)\n",
+					"df_sweden_medicine = spark.read.parquet(sweden_medicine_path)\n",
+					"df_sweden_medicine_2 = spark.read.parquet(sweden_medicine_path_2)\n",
+					"\n",
+					"#df_denmark_medicine.createOrReplaceTempView(\"denmark_medicine\")\n",
+					"#df_norway_medicine.createOrReplaceTempView(\"norway_medicine\")\n",
+					"df_sweden_medicine.createOrReplaceTempView(\"sweden_medicine\")\n",
+					"df_sweden_medicine_2.createOrReplaceTempView(\"sweden_medicine_2\")"
+				],
+				"execution_count": 4
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "sparksql"
+					}
+				},
+				"source": [
+					"%%sql\n",
+					"\n",
+					""
+				],
+				"execution_count": null
+			}
+		]
+	}
+}

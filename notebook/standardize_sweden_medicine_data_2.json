@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "051979b1-a494-41ec-87a0-6fb129449628"
+				"spark.autotune.trackingId": "cd68f73d-6a04-441d-a52c-9bef28b5539b"
 			}
 		},
 		"metadata": {
@@ -179,10 +179,11 @@
 					"\n",
 					"df_dispensed_units_filtered.show(5)\n",
 					"df_users_filtered.show(5)\n",
-					"df_users_filtered.select(\"ATC-kod\").distinct().show(56)\n",
-					"df_dispensed_units_filtered.select(\"ATC-kod\").distinct().show(56)"
+					"\n",
+					"#df_users_filtered.select(\"ATC-kod\").distinct().show(56)\n",
+					"#df_dispensed_units_filtered.select(\"ATC-kod\").distinct().show(56)"
 				],
-				"execution_count": 8
+				"execution_count": 11
 			},
 			{
 				"cell_type": "markdown",
