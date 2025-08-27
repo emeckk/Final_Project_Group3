@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "38e43fc4-b6a9-4a27-873f-bce19ffd0d1f"
+				"spark.autotune.trackingId": "cc93bf3c-557e-48be-8e1e-6fb45e8d2fc0"
 			}
 		},
 		"metadata": {
@@ -51,13 +51,8 @@
 			{
 				"cell_type": "code",
 				"source": [
-					"BASE = "
-				],
-				"execution_count": null
-			},
-			{
-				"cell_type": "code",
-				"source": [
+					"\n",
+					"\n",
 					"import os, time, glob\n",
 					"import pandas as pd, requests\n",
 					"from urllib.parse import quote\n",
@@ -237,9 +232,12 @@
 					"              \"| ATC:\", final['atc'].nunique(),\n",
 					"              \"| Regioner:\", final['region'].nunique(),\n",
 					"              \"| Kön:\", sorted(final['kon'].unique().tolist()))\n",
-					"    except: pass"
+					"    except: pass\n",
+					"\n",
+					"print(\"Klart.\")\n",
+					""
 				],
-				"execution_count": 1
+				"execution_count": 107
 			},
 			{
 				"cell_type": "code",
