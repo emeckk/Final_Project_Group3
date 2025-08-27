@@ -1,0 +1,49 @@
+{
+	"name": "ADLS_FactMedicine_Parquet",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "group3fpsynapse-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "production/fact_medicine.parquet",
+				"fileSystem": "group3fpfilesystem"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": [
+			{
+				"name": "id",
+				"type": "UTF8"
+			},
+			{
+				"name": "atc_level_5",
+				"type": "UTF8"
+			},
+			{
+				"name": "year",
+				"type": "UTF8"
+			},
+			{
+				"name": "country_code",
+				"type": "UTF8"
+			},
+			{
+				"name": "dispensed_units",
+				"type": "UTF8"
+			},
+			{
+				"name": "users",
+				"type": "UTF8"
+			},
+			{
+				"name": "dispensed_ddd",
+				"type": "DOUBLE"
+			}
+		]
+	}
+}

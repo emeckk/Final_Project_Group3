@@ -1,0 +1,16 @@
+{
+	"name": "Synapse_FactMedicine_SQL",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "group3fpsynapse-WorkspaceDefaultSqlServer",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "fact_medicine"
+		}
+	}
+}

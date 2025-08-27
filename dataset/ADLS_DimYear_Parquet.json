@@ -1,0 +1,25 @@
+{
+	"name": "ADLS_DimYear_Parquet",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "group3fpsynapse-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "production/dim_year.parquet",
+				"fileSystem": "group3fpfilesystem"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": [
+			{
+				"name": "year",
+				"type": "INT32"
+			}
+		]
+	}
+}

@@ -1,0 +1,206 @@
+{
+	"name": "SinkToSQLPool",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ADLS_DimYear_Parquet",
+						"type": "DatasetReference"
+					},
+					"name": "DimYear"
+				},
+				{
+					"dataset": {
+						"referenceName": "ADLS_DimMedicine_Parquet",
+						"type": "DatasetReference"
+					},
+					"name": "DimMedicine"
+				},
+				{
+					"dataset": {
+						"referenceName": "ADLS_DimCountry_Parquet",
+						"type": "DatasetReference"
+					},
+					"name": "DimCountry"
+				},
+				{
+					"dataset": {
+						"referenceName": "ADLS_FactMedicine_Parquet",
+						"type": "DatasetReference"
+					},
+					"name": "FactMedicine"
+				},
+				{
+					"dataset": {
+						"referenceName": "ADLS_FactCountry_Parquet",
+						"type": "DatasetReference"
+					},
+					"name": "FactCountry"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Synapse_DimYear_SQL",
+						"type": "DatasetReference"
+					},
+					"name": "DimYearSink"
+				},
+				{
+					"dataset": {
+						"referenceName": "Synapse_DimMedicine_SQL",
+						"type": "DatasetReference"
+					},
+					"name": "DimMedicineSink"
+				},
+				{
+					"dataset": {
+						"referenceName": "Synapse_DimCountry_SQL",
+						"type": "DatasetReference"
+					},
+					"name": "DimCountrySink"
+				},
+				{
+					"dataset": {
+						"referenceName": "Synapse_FactMedicine_SQL",
+						"type": "DatasetReference"
+					},
+					"name": "FactMedicineSink"
+				},
+				{
+					"dataset": {
+						"referenceName": "Synapse_FactCountry_SQL",
+						"type": "DatasetReference"
+					},
+					"name": "FactCountrySink"
+				}
+			],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          year as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> DimYear",
+				"source(output(",
+				"          atc_level_5 as string,",
+				"          atc_level_5_name as string,",
+				"          atc_level_4 as string,",
+				"          atc_level_4_name as string,",
+				"          atc_level_3 as string,",
+				"          atc_level_3_name as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> DimMedicine",
+				"source(output(",
+				"          country_code as string,",
+				"          country_name as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> DimCountry",
+				"source(output(",
+				"          id as string,",
+				"          atc_level_5 as string,",
+				"          year as string,",
+				"          country_code as string,",
+				"          dispensed_units as string,",
+				"          users as string,",
+				"          dispensed_ddd as double",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> FactMedicine",
+				"source(output(",
+				"          id as string,",
+				"          year as string,",
+				"          country as string,",
+				"          deaths_diabetes_mellitus as integer,",
+				"          deaths_cardiovascular_disease as integer,",
+				"          deaths_heart_attack as integer,",
+				"          deaths_kidney_and_ureter_disease as integer,",
+				"          deaths_total as integer,",
+				"          population as long,",
+				"          diabetic_population as double,",
+				"          diabetic_share as double",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> FactCountry",
+				"DimYear sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     recreate:true,",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> DimYearSink",
+				"DimMedicine sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     recreate:true,",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> DimMedicineSink",
+				"DimCountry sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     recreate:true,",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> DimCountrySink",
+				"FactMedicine sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     recreate:true,",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> FactMedicineSink",
+				"FactCountry sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> FactCountrySink"
+			]
+		}
+	}
+}

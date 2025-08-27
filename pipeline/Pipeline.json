@@ -340,6 +340,8 @@
 			{
 				"name": "Standardize Sweden Medicine Data",
 				"type": "SynapseNotebook",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "Copy Sweden Medicine Data",
@@ -375,7 +377,7 @@
 				}
 			},
 			{
-				"name": "Join and Sink to SQL Pool",
+				"name": "Create Dim and Fact Tables",
 				"type": "SynapseNotebook",
 				"state": "Inactive",
 				"onInactiveMarkAs": "Succeeded",
@@ -546,6 +548,8 @@
 			{
 				"name": "Copy Sweden Medicine Data",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -589,6 +593,44 @@
 						"type": "DatasetReference"
 					}
 				]
+			},
+			{
+				"name": "Sink to SQL Pool",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "Create Dim and Fact Tables",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "SinkToSQLPool",
+						"type": "DataFlowReference"
+					},
+					"staging": {
+						"linkedService": {
+							"referenceName": "group3fpadls",
+							"type": "LinkedServiceReference"
+						},
+						"folderPath": "group3fpfilesystem/staging"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
 			}
 		],
 		"annotations": []

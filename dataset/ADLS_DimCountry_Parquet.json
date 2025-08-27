@@ -1,0 +1,29 @@
+{
+	"name": "ADLS_DimCountry_Parquet",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "group3fpsynapse-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "production/dim_country.parquet",
+				"fileSystem": "group3fpfilesystem"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": [
+			{
+				"name": "country_code",
+				"type": "UTF8"
+			},
+			{
+				"name": "country_name",
+				"type": "UTF8"
+			}
+		]
+	}
+}

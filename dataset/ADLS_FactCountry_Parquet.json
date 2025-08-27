@@ -1,0 +1,65 @@
+{
+	"name": "ADLS_FactCountry_Parquet",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "group3fpsynapse-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "production/fact_country.parquet",
+				"fileSystem": "group3fpfilesystem"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": [
+			{
+				"name": "id",
+				"type": "UTF8"
+			},
+			{
+				"name": "year",
+				"type": "UTF8"
+			},
+			{
+				"name": "country",
+				"type": "UTF8"
+			},
+			{
+				"name": "deaths_diabetes_mellitus",
+				"type": "INT32"
+			},
+			{
+				"name": "deaths_cardiovascular_disease",
+				"type": "INT32"
+			},
+			{
+				"name": "deaths_heart_attack",
+				"type": "INT32"
+			},
+			{
+				"name": "deaths_kidney_and_ureter_disease",
+				"type": "INT32"
+			},
+			{
+				"name": "deaths_total",
+				"type": "INT32"
+			},
+			{
+				"name": "population",
+				"type": "INT64"
+			},
+			{
+				"name": "diabetic_population",
+				"type": "DOUBLE"
+			},
+			{
+				"name": "diabetic_share",
+				"type": "DOUBLE"
+			}
+		]
+	}
+}
