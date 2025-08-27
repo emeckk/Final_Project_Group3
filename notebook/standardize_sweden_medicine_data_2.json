@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "3fa87763-15e4-4aad-8c4e-fa546dd3e986"
+				"spark.autotune.trackingId": "051979b1-a494-41ec-87a0-6fb129449628"
 			}
 		},
 		"metadata": {
@@ -101,7 +101,7 @@
 					"        fs.copyFromLocalFile(False, True, src_path, dst_path)\n",
 					""
 				],
-				"execution_count": 20
+				"execution_count": 1
 			},
 			{
 				"cell_type": "markdown",
@@ -126,7 +126,7 @@
 					"df_dispensed_units.show(5)\n",
 					"df_users.show(5)"
 				],
-				"execution_count": 22
+				"execution_count": 2
 			},
 			{
 				"cell_type": "markdown",
@@ -179,9 +179,10 @@
 					"\n",
 					"df_dispensed_units_filtered.show(5)\n",
 					"df_users_filtered.show(5)\n",
-					"df_users_filtered.select(\"ATC-kod\").distinct().count()"
+					"df_users_filtered.select(\"ATC-kod\").distinct().show(56)\n",
+					"df_dispensed_units_filtered.select(\"ATC-kod\").distinct().show(56)"
 				],
-				"execution_count": 30
+				"execution_count": 8
 			},
 			{
 				"cell_type": "markdown",
@@ -222,7 +223,7 @@
 					"df_dispensed_units_renamed.show(5)\n",
 					"df_users_renamed.show(5)"
 				],
-				"execution_count": 25
+				"execution_count": 4
 			},
 			{
 				"cell_type": "markdown",
@@ -245,7 +246,7 @@
 					"\n",
 					"combined.show(5)"
 				],
-				"execution_count": 28
+				"execution_count": 5
 			},
 			{
 				"cell_type": "markdown",
@@ -265,7 +266,7 @@
 				"source": [
 					"combined.write.mode(\"overwrite\").parquet(\"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/sweden_medicine_2.parquet\")"
 				],
-				"execution_count": 29
+				"execution_count": 6
 			}
 		]
 	}
