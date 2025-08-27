@@ -3,7 +3,10 @@
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "group3fpsynapse-WorkspaceDefaultSqlServer",
-			"type": "LinkedServiceReference"
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"DBName": "group3fpsql"
+			}
 		},
 		"annotations": [],
 		"type": "AzureSqlDWTable",
