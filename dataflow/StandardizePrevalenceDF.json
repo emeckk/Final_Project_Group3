@@ -39,6 +39,9 @@
 				},
 				{
 					"name": "DropAgeColumn"
+				},
+				{
+					"name": "CastDatatypes"
 				}
 			],
 			"scriptLines": [
@@ -83,7 +86,15 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> DropAgeColumn",
-				"DropAgeColumn sink(allowSchemaDrift: true,",
+				"DropAgeColumn cast(output(",
+				"          year as integer,",
+				"          country as string,",
+				"          diabetic_share as float,",
+				"          lower_confidence as float,",
+				"          upper_confidence as float",
+				"     ),",
+				"     errors: true) ~> CastDatatypes",
+				"CastDatatypes sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
 				"     truncate: true,",

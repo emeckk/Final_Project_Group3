@@ -125,8 +125,6 @@
 			{
 				"name": "Standardize Prevalence Data",
 				"type": "ExecuteDataFlow",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "Copy Diabetes Prevalence",
@@ -591,44 +589,6 @@
 						"type": "DatasetReference"
 					}
 				]
-			},
-			{
-				"name": "Sink to SQL Pool",
-				"type": "ExecuteDataFlow",
-				"dependsOn": [
-					{
-						"activity": "Create Dim and Fact Tables",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"dataflow": {
-						"referenceName": "SinkToSQLPool",
-						"type": "DataFlowReference"
-					},
-					"staging": {
-						"linkedService": {
-							"referenceName": "group3fpadls",
-							"type": "LinkedServiceReference"
-						},
-						"folderPath": "group3fpfilesystem/staging"
-					},
-					"compute": {
-						"coreCount": 8,
-						"computeType": "General"
-					},
-					"traceLevel": "Fine"
-				}
 			}
 		],
 		"annotations": []

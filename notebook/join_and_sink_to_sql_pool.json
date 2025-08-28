@@ -17,15 +17,15 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "2fdfce48-4916-43b7-a7dd-4004086a2b38"
+				"spark.autotune.trackingId": "ada37ad0-e515-4540-93d1-efc96c84590a"
 			}
 		},
 		"metadata": {
 			"saveOutput": true,
 			"enableDebugMode": false,
 			"kernelspec": {
-				"name": "synapse_sparksql",
-				"display_name": "sql"
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
 			},
 			"language_info": {
 				"name": "sql"
@@ -89,7 +89,7 @@
 					"diabetes_prevalence_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/diabetes_prevalence.parquet\"\n",
 					"atc_name_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/atc_name.parquet\""
 				],
-				"execution_count": 2
+				"execution_count": 1
 			},
 			{
 				"cell_type": "code",
@@ -110,7 +110,7 @@
 					"df_diabetes_prevalence = spark.read.parquet(diabetes_prevalence_path)\n",
 					"df_atc_name = spark.read.parquet(atc_name_path)"
 				],
-				"execution_count": 3
+				"execution_count": 2
 			},
 			{
 				"cell_type": "code",
@@ -131,7 +131,7 @@
 					"df_diabetes_prevalence.createOrReplaceTempView(\"diabetes_prevalence\")\n",
 					"df_atc_name.createOrReplaceTempView('atc_name')"
 				],
-				"execution_count": 4
+				"execution_count": 3
 			},
 			{
 				"cell_type": "code",
@@ -161,7 +161,7 @@
 					"--For testing\n",
 					"--SELECT * FROM dim_medicine;"
 				],
-				"execution_count": 5
+				"execution_count": 4
 			},
 			{
 				"cell_type": "code",
@@ -185,7 +185,7 @@
 					"--SELECT * FROM dim_country;\n",
 					""
 				],
-				"execution_count": 6
+				"execution_count": 5
 			},
 			{
 				"cell_type": "code",
@@ -201,7 +201,7 @@
 					"--For testing\n",
 					"--SELECT * FROM dim_year;"
 				],
-				"execution_count": 7
+				"execution_count": 6
 			},
 			{
 				"cell_type": "code",
@@ -253,7 +253,7 @@
 					"--For testing\n",
 					"--SELECT * FROM fact_medicine;"
 				],
-				"execution_count": 8
+				"execution_count": 7
 			},
 			{
 				"cell_type": "code",
@@ -286,7 +286,7 @@
 					"--For testing\n",
 					"--SELECT * FROM fact_country;"
 				],
-				"execution_count": 11
+				"execution_count": 8
 			},
 			{
 				"cell_type": "code",
@@ -298,6 +298,9 @@
 				"source": [
 					"%%pyspark\n",
 					"\n",
+					"import com.microsoft.spark.sqlanalytics\n",
+					"from pyspark.sql.functions import col\n",
+					"\n",
 					"# Convert tables to suitible format\n",
 					"dim_medicine_prod = spark.table(\"dim_medicine\")\n",
 					"dim_year_prod = spark.table(\"dim_year\")\n",
@@ -305,14 +308,34 @@
 					"fact_medicine_prod = spark.table(\"fact_medicine\")\n",
 					"fact_country_prod = spark.table(\"fact_country\")\n",
 					"\n",
+					"\n",
+					"# Cast correct datatypes\n",
+					"fact_medicine_casted = fact_medicine_prod.withColumn(\"year\", col(\"year\").cast(\"int\")) \\\n",
+					"                    .withColumn(\"dispensed_units\", col(\"dispensed_units\").cast(\"int\")) \\\n",
+					"                    .withColumn(\"users\", col(\"users\").cast(\"int\")) \\\n",
+					"                    .withColumn(\"dispensed_ddd\", col(\"dispensed_ddd\").cast(\"int\"))\n",
+					"\n",
+					"fact_country_casted = fact_country_prod.withColumn(\"year\", col(\"year\").cast(\"int\")) \\\n",
+					"                        .withColumn(\"population\", col(\"population\").cast(\"int\")) \\\n",
+					"                        .withColumn(\"diabetic_share\", col(\"diabetic_share\").cast(\"float\")) \\\n",
+					"                        .withColumn(\"diabetic_population\", col(\"diabetic_population\").cast(\"int\"))\n",
+					"\n",
+					"\n",
 					"# Saves as parquet to production folder\n",
-					"dim_medicine_prod.write.mode(\"overwrite\").parquet(\"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/production/dim_medicine.parquet\")\n",
-					"dim_year_prod.write.mode(\"overwrite\").parquet(\"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/production/dim_year.parquet\")\n",
-					"dim_country_prod.write.mode(\"overwrite\").parquet(\"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/production/dim_country.parquet\")\n",
-					"fact_medicine_prod.write.mode(\"overwrite\").parquet(\"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/production/fact_medicine.parquet\")\n",
-					"fact_country_prod.write.mode(\"overwrite\").parquet(\"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/production/fact_country.parquet\")"
+					"dim_medicine_prod.write.mode(\"overwrite\").synapsesql(\"group3fpsql.dbo.dim_medicine\")\n",
+					"dim_year_prod.write.mode(\"overwrite\").synapsesql(\"group3fpsql.dbo.dim_year\")\n",
+					"dim_country_prod.write.mode(\"overwrite\").synapsesql(\"group3fpsql.dbo.dim_country\")\n",
+					"fact_medicine_casted.write.mode(\"overwrite\").synapsesql(\"group3fpsql.dbo.fact_medicine\")\n",
+					"fact_country_casted.write.mode(\"overwrite\").synapsesql(\"group3fpsql.dbo.fact_country\")"
 				],
-				"execution_count": 10
+				"execution_count": 23
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					""
+				],
+				"execution_count": null
 			}
 		]
 	}
