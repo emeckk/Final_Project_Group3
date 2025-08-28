@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "ada37ad0-e515-4540-93d1-efc96c84590a"
+				"spark.autotune.trackingId": "faefd806-293a-4eb3-9fa1-d70d1d3dc7ab"
 			}
 		},
 		"metadata": {
@@ -89,7 +89,7 @@
 					"diabetes_prevalence_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/diabetes_prevalence.parquet\"\n",
 					"atc_name_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/atc_name.parquet\""
 				],
-				"execution_count": 1
+				"execution_count": 38
 			},
 			{
 				"cell_type": "code",
@@ -110,7 +110,7 @@
 					"df_diabetes_prevalence = spark.read.parquet(diabetes_prevalence_path)\n",
 					"df_atc_name = spark.read.parquet(atc_name_path)"
 				],
-				"execution_count": 2
+				"execution_count": 39
 			},
 			{
 				"cell_type": "code",
@@ -131,7 +131,7 @@
 					"df_diabetes_prevalence.createOrReplaceTempView(\"diabetes_prevalence\")\n",
 					"df_atc_name.createOrReplaceTempView('atc_name')"
 				],
-				"execution_count": 3
+				"execution_count": 40
 			},
 			{
 				"cell_type": "code",
@@ -161,7 +161,7 @@
 					"--For testing\n",
 					"--SELECT * FROM dim_medicine;"
 				],
-				"execution_count": 4
+				"execution_count": 41
 			},
 			{
 				"cell_type": "code",
@@ -185,7 +185,7 @@
 					"--SELECT * FROM dim_country;\n",
 					""
 				],
-				"execution_count": 5
+				"execution_count": 42
 			},
 			{
 				"cell_type": "code",
@@ -196,12 +196,12 @@
 					"DROP TABLE IF EXISTS dim_year;\n",
 					"\n",
 					"CREATE TABLE dim_year AS\n",
-					"SELECT explode(sequence(1980, 2025)) AS year;\n",
+					"SELECT explode(sequence(2006, 2020)) AS year;\n",
 					"\n",
 					"--For testing\n",
-					"--SELECT * FROM dim_year;"
+					"SELECT * FROM dim_year;"
 				],
-				"execution_count": 6
+				"execution_count": 43
 			},
 			{
 				"cell_type": "code",
@@ -253,7 +253,7 @@
 					"--For testing\n",
 					"--SELECT * FROM fact_medicine;"
 				],
-				"execution_count": 7
+				"execution_count": 44
 			},
 			{
 				"cell_type": "code",
@@ -274,8 +274,8 @@
 					"    dth.deaths_kidney_and_ureter_disease,\n",
 					"    dth.deaths_total,\n",
 					"    pop.population,\n",
-					"    pre.diabetic_share / 100 AS diabetic_share,\n",
-					"    ROUND(pop.population * pre.diabetic_share) AS diabetic_population\n",
+					"    pre.diabetic_share / 100 AS diabetic_share_of_population,\n",
+					"    ROUND(pop.population * diabetic_share_of_population) AS diabetic_population\n",
 					"FROM \n",
 					"    population pop \n",
 					"INNER JOIN cause_of_death dth ON dth.year = pop.year AND dth.country = pop.country\n",
@@ -284,9 +284,9 @@
 					"    year, country ASC;\n",
 					"\n",
 					"--For testing\n",
-					"--SELECT * FROM fact_country;"
+					"SELECT * FROM fact_country;"
 				],
-				"execution_count": 8
+				"execution_count": 50
 			},
 			{
 				"cell_type": "code",
@@ -317,25 +317,18 @@
 					"\n",
 					"fact_country_casted = fact_country_prod.withColumn(\"year\", col(\"year\").cast(\"int\")) \\\n",
 					"                        .withColumn(\"population\", col(\"population\").cast(\"int\")) \\\n",
-					"                        .withColumn(\"diabetic_share\", col(\"diabetic_share\").cast(\"float\")) \\\n",
+					"                        .withColumn(\"diabetic_share_of_population\", col(\"diabetic_share_of_population\").cast(\"float\")) \\\n",
 					"                        .withColumn(\"diabetic_population\", col(\"diabetic_population\").cast(\"int\"))\n",
 					"\n",
 					"\n",
-					"# Saves as parquet to production folder\n",
+					"# Writes directly to SQL pool\n",
 					"dim_medicine_prod.write.mode(\"overwrite\").synapsesql(\"group3fpsql.dbo.dim_medicine\")\n",
 					"dim_year_prod.write.mode(\"overwrite\").synapsesql(\"group3fpsql.dbo.dim_year\")\n",
 					"dim_country_prod.write.mode(\"overwrite\").synapsesql(\"group3fpsql.dbo.dim_country\")\n",
 					"fact_medicine_casted.write.mode(\"overwrite\").synapsesql(\"group3fpsql.dbo.fact_medicine\")\n",
 					"fact_country_casted.write.mode(\"overwrite\").synapsesql(\"group3fpsql.dbo.fact_country\")"
 				],
-				"execution_count": 23
-			},
-			{
-				"cell_type": "code",
-				"source": [
-					""
-				],
-				"execution_count": null
+				"execution_count": 53
 			}
 		]
 	}

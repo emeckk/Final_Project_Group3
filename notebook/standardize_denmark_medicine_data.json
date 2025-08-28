@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "7a0487cf-b184-40ef-b629-cba3ad2f4c1e"
+				"spark.autotune.trackingId": "d07bac01-a82c-4d0c-a6bf-fa00ea614d6f"
 			}
 		},
 		"metadata": {
@@ -85,7 +85,7 @@
 					"\n",
 					"# Drop empty columns\n",
 					"df_atc = df_atc.drop(\"_c13\")\n",
-					"df_product = df_product.drop(\"_c14\")\n",
+					"df_product = df_product.drop(\"_c14\", \"_c15\")\n",
 					"\n",
 					"# Add headers\n",
 					"new_cols_atc = [\n",
@@ -128,7 +128,7 @@
 					"df_atc_renamed.createOrReplaceTempView(\"raw_data_atc\")\n",
 					"df_product_renamed.createOrReplaceTempView(\"raw_data_product\")"
 				],
-				"execution_count": 1
+				"execution_count": 7
 			},
 			{
 				"cell_type": "markdown",
@@ -181,7 +181,7 @@
 					"\n",
 					"SELECT * FROM product_minimal LIMIT 5;"
 				],
-				"execution_count": 2
+				"execution_count": 8
 			},
 			{
 				"cell_type": "markdown",
@@ -235,7 +235,7 @@
 					"\n",
 					"SELECT * FROM atc_minimal LIMIT 5;"
 				],
-				"execution_count": 3
+				"execution_count": 9
 			},
 			{
 				"cell_type": "markdown",
@@ -275,7 +275,7 @@
 					"\n",
 					"SELECT * FROM atc_product_full LIMIT 5;"
 				],
-				"execution_count": 4
+				"execution_count": 10
 			},
 			{
 				"cell_type": "markdown",
@@ -331,7 +331,7 @@
 					"WHERE r.atc4 LIKE \"A10%\"\n",
 					"ORDER BY r.year, r.atc4;"
 				],
-				"execution_count": 5
+				"execution_count": 11
 			},
 			{
 				"cell_type": "markdown",
@@ -365,7 +365,7 @@
 					"GROUP BY atc_level_5, year\n",
 					"ORDER BY row_count DESC;"
 				],
-				"execution_count": 6
+				"execution_count": 12
 			},
 			{
 				"cell_type": "markdown",
@@ -377,7 +377,7 @@
 					}
 				},
 				"source": [
-					"##### Sink to ADLS"
+					"###### Sink to ADLS"
 				]
 			},
 			{
@@ -387,7 +387,7 @@
 					"\n",
 					"df.write.mode(\"overwrite\").parquet(\"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/denmark_medicine.parquet\")"
 				],
-				"execution_count": 7
+				"execution_count": 13
 			}
 		]
 	}

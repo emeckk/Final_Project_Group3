@@ -1,0 +1,17 @@
+{
+	"name": "SQL script 2",
+	"properties": {
+		"content": {
+			"query": "SELECT TOP (100) [id]\n,[year]\n,[country]\n,[deaths_diabetes_mellitus]\n,[deaths_cardiovascular_disease]\n,[deaths_heart_attack]\n,[deaths_kidney_and_ureter_disease]\n,[deaths_total]\n,[population]\n,[diabetic_share_of_population]\n,[diabetic_population]\n FROM [dbo].[fact_country]",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "group3fpsql",
+				"poolName": "group3fpsql"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
