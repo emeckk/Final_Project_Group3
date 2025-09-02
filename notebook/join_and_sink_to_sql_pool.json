@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "true",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "faefd806-293a-4eb3-9fa1-d70d1d3dc7ab"
+				"spark.autotune.trackingId": "1961c8d6-0b42-4d7d-aa22-3d5ce3eb81a7"
 			}
 		},
 		"metadata": {
@@ -89,7 +89,7 @@
 					"diabetes_prevalence_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/diabetes_prevalence.parquet\"\n",
 					"atc_name_path = \"abfss://group3fpfilesystem@group3fpadls.dfs.core.windows.net/standardized/atc_name.parquet\""
 				],
-				"execution_count": 38
+				"execution_count": 1
 			},
 			{
 				"cell_type": "code",
@@ -110,7 +110,7 @@
 					"df_diabetes_prevalence = spark.read.parquet(diabetes_prevalence_path)\n",
 					"df_atc_name = spark.read.parquet(atc_name_path)"
 				],
-				"execution_count": 39
+				"execution_count": 2
 			},
 			{
 				"cell_type": "code",
@@ -131,7 +131,7 @@
 					"df_diabetes_prevalence.createOrReplaceTempView(\"diabetes_prevalence\")\n",
 					"df_atc_name.createOrReplaceTempView('atc_name')"
 				],
-				"execution_count": 40
+				"execution_count": 3
 			},
 			{
 				"cell_type": "code",
@@ -161,7 +161,7 @@
 					"--For testing\n",
 					"--SELECT * FROM dim_medicine;"
 				],
-				"execution_count": 41
+				"execution_count": 4
 			},
 			{
 				"cell_type": "code",
@@ -185,7 +185,7 @@
 					"--SELECT * FROM dim_country;\n",
 					""
 				],
-				"execution_count": 42
+				"execution_count": 5
 			},
 			{
 				"cell_type": "code",
@@ -201,7 +201,7 @@
 					"--For testing\n",
 					"SELECT * FROM dim_year;"
 				],
-				"execution_count": 43
+				"execution_count": 6
 			},
 			{
 				"cell_type": "code",
@@ -253,7 +253,7 @@
 					"--For testing\n",
 					"--SELECT * FROM fact_medicine;"
 				],
-				"execution_count": 44
+				"execution_count": 7
 			},
 			{
 				"cell_type": "code",
@@ -267,7 +267,7 @@
 					"SELECT\n",
 					"    md5(CONCAT_WS('|', pop.year, pop.country)) AS id,\n",
 					"    pop.year,\n",
-					"    pop.country,\n",
+					"    pop.country AS country_code,\n",
 					"    dth.deaths_diabetes_mellitus,\n",
 					"    dth.deaths_cardiovascular_disease,\n",
 					"    dth.deaths_heart_attack,\n",
@@ -281,12 +281,12 @@
 					"INNER JOIN cause_of_death dth ON dth.year = pop.year AND dth.country = pop.country\n",
 					"INNER JOIN diabetes_prevalence pre ON pre.year = pop.year AND pre.country = pop.country\n",
 					"ORDER BY \n",
-					"    year, country ASC;\n",
+					"    year, country_code ASC;\n",
 					"\n",
 					"--For testing\n",
 					"SELECT * FROM fact_country;"
 				],
-				"execution_count": 50
+				"execution_count": 9
 			},
 			{
 				"cell_type": "code",
